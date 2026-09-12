@@ -1,0 +1,45 @@
+# Dependências Python do Banking Analytics.
+#
+# Este arquivo declara a INTENÇÃO (quais bibliotecas o projeto usa e por quê).
+# O que de fato foi instalado e validado fica travado em requirements.lock.txt,
+# gerado por `pip freeze` — é ele que garante que outra máquina (ou você daqui a
+# seis meses) reproduza exatamente o mesmo resultado.
+#
+# Instalar:  .\scripts\setup_python.cmd
+# Detalhe:   README.md § Como rodar
+
+# --- Núcleo de dados ---------------------------------------------------------
+pandas
+numpy
+
+# --- Fronteira Python <-> R --------------------------------------------------
+# Parquet é o formato de troca entre as duas linguagens: preserva tipos (data,
+# decimal, categórico) — coisa que CSV perde — e é lido nativamente dos dois
+# lados (pyarrow aqui, arrow no R). Ver AGENTS.md § A fronteira entre as duas linguagens.
+pyarrow
+
+# --- Modelagem de crédito ----------------------------------------------------
+# optbinning: binning ótimo, WOE/IV e construção de scorecard. É a biblioteca
+#   que justifica trazer Python para este projeto — não há equivalente em R com
+#   o mesmo nível de maturidade.
+optbinning
+# scikit-learn: partição, pipelines, métricas, calibração.
+scikit-learn
+# statsmodels: regressão logística COM p-valor e intervalo de confiança por
+#   coeficiente. Em crédito isso não é luxo: um scorecard precisa justificar
+#   variável a variável, e o sklearn não reporta significância.
+statsmodels
+# lightgbm: modelo desafiante (challenger) contra o scorecard logístico.
+lightgbm
+# shap: explicabilidade. Modelo de crédito que nega crédito precisa dizer por quê
+#   — é exigência regulatória, não enfeite.
+shap
+
+# --- Gráficos (dependência do optbinning e diagnóstico rápido) ---------------
+matplotlib
+
+# --- Leitura de base em Excel ------------------------------------------------
+openpyxl
+
+# --- Testes ------------------------------------------------------------------
+pytest

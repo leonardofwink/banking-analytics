@@ -2,7 +2,9 @@
 
 Projeto de **modelagem de crédito e banking analytics**, desenvolvido no âmbito da mentoria **ANALITICA**.
 
-Repositório em **R**, organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts.
+Repositório **poliglota (R + Python)**, organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts.
+
+**Python modela · R explora e comunica.** Python entra pelo ferramental de crédito que não tem equivalente maduro em R (`optbinning` para binning/WOE/scorecard, `lightgbm`, `shap`); R continua melhor para investigar e apresentar (`dplyr`, `ggplot2`, Quarto). As duas linguagens **não se importam** — conversam por arquivo Parquet em `dados/`. A regra completa está em [`AGENTS.md`](AGENTS.md#a-fronteira-entre-as-duas-linguagens).
 
 > 📖 **Começando agora? Leia o [glossário](docs/GLOSSARIO.md) primeiro.** Ele é a peça central do projeto: risco inerente, risco residual, mitigação, PD/EAD/LGD, ROE e o vocabulário de crédito que aparece em todo o resto.
 
@@ -23,34 +25,41 @@ Repositório em **R**, organizado para reprodutibilidade: o git versiona **apena
 
 ```
 .
-├── R/                      Funções reutilizáveis (biblioteca interna, carregada pelo _setup.R)
-├── scripts/                Pipelines executáveis
-│   ├── _setup.R            Âncora: raiz, diretórios, pacotes, log, semente
-│   ├── rscript.cmd         Wrapper que acha o Rscript desta máquina
-│   ├── etl/                Ingestão, limpeza, construção da ABT
+├── R/                      🇷 Funções R reutilizáveis (carregadas pelo _setup.R)
+├── scripts/                🇷 Pipelines R + wrappers de execução
+│   ├── _setup.R            Âncora R: raiz, diretórios, pacotes, log, semente
+│   ├── rscript.cmd         Acha o Rscript desta máquina
+│   ├── setup_python.cmd    Cria o .venv e instala as dependências Python
+│   ├── py.cmd              Roda Python no .venv, sem precisar ativá-lo
+│   ├── etl/                Ingestão e limpeza
 │   ├── analises/           Exploratória, safras, univariadas
-│   ├── modelagem/          Scorecard, PD/LGD/EAD, validação
+│   ├── modelagem/          Modelagem em R (quando fizer sentido)
 │   └── relatorios/         Saídas para apresentação
+├── python/                 🐍 Lado Python
+│   ├── banking/            Biblioteca interna (pacote importável)
+│   │   └── projeto.py      Âncora Python: raiz, diretórios, log, semente
+│   ├── etl/                Ingestão e construção da ABT
+│   ├── modelagem/          Binning, WOE/IV, scorecard, challenger, SHAP
+│   └── relatorios/         Saídas geradas em Python
 ├── dados/                  ⛔ NÃO versionado
 │   ├── brutos/             Como chegou — somente leitura
 │   ├── intermediarios/     Limpo e padronizado
-│   └── processados/        ABT — base analítica pronta
+│   └── processados/        ABT — base analítica pronta (fronteira Python ↔ R)
 ├── outputs/                ⛔ NÃO versionado (figuras, tabelas, relatórios)
 ├── docs/                   Documentação
-└── tests/                  Testes das funções de R/
+└── tests/                  testthat/ (R) · python/ (pytest)
 ```
 
-**A distinção que importa:** `R/` tem **funções** (puras, testáveis, sem efeito colateral ao carregar); `scripts/` tem **pipelines** (rodam, leem e escrevem arquivos, imprimem log). Cálculo que vale a pena testar vira função em `R/`; a sequência que orquestra vira script em `scripts/`.
+**A distinção que importa, nas duas linguagens:** `R/` e `python/banking/` têm **funções** (puras, testáveis, sem efeito colateral ao carregar); `scripts/` e `python/{etl,modelagem,relatorios}/` têm **pipelines** (rodam, leem e escrevem arquivos, imprimem log). Cálculo que vale testar vira função na biblioteca; a sequência que orquestra vira pipeline.
 
 ## Como rodar
+
+### R
 
 **Pré-requisito:** R ≥ 4.5. Não precisa estar no PATH — o wrapper descobre a instalação.
 
 ```powershell
-# 1. Conferir qual R o projeto vai usar
-.\scripts\rscript.cmd
-
-# 2. Rodar um script qualquer
+.\scripts\rscript.cmd                          # qual R o projeto vai usar
 .\scripts\rscript.cmd scripts\etl\01_ingestao.R
 ```
 
@@ -61,6 +70,30 @@ source(here::here("scripts", "_setup.R"))
 ```
 
 Os pacotes são instalados sob demanda por `pacman::p_load()` na primeira execução.
+
+### Python
+
+**Pré-requisito:** Python ≥ 3.12. Uma vez por máquina (e sempre que o `requirements.txt` mudar):
+
+```powershell
+.\scripts\setup_python.cmd     # cria o .venv, instala tudo, trava as versões
+```
+
+Depois, rode sem precisar ativar o ambiente — o wrapper usa o interpretador do `.venv`:
+
+```powershell
+.\scripts\py.cmd                                  # qual interpretador está em uso
+.\scripts\py.cmd python\modelagem\01_scorecard.py
+.\scripts\py.cmd -m pytest                        # testes
+```
+
+Todo script Python começa importando a âncora:
+
+```python
+from banking.projeto import DIR_PROCESSADOS, SEMENTE, log_step, semear
+```
+
+As versões instaladas ficam travadas em `requirements.lock.txt` (gerado — não editar à mão). É ele que garante que outra máquina chegue no mesmo número.
 
 ### Variáveis de ambiente
 

@@ -15,6 +15,9 @@
 *.R     text eol=lf
 *.Rmd   text eol=lf
 *.qmd   text eol=lf
+*.py    text eol=lf
+*.toml  text eol=lf
 *.md    text eol=lf
 *.json  text eol=lf
+*.txt   text eol=lf
 *.Rproj text eol=crlf

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Descobre o Rscript.exe desta máquina e repassa os argumentos recebidos.
 

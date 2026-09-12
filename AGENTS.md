@@ -30,22 +30,74 @@ Vocabulário completo em [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md).
 
 > **Mapa central:** o [`README.md`](README.md) é a fonte única da estrutura — árvore de pastas, como rodar, mapa dos documentos. Atualize-o sempre que um script for adicionado ou renomeado. A tabela abaixo é o resumo de convenção.
 
+O projeto é **poliglota: R e Python**, com papéis definidos (ver § A fronteira entre as duas linguagens).
+
 | O que | Onde |
 | ----- | ---- |
-| **Funções reutilizáveis** (puras, testáveis) | `R/` — carregadas automaticamente pelo `_setup.R` |
-| Âncora do projeto (raiz, diretórios, log, semente) | [`scripts/_setup.R`](scripts/_setup.R) — sourçada no topo de todo script |
-| Ingestão, limpeza, construção da ABT | `scripts/etl/` — prefixos de ordem `00_`, `01_`, … |
-| Análise exploratória, safras, univariadas | `scripts/analises/` |
-| Scorecard, PD/LGD/EAD, validação | `scripts/modelagem/` |
-| Saídas para apresentação | `scripts/relatorios/` |
+| **Funções R reutilizáveis** (puras, testáveis) | `R/` — carregadas automaticamente pelo `_setup.R` |
+| Âncora R (raiz, diretórios, log, semente) | [`scripts/_setup.R`](scripts/_setup.R) — sourçada no topo de todo script R |
+| Pipelines R: ETL, exploratória, relatórios | `scripts/etl/` · `scripts/analises/` · `scripts/relatorios/` — prefixos de ordem `00_`, `01_`, … |
+| **Funções Python reutilizáveis** (pacote interno `banking`) | `python/banking/` |
+| Âncora Python (raiz, diretórios, log, semente) | [`python/banking/projeto.py`](python/banking/projeto.py) — importada no topo de todo script Python |
+| Pipelines Python: ETL, modelagem, relatórios | `python/etl/` · `python/modelagem/` · `python/relatorios/` |
 | Dados (**NUNCA versionar**) | `dados/brutos/` · `dados/intermediarios/` · `dados/processados/` |
 | Saídas geradas (**NÃO versionar**) | `outputs/` |
 | Documentação | `docs/` |
-| Testes das funções de `R/` | `tests/testthat/` |
+| Testes | `tests/testthat/` (R) · `tests/python/` (pytest) |
 
-**`R/` × `scripts/`:** `R/` tem funções — não roda nada ao ser carregado, não lê nem escreve arquivo, não imprime. `scripts/` tem pipelines — rodam, leem, escrevem e logam. Cálculo que vale testar (WOE, IV, KS, perda esperada) vira função em `R/`; a sequência que orquestra vira script.
+**Biblioteca × pipeline** — vale para as duas linguagens. `R/` e `python/banking/` têm **funções**: não rodam nada ao ser carregadas, não leem nem escrevem arquivo, não imprimem. `scripts/` e `python/{etl,modelagem,relatorios}/` têm **pipelines**: rodam, leem, escrevem e logam. Cálculo que vale testar (WOE, IV, KS, perda esperada) vira função na biblioteca; a sequência que orquestra vira pipeline.
 
 **Camadas de dado:** `brutos/` é **somente leitura** — nunca editar nem sobrescrever. `intermediarios/` e `processados/` são sempre **regeneráveis pelos scripts**. Se não for possível regenerar, existe um passo manual escondido e o projeto deixou de ser reprodutível.
+
+## A fronteira entre as duas linguagens
+
+> Projeto bilíngue sem fronteira declarada vira **dois projetos que discordam**: a mesma variável calculada de dois jeitos, dois números diferentes, e ninguém sabe qual está certo. A regra abaixo existe para que isso não aconteça.
+
+**Divisão de trabalho (convenção inicial — ajustável conforme a mentoria):**
+
+| Etapa | Linguagem | Por quê |
+| ----- | --------- | ------- |
+| Ingestão e limpeza | **qualquer uma** | Quem estiver mais confortável. Sem ganho técnico de um lado |
+| Construção da ABT | **uma só, escolhida e registrada** | A ABT é o contrato do projeto. Duas construções = dois projetos |
+| Binning, WOE/IV, scorecard | **Python** | `optbinning` não tem equivalente maduro em R. É o motivo de o Python estar aqui |
+| Modelos challenger, explicabilidade | **Python** | `lightgbm`, `shap` |
+| Regressão logística com significância | **Python** (`statsmodels`) ou R (`glm`) | Empate técnico — R é até mais idiomático aqui |
+| Exploratória, safras, visualização | **R** | `ggplot2` e `dplyr` continuam melhores para investigar e comunicar |
+| Relatório final | **R** (Quarto/RMarkdown) | Idem |
+
+**A fronteira física é o arquivo [Parquet](https://parquet.apache.org/) em `dados/`:**
+
+```
+Python  ──escreve──►  dados/processados/abt.parquet  ──lê──►  R
+```
+
+- **Use Parquet, não CSV**, para tudo que cruza a fronteira. CSV perde tipo: data vira texto, decimal vira `float` com vírgula errada, categórico com nível vazio vira `NA` silencioso. Parquet preserva o esquema — `pyarrow` de um lado, `arrow` do outro.
+- **Ninguém importa código da outra linguagem.** A troca é **sempre por arquivo**, nunca por `reticulate`, `rpy2` ou chamada de sistema. Assim cada lado roda sozinho e a dependência fica visível.
+- **Quem escreve um arquivo de fronteira, documenta o esquema** em [`docs/DICIONARIO_DADOS.md`](docs/DICIONARIO_DADOS.md). Coluna nova sem registro é como função sem docstring.
+- **Constantes duplicadas precisam bater.** `SEMENTE = 42` existe nos dois lados (`scripts/_setup.R` e `python/banking/projeto.py`), assim como os nomes dos diretórios. Mudou em um, muda no outro **no mesmo commit**.
+
+### ⚠️ Data de negócio atravessa a fronteira como `date32`, nunca como timestamp
+
+Armadilha **verificada neste repositório**, não teórica. O `pandas` grava `datetime64` **sem fuso**; o `arrow` do lado R lê como UTC e converte para o fuso local (−3h em São Paulo). Resultado real do teste:
+
+```
+Python grava:  2026-01-15  ──►  R lê:  2026-01-14 21:00:00
+```
+
+O dia **retrocede**. Num contrato originado no dia 1º, isso joga a operação para o mês anterior e **muda a safra** — e safra é a unidade de análise de todo o projeto. O erro não levanta exceção, não aparece no `head()` e sobrevive até alguém estranhar a curva de inadimplência.
+
+**Regra:** data de calendário (originação, vencimento, referência) é gravada como `date32` — data pura, sem hora e sem fuso, portanto sem nada a converter:
+
+```python
+import pyarrow as pa, pyarrow.parquet as pq
+
+tabela = pa.Table.from_pandas(df).cast(
+    pa.schema([("id_contrato", pa.int64()), ("data_originacao", pa.date32())])
+)
+pq.write_table(tabela, DIR_PROCESSADOS / "abt.parquet")
+```
+
+Do lado R chega como `Date`, com o dia correto. Timestamp com hora só quando a hora importar de fato — e aí **com fuso explícito**, nunca ingênuo.
 
 ## ⚠️ Regras críticas (não quebrar)
 
@@ -67,6 +119,18 @@ Vocabulário completo em [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md).
 - **Chamar o R: use o wrapper [`scripts/rscript.cmd`](scripts/rscript.cmd).** O `Rscript` não fica no PATH e o caminho da instalação muda de máquina. O wrapper resolve o interpretador local (`$env:RSCRIPT` → PATH → registro → pastas padrão; entre versões, vence a mais recente):
   `.\scripts\rscript.cmd scripts\etl\01_ingestao.R`
   Sem argumentos, imprime o caminho resolvido. **Nunca fixe caminho absoluto de R** em script ou documentação. Requer **R ≥ 4.5**.
+
+## Convenções de código Python
+
+- **Âncora de caminhos:** todo script começa com `from banking.projeto import ...`. **Nunca** use `os.chdir()` nem caminho absoluto solto — sempre as constantes `DIR_*`. Elas resolvem a partir da raiz do repositório, então o script roda igual chamado de qualquer lugar.
+- **Ambiente:** `.venv` na raiz, criado por `.\scripts\setup_python.cmd`. O pacote `banking` é instalado em **modo editável** (`pip install -e .`), o que o torna importável de qualquer lugar sem gambiarra de `sys.path`.
+- **Rodar: use o wrapper [`scripts/py.cmd`](scripts/py.cmd)**, que chama o interpretador do `.venv` sem exigir ativação — esquecer de ativar o venv é o erro mais comum e o sintoma é traiçoeiro (roda no Python global e usa outra versão de biblioteca, sem dizer isso):
+  `.\scripts\py.cmd python\modelagem\01_scorecard.py` · `.\scripts\py.cmd -m pytest`
+- **Dependências:** declare a intenção (com o porquê) em `requirements.txt`; as versões travadas ficam em `requirements.lock.txt`, **gerado** pelo setup. Nunca edite o lock à mão. Subir versão é decisão deliberada: sobe, roda os testes, confere que o número não mudou.
+- **Logs:** helper `log_step()` de `banking.projeto`, com a mesma semântica de cor do lado R — a saída dos dois tem que parecer a mesma coisa.
+- **Reprodutibilidade:** chame `semear()` antes de qualquer amostragem, partição ou treino.
+- **Estilo:** `snake_case`, type hints nas assinaturas públicas, docstrings em pt-BR. Linha de até 100 colunas.
+- **Notebooks:** úteis para explorar, **não** para entregar. O `.gitignore` bloqueia `.ipynb` de propósito: notebook guarda a saída das células junto com o código — inclusive tabelas com dado real. Conclusão que importa vira script em `python/` ou `scripts/`.
 
 ### Armadilhas específicas de modelagem de crédito
 
