@@ -1,0 +1,23 @@
+# .Renviron.example — modelo de variáveis de ambiente do projeto.
+#
+# Copie para .Renviron (que está no .gitignore e NUNCA vai para o git) e
+# preencha com os valores reais:
+#
+#   cp .Renviron.example .Renviron
+#
+# O R carrega o .Renviron automaticamente ao abrir o projeto; leia os valores
+# com Sys.getenv("NOME_DA_VARIAVEL"). Nunca escreva credencial dentro de script.
+
+# Caminho da base de dados da mentoria, se ela vier de fora do repo
+# (ex.: pasta do OneDrive/Drive que não deve ser copiada para dentro de dados/)
+BA_DADOS_EXTERNOS=
+
+# Conexão com banco, se houver
+BA_DB_HOST=
+BA_DB_PORT=
+BA_DB_NAME=
+BA_DB_USER=
+BA_DB_PASSWORD=
+
+# Chaves de API (Banco Central, Serasa, bureaus, etc.)
+BA_API_TOKEN=
