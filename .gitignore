@@ -1,0 +1,71 @@
+# === Banking Analytics — o git versiona só código e documentação ===
+# Dados de crédito contêm informação pessoal e sigilo bancário. NADA de base
+# (nem amostra, nem "só um cabecalho") entra no histórico. Ver AGENTS.md § Regras críticas.
+
+# --- Dados: brutos, intermediários e processados (NUNCA versionar) ---
+# As pastas não são versionadas nem com .gitkeep: o scripts/_setup.R as recria
+# (idempotente) em qualquer clone. Pasta vazia no git não guarda nada mesmo.
+dados/
+downloads/
+outputs/
+
+# --- Formatos de dado (rede de segurança: pega arquivo solto fora de dados/) ---
+*.csv
+*.tsv
+*.txt
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.rds
+*.RData
+*.sav
+*.dta
+*.db
+*.sqlite
+*.zip
+*.rar
+*.7z
+*.gz
+
+# --- Saídas de análise/relatório ---
+*.png
+*.jpg
+*.jpeg
+*.pdf
+*.html
+!docs/**/*.png
+
+# --- Modelos serializados (podem carregar dado de treino embutido) ---
+*.model
+*.pkl
+*.joblib
+
+# --- R / RStudio / Positron ---
+.Rhistory
+.Rapp.history
+.RData
+.RDataTmp
+.Ruserdata
+.Rproj.user/
+*_cache/
+/cache/
+*.utf8.md
+*.knit.md
+renv/library/
+renv/staging/
+
+# --- Segredos e credenciais (JAMAIS versionar) ---
+.Renviron
+.httr-oauth
+*.gsheet
+secrets/
+.secrets/
+token*.json
+credentials*.json
+
+# --- SO / editor ---
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/

@@ -1,0 +1,20 @@
+# Normalização de finais de linha.
+#
+# O repo é editado no Windows mas o git deve guardar SEMPRE em LF: sem isso, o
+# mesmo arquivo commitado de máquinas com `core.autocrlf` diferente aparece como
+# "arquivo inteiro mudou", escondendo a mudança real no diff.
+#
+# `text=auto` = git decide o que é texto e normaliza para LF no repositório.
+# `eol=crlf`  = mas entrega CRLF na cópia de trabalho para quem precisa dele
+#               (cmd.exe engasga com .cmd em LF-only; PowerShell espera CRLF).
+* text=auto
+
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+*.R     text eol=lf
+*.Rmd   text eol=lf
+*.qmd   text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf
+*.Rproj text eol=crlf
