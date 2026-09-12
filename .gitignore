@@ -27,6 +27,9 @@ outputs/
 *.rar
 *.7z
 *.gz
+# Exceções: arquivos de controle do projeto que por acaso são .txt.
+!requirements.txt
+!requirements.lock.txt
 
 # --- Saídas de análise/relatório ---
 *.png
@@ -54,6 +57,21 @@ outputs/
 *.knit.md
 renv/library/
 renv/staging/
+
+# --- Python ---
+# O .venv é recriado por scripts/setup_python.cmd; o requirements.lock.txt (que
+# É versionado) é o que garante que ele saia igual em qualquer máquina.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+# Notebooks guardam a saída das células junto com o código — inclusive tabelas
+# com dado real. Se for versionar notebook, limpe a saída antes.
+*.ipynb
 
 # --- Segredos e credenciais (JAMAIS versionar) ---
 .Renviron

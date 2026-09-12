@@ -1,0 +1,32 @@
+# Empacota `python/banking/` como a biblioteca interna do projeto.
+#
+# Instalada em modo editável (`pip install -e .`, feito pelo setup_python.cmd),
+# ela fica importável de qualquer lugar — script em python/etl/, notebook, teste
+# em tests/python/ — sem gambiarra de sys.path e sem depender do diretório de
+# onde o comando foi chamado. "Editável" = aponta para o código-fonte, então
+# editar python/banking/ tem efeito imediato, sem reinstalar.
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "banking-analytics"
+version = "0.1.0"
+description = "Modelagem de crédito e banking analytics — mentoria ANALITICA"
+requires-python = ">=3.12"
+# As dependências ficam em requirements.txt (com o porquê de cada uma) e
+# travadas em requirements.lock.txt. Aqui só o empacotamento.
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["python"]
+include = ["banking*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/python"]
+pythonpath = ["python"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

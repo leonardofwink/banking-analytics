@@ -50,5 +50,6 @@ O dado atravessa três camadas, todas **fora do git** (ver `.gitignore`):
 
 > Registrar aqui toda esquisitice encontrada na base. Este é o campo que mais economiza tempo no futuro.
 
+- **Data atravessando a fronteira Python → R.** `datetime64` do pandas chega no R deslocado em −3h (o `arrow` lê como UTC e converte para o fuso local): `2026-01-15` vira `2026-01-14 21:00:00`. Num contrato do dia 1º isso **muda a safra**. Data de calendário tem que ser gravada como `date32` — ver [`AGENTS.md`](../AGENTS.md#️-data-de-negócio-atravessa-a-fronteira-como-date32-nunca-como-timestamp). *Verificado neste repositório.*
 - *(exemplo)* Campo `renda` tem zeros que na verdade são missing.
 - *(exemplo)* Contratos renegociados aparecem duas vezes, com o mesmo ID.

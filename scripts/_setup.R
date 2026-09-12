@@ -11,6 +11,11 @@
 if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman")
 pacman::p_load(here, cli, fs, dplyr, tidyr, readr, stringr, lubridate, janitor)
 
+# A fronteira com o Python é o arquivo Parquet em dados/ (ver AGENTS.md). Para
+# ler o que o lado Python gravou:  arrow::read_parquet(fs::path(DIR_PROCESSADOS, "abt.parquet"))
+# `arrow` NÃO é carregado aqui de propósito — é pesado e nem todo script precisa.
+# Carregue no script que cruzar a fronteira:  pacman::p_load(arrow)
+
 # --- Raiz do projeto ---------------------------------------------------------
 # `here` ancora na raiz do repositório (encontra o .git); robusto a partir de
 # qualquer subpasta.
