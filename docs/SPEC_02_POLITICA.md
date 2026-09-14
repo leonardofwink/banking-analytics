@@ -34,30 +34,69 @@ Guard-rail descumprido **corta a nota de política pela metade** — exceto o te
 2. **Faixas por PD, não por quantil** — o corte de score sai da PD, para que a faixa signifique a mesma coisa em qualquer base. Faixa por quantil muda de sentido quando a população muda (e a base C é outra população).
 3. **Toda linha aprovada precisa cobrir a própria perda esperada.** `EL_faixa = PD × EAD × LGD`. Taxa que não cobre a EL da faixa é prejuízo contratado.
 
-## 3. Método: buscar, não derivar
+## 3. Método: simular por dentro, decidir por cenário
 
-A tentação é derivar a taxa analiticamente (`taxa = funding + EL + opex + margem`). Isso serve como **ponto de partida**, mas não como resposta, por um motivo: **a Base C reage**. Taxa alta derruba o aceite e ainda piora a PD por seleção adversa — dois efeitos que a fórmula não enxerga.
+⚠️ **Correção de rumo depois de ler o enunciado:** **não existe simulador para rodar.** A Base C só reage no dia da apuração, e o enunciado é explícito:
 
-Método decidido:
+> "A direção de cada efeito está declarada. A intensidade, não — e não há como descobri-la por tentativa e erro, porque **vocês só submetem uma vez**. O caminho é **raciocinar sobre o trade-off, não otimizá-lo às cegas**."
 
-1. **Ponto de partida analítico** — para cada faixa, a taxa mínima que cobre `EL + funding + opex + margem`. Dá o piso.
-2. **Busca sobre a tabela** — varrer combinações de (corte de aprovação × taxa × prazo × entrada) por faixa, simulando o ROI na Base C.
-3. **Filtrar pelos guard-rails** antes de comparar ROI. Candidata que viola limite está fora, por melhor que seja o número.
-4. **Escolher a robusta, não a máxima.** Se a melhor combinação tem ROI 0,3 ponto acima da segunda e fica a 0,2 ponto de violar o limite de inadimplência, a segunda é a resposta. O simulador tem aleatoriedade; uma política no limite quebra na hora da avaliação.
+Isso elimina a busca por força bruta. Mas **não** elimina a simulação: os parâmetros dados permitem calcular o ROI de qualquer política **condicionado ao aceite**. O que falta é só a curva de aceite — e essa vira cenário, não chute único.
+
+**O que dá para calcular exatamente** (com `AutoCred_parametros_ead_lgd.xlsx`):
+
+| Componente | Como |
+| ---------- | ---- |
+| Parcela | Tabela Price com a taxa e o prazo que ofertarmos |
+| Juros de quem paga até o fim | `parcela × prazo − valor financiado` |
+| Juros de quem quebra | `parcela × mês do default` — ponderado pela **distribuição do mês do default** (média 6,9, pico nos meses 5–8) |
+| Perda realizada | `fator_EAD(prazo, faixa LTV) × valor financiado × LGD(idade veículo, faixa LTV)`, com −0,061 se houver avalista |
+| Volume financiado | Soma do financiado dos contratos fechados |
+| Prazo médio em anos | Média ponderada dos prazos ofertados ÷ 12 |
+
+Com isso o ROI da fórmula oficial sai inteiro — **dado o conjunto de quem aceita**.
+
+**O que não dá para calcular, e vira cenário:**
+- Elasticidade do aceite à taxa, à entrada exigida e ao encurtamento de prazo.
+- Intensidade da seleção adversa (quanto a PD sobe quando a taxa sobe).
+
+**Método decidido:**
+
+1. **Piso analítico por faixa** — a taxa mínima que cobre `EL` da faixa e ainda sobra. Dá o limite inferior, nunca a resposta.
+2. **Simulação interna** do ROI para políticas candidatas, sob **três cenários de aceite** (otimista, central, pessimista) e **dois de seleção adversa** (leve, forte).
+3. **Descartar quem viola guard-rail** em qualquer cenário razoável — não só no central.
+4. **Escolher a política que é boa nos três cenários**, não a que é ótima no central. Como se submete uma vez só e a intensidade é desconhecida, **robustez vale mais que máximo**: uma política que entrega ROI 18% nos três cenários vence uma que entrega 24% no central e viola o volume no pessimista, porque essa última perde metade da nota.
 
 ## 4. Aritmética que já dá para fazer
 
-**Volume mínimo × aprovação mínima.** 5.000 propostas × 35% = **1.750 aprovações**. Para chegar a R$ 40 milhões:
+Com a Base C em mãos, os números deixam de ser hipótese.
+
+**Base C:** 5.000 propostas, volume financiado **desejado** de **R$ 167,1 milhões**, ticket médio **R$ 33.411** (mediana R$ 28.706).
+
+**O volume aperta mais do que parece.** O guard-rail conta **contratos fechados**, não aprovados (o enunciado é explícito: proposta recusada pelo cliente "apenas não existe"). Então:
 
 ```
-R$ 40.000.000 ÷ 1.750 = R$ 22.857 por contrato
+R$ 40.000.000 ÷ R$ 33.411 = 1.197 contratos EFETIVADOS
 ```
 
-Se o ticket médio da Base C for maior que isso, o volume vem sozinho com a aprovação mínima e o guard-rail de R$ 40 mi não morde. Se for menor, **aprovar 35% não basta** — o volume passa a ser a restrição ativa, e é preciso aprovar mais, ou aprovar mais caro (ticket maior), ou exigir menos entrada (entrada reduz o valor financiado e, portanto, o volume originado).
+Aprovando o mínimo de 1.750 propostas, isso exige **aceite de 68%**. E aí entra a segunda mordida: **exigir entrada reduz o ticket**. Uma entrada adicional de 10 pontos percentuais sobre o valor do bem corta o financiado em ~13% (o LTV médio desejado é 0,778), derrubando o ticket para ~R$ 29.100 — e a exigência sobe para **1.375 contratos**, ou **aceite de 79%**, justo quando a entrada maior está derrubando o aceite.
 
-> ⚠️ **Tensão a resolver:** entrada mínima é a alavanca mais eficiente para risco (derruba PD e LGD juntas), **mas reduz o volume financiado** — que é guard-rail e vale 5 pontos. Exigir 30% de entrada em metade da carteira pode cortar o volume abaixo dos R$ 40 mi. Essas duas alavancas puxam em direções opostas e precisam ser otimizadas **juntas**, nunca uma de cada vez.
+> ⚠️ **A tensão central da política:** entrada mínima é a alavanca mais eficiente para o risco (derruba PD e LGD juntas), mas ataca o volume **duas vezes** — reduz o ticket de cada contrato **e** reduz quantos clientes aceitam. **Aprovar exatamente o mínimo de 35% é uma aposta apertada.** Provavelmente é preciso aprovar acima do piso e compensar o risco pelo preço e pela entrada nas faixas ruins, em vez de defender o volume só pelo corte.
 
-**Espaço de preço.** Com teto de 3,5% a.m. e prazo de 36 meses, os juros de um contrato pago até o fim somam ~77% do principal. Contra uma perda esperada de 14,3% (score 3 da tabela ilustrativa), sobra margem — **desde que o contrato seja pago**. O que estreita a política não é a matemática do preço, é o **aceite** (taxa alta afasta) e o **guard-rail de 8% de inadimplência**. Tratar o problema como "qual taxa cobre a perda" resolve a parte fácil.
+**E a inadimplência é o limite que mais aperta.** O guard-rail é **≤ 8% dos contratos fechados**. A base A — que é a carteira da política antiga, já filtrada por ela — fechou em **8,26%**. E a Base C é pior: score de bureau 96 pontos menor e 2,7× mais restrições ativas. Ou seja:
+
+> **O limite de inadimplência já era violado pela política antiga, numa população melhor do que a que vamos enfrentar.** Não dá para bater esse guard-rail aprovando amplamente: ele exige corte de risco real. Este é, muito provavelmente, o **limite que decide a política** — e a tentação de aprovar mais para salvar o volume esbarra exatamente nele.
+
+**Onde a LGD dá dinheiro.** O fator de EAD varia entre 0,980 e 1,042 — 6 pontos, irrelevante. A LGD varia de **0,412 a 0,908** — 50 pontos, e responde a duas coisas que a política enxerga:
+
+| Alavanca | Efeito na LGD |
+| -------- | ------------- |
+| Baixar a faixa de LTV (entrada) | Veículo de 3–5 anos: **0,736 → 0,584** indo de >90% para ≤60%. **15 pontos** |
+| Restringir idade do veículo | Veículo 0–2 anos com LTV ≤60%: **0,412**. Veículo 9+ anos com LTV >90%: **0,908**. **50 pontos** |
+| Exigir avalista | **−0,061**, direto |
+
+A idade do veículo é a variável mais subestimada aqui: ela não é alavanca de preço, é **critério de elegibilidade**. Um contrato de veículo com 9+ anos e LTV alto perde 90% da exposição quando quebra — quase nenhuma taxa dentro do teto cobre isso. Vale avaliar uma regra de corte por idade do veículo, além do corte por score.
+
+**Espaço de preço.** Com teto de 3,5% a.m. e 36 meses, os juros de um contrato pago até o fim somam ~77% do principal. Contra a perda esperada, sobra margem — **desde que o contrato seja pago**. Mas o enunciado lembra que **quem quebra pagou só até o mês do calote**, e a distribuição mostra que o default acontece cedo: **mês médio 6,9**, com pico entre o 5º e o 8º. Um contrato de 48 meses que quebra no mês 6 devolveu 6 parcelas e levou o EAD inteiro. **Precificar como se o inadimplente pagasse metade do contrato superestima a receita.**
 
 ## 5. Contrato do arquivo de submissão
 
@@ -77,15 +116,23 @@ Se o ticket médio da Base C for maior que isso, o volume vem sozinho com a apro
 
 Erro de formato aqui custa mais barato de evitar do que de explicar depois.
 
-## 6. Perguntas para o professor
+## 6. Perguntas — o que o enunciado respondeu e o que falta
 
-Respostas que mudam a política e que não estão nos slides:
+**Respondidas pelo material de 13/09:**
 
-1. **O volume originado de R$ 40 mi conta as propostas aprovadas ou só as aceitas pelo cliente?** Se for aceitas, a conta do § 4 muda: com 60% de aceite seriam ~1.050 contratos e ticket médio de R$ 38 mil. Isso desloca todo o ponto de operação.
-2. **Qual o custo de captação (funding) e a despesa operacional por contrato?** Sem eles, a taxa mínima que "cobre a perda e ainda sobra" não tem piso definido — o ROI exigido de 15% a.a. é o retorno depois de qual custo?
-3. **A inadimplência de 8% é medida sobre contratos aceitos, em quantidade ou em valor?** O guard-rail diz "8% dos contratos", o que sugere quantidade — confirmar.
-4. **A documentação do simulador da Base C será fornecida** (curva de aceite em função da taxa, e o efeito de seleção adversa)? Sem isso, a busca do § 3 vira chute e só dá para testar sensibilidade sob premissas assumidas.
-5. **O valor do bem está na Base C?** É necessário para calcular o LTV e, portanto, o efeito da entrada mínima sobre PD e LGD.
+| Pergunta | Resposta |
+| -------- | -------- |
+| Volume conta aprovadas ou aceitas? | **Aceitas.** "Só entra na conta quem efetivamente contratou. Proposta aprovada que o cliente recusa não gera receita nem prejuízo — apenas não existe" |
+| Inadimplência sobre o quê? | **"8% dos contratos fechados"** — quantidade, sobre os efetivados |
+| Haverá simulador para calibrar? | **Não.** Submissão única, sem feedback. As intensidades não serão reveladas |
+| `valor_bem` está na Base C? | **Sim**, junto com `pct_entrada_desejada` e `ltv_desejado` — dá para recalcular o LTV sob qualquer entrada exigida |
+
+**Ainda em aberto:**
+
+1. **Custo de captação (funding) e despesa operacional por contrato.** Sem eles, "cobrir a perda e ainda sobrar" não tem piso definido — o ROI de 15% a.a. é líquido de quê? A fórmula oficial do ROI não subtrai custo de captação, o que sugere que o ROI apurado é **antes** do funding; convém confirmar, porque muda a taxa mínima de cada faixa.
+2. **O documento "AutoCred — Regras da Competição"**, citado no fim do enunciado como fonte das regras completas de submissão e da rubrica. Não veio no pacote.
+3. **Para qual e-mail enviar**, e se os três arquivos vão juntos.
+4. **A taxa de aprovação de 35% é sobre as 5.000 propostas** (e não sobre as elegíveis) — o enunciado diz "35% das 5.000 propostas", o que parece fechar a questão, mas vale confirmar que propostas negadas por regra de elegibilidade (ex.: idade do veículo) contam no denominador.
 
 ## 7. Critérios de aceite
 

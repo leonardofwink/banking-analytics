@@ -1,6 +1,8 @@
 # Desafio AutoCred — briefing
 
-> **Fonte:** slides apresentados na mentoria em 2026-09-12. Este documento é a **captura fiel do que foi pedido** — não misture decisões nossas aqui. O que nós decidimos vive nas specs ([`SPEC_01_MODELO_PD.md`](SPEC_01_MODELO_PD.md), [`SPEC_02_POLITICA.md`](SPEC_02_POLITICA.md)).
+> **Fonte:** slides da mentoria de 2026-09-12 + `AutoCred_Enunciado_Desafio.pdf` + dicionário de dados e parâmetros (recebidos em 13/09). Este documento é a **captura fiel do que foi pedido** — não misture decisões nossas aqui. O que nós decidimos vive nas specs ([`SPEC_01_MODELO_PD.md`](SPEC_01_MODELO_PD.md), [`SPEC_02_POLITICA.md`](SPEC_02_POLITICA.md)). O detalhe das colunas está no [`DICIONARIO_DADOS.md`](DICIONARIO_DADOS.md).
+>
+> Arquivos originais em `dados/brutos/professor/` — **fora do git**.
 >
 > Regra: mudou o briefing (material novo do professor), atualiza aqui **primeiro**; as specs se ajustam depois.
 
@@ -27,18 +29,20 @@ Cada grupo entrega os dois. **Eles são avaliados separadamente.**
 
 | # | Entregável | O que é | Métrica oficial |
 | - | ---------- | ------- | --------------- |
-| **1** | **Modelo de PD** | Estimar a probabilidade de o contrato atingir **90 dias de atraso nos 12 meses após a concessão** | **AuROC**, medido em uma base out-of-time que não conhecemos |
+| **1** | **Modelo de PD** | Estimar a probabilidade de o contrato atingir **90 dias de atraso nos 12 meses após a concessão**. É o modelo de *Application Scoring* visto em aula | **AuROC** sobre a **Base B** (out-of-time). **KS** é reportado como métrica secundária |
 | **2** | **Política de crédito** | Transformar o score em decisão: **a quem conceder, a que preço, em que prazo, com quanta entrada** | **ROI anualizado** da carteira que a política gerar |
 
 ## As três bases
 
-| Base | O que é |
-| ---- | ------- |
-| **A · desenvolvimento** | 10.000 contratos de **2022 a 2024**, com o alvo e os **realizados de EAD e LGD** |
-| **B · teste do modelo** | 3.000 contratos de **2025**, mesmas variáveis, **sem o alvo** — é aqui que o AuROC é medido |
-| **C · propostas** | 5.000 propostas para aplicar a política — **sem taxa e sem prazo**, porque isso é decisão nossa |
+| Base | O que é | Período |
+| ---- | ------- | ------- |
+| **A · desenvolvimento** | 10.000 contratos, janela de performance de 12 meses já fechada, com o alvo e os **realizados de EAD e LGD** | jan/2022 – dez/2024 |
+| **B · teste do modelo** | 3.000 contratos, mesmas variáveis, **sem o alvo** — é sobre ela que o AuROC é calculado | jan – jun/2025 |
+| **C · propostas** | 5.000 propostas para aplicar a política — **sem taxa e sem prazo**, porque isso é decisão nossa | jul – dez/2025 |
 
-> ⚠️ **As bases A e B só contêm contratos aprovados pela política antiga. A base C é de mar aberto.**
+> ⚠️ **As bases A e B só contêm contratos aprovados pela política antiga. A base C é de mar aberto** — inclui perfis que a AutoCred vinha recusando e que não estão representados no treino. O enunciado nomeia o problema: **inferência de rejeitados**.
+
+> 📌 **"Leiam com atenção a coluna 'Disponível na concessão?'"** — do dicionário. Uma variável marcada com NÃO não existe no momento da concessão; usá-la produz um modelo excelente na base histórica e inútil na vida real. Há **uma armadilha concreta plantada nas bases** — ver [`DICIONARIO_DADOS.md`](DICIONARIO_DADOS.md#-a-armadilha-qtd_parcelas_em_atraso_12m).
 
 ## Do score ao resultado
 
@@ -56,7 +60,25 @@ Modelo de PD  ──►  Perda esperada  ──►  Faixa de score  ──►  P
 ROI anual = [ (juros recebidos − perda realizada) ÷ volume financiado ] ÷ prazo médio em anos
 ```
 
-> Neste desafio, **EAD e LGD vêm prontos, em tabela**. Nós modelamos a PD e decidimos a política: é onde mora a decisão de negócio.
+**Duas consequências que o enunciado manda internalizar antes de desenhar a política:**
+
+1. **Os juros de um contrato inadimplente contam apenas até o mês do calote.** "Quem quebra no mês 4 de um contrato de 48 meses pagou quatro parcelas, não quarenta e oito."
+2. **Só entra na conta quem efetivamente contratou.** "Proposta aprovada que o cliente recusa não gera receita nem prejuízo — apenas não existe."
+
+> Neste desafio, **EAD e LGD vêm prontos, em tabela** (`AutoCred_parametros_ead_lgd.xlsx`, reproduzidos no [dicionário](DICIONARIO_DADOS.md#parâmetros-de-ead-e-lgd-dados-não-modelados)). Nós modelamos a PD e decidimos a política: é onde mora a decisão de negócio.
+>
+> - **EAD** = fator por prazo e faixa de LTV × valor financiado. Fórmula fechada: saldo devedor pela Tabela Price no mês do default + as 3 parcelas vencidas que caracterizam o atraso de 90 dias.
+> - **LGD** = tabela por idade do veículo na originação e faixa de LTV, com ajuste de **−0,061 quando há avalista**. Workout de 24 meses.
+
+## Determinismo e submissão única
+
+> "Os sorteios de cada proposta são fixos. Duas políticas idênticas produzem exatamente o mesmo resultado, e qualquer diferença entre grupos vem da decisão tomada, nunca do acaso."
+
+E, sobre a intensidade dos efeitos da Base C:
+
+> "A direção de cada efeito está declarada. A intensidade, não — e **não há como descobri-la por tentativa e erro, porque vocês só submetem uma vez**. O caminho é **raciocinar sobre o trade-off, não otimizá-lo às cegas**."
+
+Isso elimina a estratégia de calibrar por submissões sucessivas. Não há feedback antes do dia 26.
 
 ## O que a taxa precisa cobrir
 
@@ -121,7 +143,17 @@ O conselho não quer só ROI: quer **ROI dentro do apetite de risco, e sem parar
 
 ## Formato da submissão
 
-Arquivo `.csv` escorado, enviado **por e-mail**. Modelo fornecido: `submissao_politica_EXEMPLO.csv`
+São **três entregas**, não uma:
+
+| Entrega | Arquivo | Linhas | Base |
+| ------- | ------- | ------ | ---- |
+| Escoragem do modelo | `submissao_modelo.csv` | 3.000 | B |
+| Decisões de política | `submissao_politica.csv` | 5.000 | C |
+| Documento de política | a partir de `template_documento_politica.docx` | — | — |
+
+**`submissao_modelo.csv`** tem apenas duas colunas: `id_contrato` e `pd`.
+
+**`submissao_politica.csv`** — modelo fornecido em `submissao_politica_EXEMPLO.csv`:
 
 | id_proposta | pd | score_1a10 | decisao | taxa_am | prazo_meses | pct_entrada_minima |
 | ----------- | -- | ---------- | ------- | ------- | ----------- | ------------------ |
@@ -147,8 +179,9 @@ Regras que o exemplo revela:
 
 | Data | O quê |
 | ---- | ----- |
-| **25/09/2026** | **Prazo limite** — entrega do modelo e da política (e-mail com o `.csv` escorado) |
-| **26/09/2026** | Próxima mentoria — **leaderboard** |
+| 12/09 | Lançamento: bases A e B, dicionário, parâmetros de EAD/LGD e modelos de submissão |
+| **25/09 (sex), 23h59** | **Prazo limite** — escoragem do modelo (base B) e decisões de política (base C) |
+| **26/09, na mentoria** | Apuração ao vivo, leaderboard, apresentações e debrief |
 
 **Divisão do grupo (3 pessoas):**
 
@@ -158,7 +191,9 @@ Regras que o exemplo revela:
 | Política e precificação | Entregável 2 — tabela de faixas, taxa, prazo, entrada |
 | Negócio e defesa | Bloco de defesa (20%) — o encadeamento PD → ROI diante do conselho |
 
-**Material ainda pendente do professor:** as bases (arquivo Excel), a tabela de EAD e LGD, e a documentação do simulador da Base C.
+**Material recebido em 13/09:** enunciado, dicionário de dados, parâmetros de EAD/LGD, as três bases e os modelos de submissão (em `dados/brutos/professor/`).
+
+**Ainda pendente:** o documento **"AutoCred — Regras da Competição"**, citado no fim do enunciado como fonte das *"regras completas de submissão e da rubrica de avaliação"*. A rubrica que temos veio dos slides; convém confirmar que não mudou. **O endereço de e-mail da entrega também não está nos materiais.**
 
 ---
 

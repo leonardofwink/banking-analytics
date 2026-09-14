@@ -35,14 +35,17 @@ Por que isso importa aqui em particular: **o grupo trabalha em paralelo em três
 
 **A interface entre as frentes é o contrato de saída do modelo** (`escorar(df) -> pd`, § 7 da SPEC 01). Com ele fixado, a política pode ser construída e testada com uma PD provisória enquanto o modelo final ainda está sendo escolhido — as duas frentes não se bloqueiam.
 
-## Dependências externas (bloqueiam o início)
+## Dependências externas
 
-| O que falta | De quem | Bloqueia |
+**Recebido em 13/09** (em `dados/brutos/professor/`, fora do git): enunciado, dicionário de dados, parâmetros de EAD/LGD, as três bases e os modelos de submissão. **Nada mais bloqueia o início.**
+
+| Ainda falta | De quem | Bloqueia |
 | ----------- | ------- | -------- |
-| Bases A, B e C (arquivo Excel) | Professor | Tudo |
-| Tabela de EAD e LGD | Professor | Perda esperada → política |
-| Documentação do simulador da Base C | Professor | Otimização da política |
-| Respostas às 5 perguntas da [SPEC 02 § 6](SPEC_02_POLITICA.md#6-perguntas-para-o-professor) | Professor | Precificação |
+| Documento "AutoCred — Regras da Competição" | Professor | Confirmação da rubrica e das regras de submissão |
+| E-mail de destino da entrega | Professor | Só o envio, no dia 25 |
+| Custo de captação e despesa operacional | Professor | Piso da taxa por faixa ([SPEC 02 § 6](SPEC_02_POLITICA.md#6-perguntas--o-que-o-enunciado-respondeu-e-o-que-falta)) |
+
+> Não há simulador da Base C: **a submissão é única e sem feedback**. A política é decidida por raciocínio sobre o trade-off e testada por cenários internos, não calibrada por tentativa.
 
 ## Cronograma
 
