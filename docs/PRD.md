@@ -25,9 +25,13 @@ Por que isso importa aqui em particular: **o grupo trabalha em paralelo em três
 
 | Papel | Responsável | Entregável | Spec |
 | ----- | ----------- | ---------- | ---- |
-| Modelagem | *a definir* | Modelo de PD (40 pts) | [SPEC 01](SPEC_01_MODELO_PD.md) |
-| Política e precificação | *a definir* | Tabela de faixas + CSV (40 pts) | [SPEC 02](SPEC_02_POLITICA.md) |
-| Negócio e defesa | *a definir* | Apresentação ao conselho (20 pts) | — |
+| Modelagem | — | Modelo de PD (40 pts) | [SPEC 01](SPEC_01_MODELO_PD.md) |
+| **Política e precificação** | **Leonardo** | Tabela de faixas + CSV (40 pts) | [SPEC 02](SPEC_02_POLITICA.md) |
+| Negócio e defesa | — | Apresentação ao conselho (20 pts) | — |
+
+**O grupo decidiu que todos desenvolvem todas as partes**, comparam resultados e juntam o melhor de cada um. Os papéis acima marcam quem responde pela entrega final de cada bloco, não quem trabalha nele.
+
+> ⚠️ **Consequência desse modelo: a comparação só vale se os três medirem igual.** Três pessoas modelando em paralelo com splits, sementes ou recortes diferentes produzem AuROCs que não são comparáveis — a diferença pode ser o método de medição, não a qualidade do modelo, e o grupo acaba escolhendo o mais otimista em vez do melhor. Antes de qualquer um começar a modelar, fixar: **mesmo split temporal (treino 2022–23, validação 2024), mesma semente, mesma métrica, mesma definição de default**. O que varia é o modelo; o resto é constante, senão não é experimento.
 
 **A interface entre as frentes é o contrato de saída do modelo** (`escorar(df) -> pd`, § 7 da SPEC 01). Com ele fixado, a política pode ser construída e testada com uma PD provisória enquanto o modelo final ainda está sendo escolhido — as duas frentes não se bloqueiam.
 
