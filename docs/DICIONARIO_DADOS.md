@@ -96,7 +96,7 @@ A base C traz o que o cliente **pediu**, não o que foi contratado — porque o 
 
 > **Quatro preditoras do modelo (`ltv`, `prazo_meses`, `valor_financiado`, `comprometimento_renda`) só existem em C depois que a política decide.** E a política decide olhando a PD, que vem do modelo, que precisa dessas variáveis. **A dependência é circular.**
 
-Como resolver está na [SPEC 01 § 7](SPEC_01_MODELO_PD.md) e na [SPEC 02](SPEC_02_POLITICA.md): escorar em duas passagens — a primeira com as condições *desejadas* para achar a faixa de score, a segunda com as condições *ofertadas* para estimar o risco do que de fato será contratado.
+Como resolver está na [ENTREGÁVEL 1 § 7](ENTREGAVEL_1_MODELO.md) e na [Entregável 2](ENTREGAVEL_2_POLITICA.md): escorar em duas passagens — a primeira com as condições *desejadas* para achar a faixa de score, a segunda com as condições *ofertadas* para estimar o risco do que de fato será contratado.
 
 ## A base C é medi­velmente mais arriscada
 

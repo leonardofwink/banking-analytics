@@ -1,6 +1,6 @@
 # Desafio AutoCred — briefing
 
-> **Fonte:** slides da mentoria de 2026-09-12 + `AutoCred_Enunciado_Desafio.pdf` + dicionário de dados e parâmetros (recebidos em 13/09). Este documento é a **captura fiel do que foi pedido** — não misture decisões nossas aqui. O que nós decidimos vive nas specs ([`SPEC_01_MODELO_PD.md`](SPEC_01_MODELO_PD.md), [`SPEC_02_POLITICA.md`](SPEC_02_POLITICA.md)). O detalhe das colunas está no [`DICIONARIO_DADOS.md`](DICIONARIO_DADOS.md).
+> **Fonte:** slides da mentoria de 2026-09-12 + `AutoCred_Enunciado_Desafio.pdf` + dicionário de dados e parâmetros (recebidos em 13/09). Este documento é a **captura fiel do que foi pedido** — não misture decisões nossas aqui. O que nós decidimos vive nas specs ([`ENTREGAVEL_1_MODELO.md`](ENTREGAVEL_1_MODELO.md), [`ENTREGAVEL_2_POLITICA.md`](ENTREGAVEL_2_POLITICA.md)). O detalhe das colunas está no [`DICIONARIO_DADOS.md`](DICIONARIO_DADOS.md).
 >
 > Arquivos originais em `dados/brutos/professor/` — **fora do git**.
 >
