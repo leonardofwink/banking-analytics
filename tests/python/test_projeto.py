@@ -74,14 +74,47 @@ def test_gitignore_bloqueia_dado() -> None:
         assert padrao in gitignore, f"padrão ausente no .gitignore: {padrao}"
 
 
+# Módulos de `banking/` autorizados a tocar o disco. Toda entrada aqui precisa
+# estar declarada no AGENTS.md — é o que o teste seguinte cobra. A lista existe
+# para que a exceção seja uma decisão consciente e documentada, não um descuido
+# que virou hábito.
+EXCECOES_IO = {
+    "projeto.py",  # a âncora: resolve caminhos e cria os diretórios de dados
+    "dados.py",  # a porta de entrada única das bases (passo S01)
+}
+
+_SINAIS_DE_ESCRITA = ("mkdir(", "write_table(", "to_parquet(", "to_csv(", "open(")
+
+
 def test_biblioteca_nao_tem_efeito_colateral_de_escrita() -> None:
-    """`banking` é biblioteca: só a âncora pode criar diretório."""
-    modulos = [p for p in (PROJ_ROOT / "python" / "banking").glob("*.py")]
+    """`banking` é biblioteca: só os módulos autorizados escrevem em disco.
+
+    Pipeline que se disfarça de biblioteca é difícil de testar e impossível de
+    reaproveitar: quem importa a função herda o efeito colateral sem pedir.
+    """
+    modulos = list((PROJ_ROOT / "python" / "banking").glob("*.py"))
     assert modulos, "pacote banking vazio"
     for modulo in modulos:
-        if modulo.name in ("projeto.py", "__init__.py"):
-            continue  # a âncora cria os diretórios por definição
+        if modulo.name in EXCECOES_IO or modulo.name == "__init__.py":
+            continue
         fonte = modulo.read_text(encoding="utf-8")
-        assert "mkdir(" not in fonte, (
-            f"{modulo.name} escreve no disco — isso é papel de pipeline, não de biblioteca"
+        escreve = [s for s in _SINAIS_DE_ESCRITA if s in fonte]
+        assert not escreve, (
+            f"{modulo.name} escreve no disco ({escreve}) — isso é papel de pipeline. "
+            f"Se for exceção deliberada, declare no AGENTS.md e em EXCECOES_IO."
+        )
+
+
+def test_excecoes_de_io_estao_declaradas_no_agents() -> None:
+    """Cada módulo autorizado a escrever precisa estar justificado no AGENTS.md.
+
+    Sem isso, `EXCECOES_IO` viraria um escape fácil: bastaria acrescentar um
+    nome à lista para calar o teste anterior. Exigir a declaração no documento
+    de convenções obriga a escrever *por que* a exceção existe.
+    """
+    agents = (PROJ_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    for modulo in EXCECOES_IO:
+        assert modulo in agents, (
+            f"{modulo} está em EXCECOES_IO mas não aparece no AGENTS.md. "
+            "Exceção não documentada é exceção esquecida."
         )
