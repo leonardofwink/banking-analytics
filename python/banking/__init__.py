@@ -9,10 +9,12 @@ Regras (ver ``AGENTS.md``):
 - Funções **puras e testáveis**: nada roda ao importar, nada lê nem escreve
   arquivo, nada imprime. Pipeline que lê, escreve e loga vive em ``python/etl/``,
   ``python/modelagem/`` e ``python/relatorios/``.
-- A única exceção é :mod:`banking.projeto`, a âncora — ela resolve caminhos e
-  cria os diretórios de dados, por definição.
+- Duas exceções declaradas: :mod:`banking.projeto`, a âncora (resolve caminhos e
+  cria os diretórios de dados, por definição), e :mod:`banking.dados`, a porta de
+  entrada única das bases — centralizar a leitura em um lugar só é justamente o
+  que impede que uma coluna proibida escape em algum script distraído.
 - Toda função de crédito documenta a **convenção de unidade**: PD e LGD em
   fração (0–1), nunca em 0–100; EAD em reais.
 """
 
-__all__ = ["projeto"]
+__all__ = ["dados", "projeto"]

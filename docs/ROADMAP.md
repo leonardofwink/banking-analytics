@@ -23,7 +23,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ## Fase 0 — Fundação
 
-### S01 · Ingestão e contrato de dados
+### S01 · Ingestão e contrato de dados ✅
 
 **O que é:** ler os três CSVs, remover as colunas proibidas, conferir tipos e contagens, gravar em Parquet em `dados/processados/`.
 
@@ -34,6 +34,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **DoD — pronto quando:** as três bases carregam com 10.000 / 3.000 / 5.000 linhas, nenhuma coluna proibida presente, e o teste passa.
 
 **Depende de:** nada. É o primeiro.
+
+**Status:** ✅ concluído em 2026-09-14 — spec e DoD verificado em [`specs/S01_INGESTAO.md`](specs/S01_INGESTAO.md).
 
 ---
 

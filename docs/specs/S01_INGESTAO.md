@@ -1,6 +1,8 @@
 # S01 · Ingestão e contrato de dados
 
 > Passo 1 de 11 do [`ROADMAP.md`](../ROADMAP.md). **Não depende de nada e bloqueia tudo.**
+>
+> ✅ **CONCLUÍDO em 2026-09-14.** DoD verificado item a item; 28 testes verdes. Implementação em [`python/banking/dados.py`](../../python/banking/dados.py), [`python/etl/01_ingestao.py`](../../python/etl/01_ingestao.py) e [`tests/python/test_ingestao.py`](../../tests/python/test_ingestao.py).
 > Dados descritos em [`DICIONARIO_DADOS.md`](../DICIONARIO_DADOS.md).
 
 ## Objetivo
@@ -41,10 +43,10 @@ Isto é tão importante quanto o que fazemos:
 **Por quê:** fonte única. Hoje a lista de proibidas está em três lugares (dicionário do professor, nosso `DICIONARIO_DADOS.md` e a cabeça de quem lembrar). Precisa existir **em código**, num lugar que o teste consiga ler.
 
 **DoD:**
-- [ ] `from banking.dados import COLUNAS_PROIBIDAS, ALVO` funciona
-- [ ] `COLUNAS_PROIBIDAS` tem exatamente as 5 colunas pós-concessão que **não** são o alvo: `qtd_parcelas_em_atraso_12m`, `mes_default`, `ead_realizado`, `lgd_realizado`, `perda_financeira`
-- [ ] `ALVO == "default_90_12"`, declarado separado (é proibido como **preditora**, obrigatório como **alvo**)
-- [ ] Esquema esperado registrado: A = 10.000 linhas, B = 3.000, C = 5.000
+- [x] `from banking.dados import COLUNAS_PROIBIDAS, ALVO` funciona
+- [x] `COLUNAS_PROIBIDAS` tem exatamente as 5 colunas pós-concessão que **não** são o alvo: `qtd_parcelas_em_atraso_12m`, `mes_default`, `ead_realizado`, `lgd_realizado`, `perda_financeira`
+- [x] `ALVO == "default_90_12"`, declarado separado (é proibido como **preditora**, obrigatório como **alvo**)
+- [x] Esquema esperado registrado: A = 10.000 linhas, B = 3.000, C = 5.000
 
 ---
 
@@ -55,10 +57,10 @@ Isto é tão importante quanto o que fazemos:
 **Por quê:** o `read_csv` traz data como texto. Data como texto ordena errado ("2024-1-5" > "2024-12-31" em ordem alfabética) e impede o split temporal do S03.
 
 **DoD:**
-- [ ] `carregar_bruto("A" | "B" | "C")` devolve DataFrame com 10.000 / 3.000 / 5.000 linhas
-- [ ] Coluna de data é tipo data, não texto
-- [ ] Períodos conferem: A = 2022-01 a 2024-12 · B = 2025-01 a 2025-06 · C = 2025-07 a 2025-12
-- [ ] **Nulos preservados** — base A com 770 nulos em `renda_mensal_declarada`, 1.207 em `tempo_emprego_meses`, 327 em `score_bureau`
+- [x] `carregar_bruto("A" | "B" | "C")` devolve DataFrame com 10.000 / 3.000 / 5.000 linhas
+- [x] Coluna de data é tipo data, não texto
+- [x] Períodos conferem: A = 2022-01 a 2024-12 · B = 2025-01 a 2025-06 · C = 2025-07 a 2025-12
+- [x] **Nulos preservados** — base A com 770 nulos em `renda_mensal_declarada`, 1.207 em `tempo_emprego_meses`, 327 em `score_bureau`
 
 ---
 
@@ -74,12 +76,12 @@ Isto é tão importante quanto o que fazemos:
 Por isso eles saem da base de modelagem e vão para um arquivo separado, em vez de sumirem.
 
 **DoD:**
-- [ ] `carregar("A")` devolve 23 colunas: 22 preditoras/apoio + o alvo
-- [ ] `carregar("B")` devolve 22 colunas, **sem** o alvo
-- [ ] `carregar("C")` devolve 20 colunas
-- [ ] Nenhuma das 5 `COLUNAS_PROIBIDAS` presente em qualquer uma das três
-- [ ] `carregar_realizados()` devolve 10.000 linhas com `id_contrato` + as 4 colunas de realizado
-- [ ] Os 826 inadimplentes da base A têm `ead_realizado` preenchido; os adimplentes, nulo
+- [x] `carregar("A")` devolve 23 colunas: 22 preditoras/apoio + o alvo
+- [x] `carregar("B")` devolve 22 colunas, **sem** o alvo
+- [x] `carregar("C")` devolve 20 colunas
+- [x] Nenhuma das 5 `COLUNAS_PROIBIDAS` presente em qualquer uma das três
+- [x] `carregar_realizados()` devolve 10.000 linhas com `id_contrato` + as 4 colunas de realizado
+- [x] Os 826 inadimplentes da base A têm `ead_realizado` preenchido; os adimplentes, nulo
 
 ---
 
@@ -92,9 +94,9 @@ Por isso eles saem da base de modelagem e vão para um arquivo separado, em vez 
 Domínios a conferir: `prazo_meses` ∈ {24, 36, 48, 60} · `ltv` entre 0 e 1 · `default_90_12` ∈ {0, 1} · `valor_financiado` > 0 · ids únicos.
 
 **DoD:**
-- [ ] `validar()` passa nas três bases como estão hoje
-- [ ] `validar()` **falha com mensagem clara** (dizendo qual coluna e qual valor) quando recebe uma base adulterada de propósito no teste
-- [ ] Ids únicos confirmados nas três
+- [x] `validar()` passa nas três bases como estão hoje
+- [x] `validar()` **falha com mensagem clara** (dizendo qual coluna e qual valor) quando recebe uma base adulterada de propósito no teste
+- [x] Ids únicos confirmados nas três
 
 ---
 
@@ -105,10 +107,10 @@ Domínios a conferir: `prazo_meses` ∈ {24, 36, 48, 60} · `ltv` entre 0 e 1 ·
 **Por quê:** Parquet preserva tipo (CSV não) e é a [fronteira com o R](../../AGENTS.md#a-fronteira-entre-as-duas-linguagens). O `date32` não é detalhe: já verificamos neste repositório que `datetime64` do pandas chega no R **deslocado em −3h**, o que transformaria `2022-01-01` em `2021-12-31` e **moveria o contrato de safra**. Safra é a unidade de análise do S03.
 
 **DoD:**
-- [ ] Os quatro arquivos existem em `dados/processados/`
-- [ ] Ler de volta em Python devolve exatamente as mesmas linhas e tipos (round-trip)
-- [ ] Ler no R com `arrow::read_parquet()` devolve as datas como `Date`, **sem deslocamento** — conferir que a menor data da base A é `2022-01-01`, não `2021-12-31`
-- [ ] Nenhum arquivo em `dados/` aparece em `git status`
+- [x] Os quatro arquivos existem em `dados/processados/`
+- [x] Ler de volta em Python devolve exatamente as mesmas linhas e tipos (round-trip)
+- [x] Ler no R com `arrow::read_parquet()` devolve as datas como `Date`, **sem deslocamento** — conferir que a menor data da base A é `2022-01-01`, não `2021-12-31`
+- [x] Nenhum arquivo em `dados/` aparece em `git status`
 
 ---
 
@@ -128,8 +130,8 @@ Domínios a conferir: `prazo_meses` ∈ {24, 36, 48, 60} · `ltv` entre 0 e 1 ·
 7. `validar()` rejeita base adulterada.
 
 **DoD:**
-- [ ] `.\scripts\py.cmd -m pytest -q` verde, incluindo os 7 acima
-- [ ] Cada teste falha de verdade se a proteção for removida (verificado quebrando de propósito uma vez)
+- [x] `.\scripts\py.cmd -m pytest -q` verde, incluindo os 7 acima
+- [x] Cada teste falha de verdade se a proteção for removida (verificado quebrando de propósito uma vez)
 
 ---
 
@@ -140,9 +142,9 @@ Domínios a conferir: `prazo_meses` ∈ {24, 36, 48, 60} · `ltv` entre 0 e 1 ·
 **Por quê:** separar biblioteca de pipeline é a convenção do repositório. As funções ficam testáveis; o script é o que alguém roda.
 
 **DoD:**
-- [ ] `.\scripts\py.cmd python\etl\01_ingestao.py` roda do zero, sem passo manual
-- [ ] Loga cada base com linhas e colunas, e o caminho de cada arquivo gravado
-- [ ] Rodar duas vezes seguidas produz arquivos idênticos (idempotente)
+- [x] `.\scripts\py.cmd python\etl\01_ingestao.py` roda do zero, sem passo manual
+- [x] Loga cada base com linhas e colunas, e o caminho de cada arquivo gravado
+- [x] Rodar duas vezes seguidas produz arquivos idênticos (idempotente)
 
 ---
 
@@ -150,14 +152,14 @@ Domínios a conferir: `prazo_meses` ∈ {24, 36, 48, 60} · `ltv` entre 0 e 1 ·
 
 Só está pronto quando **todos** estes verificam:
 
-- [ ] `.\scripts\py.cmd python\etl\01_ingestao.py` roda limpo e gera os 4 Parquets
-- [ ] `.\scripts\py.cmd -m pytest -q` verde
-- [ ] As três bases carregam com 10.000 / 3.000 / 5.000 linhas
-- [ ] **Zero colunas proibidas** nas bases de modelagem
-- [ ] Realizados preservados à parte, prontos para o S02
-- [ ] Datas lidas no R sem deslocamento de fuso
-- [ ] `git status` limpo de dados
-- [ ] O `DICIONARIO_DADOS.md` reflete os arquivos gerados
+- [x] `.\scripts\py.cmd python\etl\01_ingestao.py` roda limpo e gera os 4 Parquets
+- [x] `.\scripts\py.cmd -m pytest -q` verde
+- [x] As três bases carregam com 10.000 / 3.000 / 5.000 linhas
+- [x] **Zero colunas proibidas** nas bases de modelagem
+- [x] Realizados preservados à parte, prontos para o S02
+- [x] Datas lidas no R sem deslocamento de fuso
+- [x] `git status` limpo de dados
+- [x] O `DICIONARIO_DADOS.md` reflete os arquivos gerados
 
 ## Artefatos gerados
 
