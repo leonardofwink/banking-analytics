@@ -1,10 +1,10 @@
-﻿# requirements.lock.txt â€” GERADO AUTOMATICAMENTE por scripts/setup_python.cmd.
+﻿# requirements.lock.txt — GERADO AUTOMATICAMENTE por scripts/setup_python.cmd.
 #
-# NÃ£o edite Ã  mÃ£o. Declare a intenÃ§Ã£o em requirements.txt e rode o setup de novo.
-# Este arquivo trava as versÃµes exatas que foram validadas: Ã© o que faz outra
-# mÃ¡quina reproduzir o mesmo nÃºmero. Modelo treinado com outra versÃ£o de
-# scikit-learn pode dar outro resultado â€” sem ninguÃ©m perceber.
-# Gerado em: 2026-09-12 11:39
+# Não edite à mão. Declare a intenção em requirements.txt e rode o setup de novo.
+# Este arquivo trava as versões exatas que foram validadas: é o que faz outra
+# máquina reproduzir o mesmo número. Modelo treinado com outra versão de
+# scikit-learn pode dar outro resultado — sem ninguém perceber.
+# Gerado em: 2026-09-13 21:03
 
 absl-py==2.5.0
 cffi==2.1.1
@@ -63,3 +63,4 @@ tqdm==4.70.1
 typing_extensions==4.16.0
 tzdata==2026.4
 wrapt==2.4.1
+xgboost==3.4.1

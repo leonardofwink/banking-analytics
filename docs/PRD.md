@@ -1,83 +1,70 @@
-# PRD — Banking Analytics
+# Plano de execução — Desafio AutoCred
 
-> **Status: rascunho.** O escopo da mentoria ainda está sendo apresentado. Este documento é o lugar onde ele será registrado à medida que for definido — não invente conteúdo aqui; preencha o que for confirmado e deixe o resto marcado como pendente.
+> **Requisitos** (o que o professor pediu): [`DESAFIO.md`](DESAFIO.md) · **Como faremos**: [`SPEC_01_MODELO_PD.md`](SPEC_01_MODELO_PD.md) e [`SPEC_02_POLITICA.md`](SPEC_02_POLITICA.md) · **Aulas**: [`MENTORIA.md`](MENTORIA.md)
 >
-> Este é o documento de **o quê** e **por quê**. O **como** (estrutura, convenções, comandos) vive em [`AGENTS.md`](../AGENTS.md) e [`README.md`](../README.md).
+> Este documento é só o **plano**: quem faz o quê, em que ordem, até quando.
 
----
+## Metodologia — SDD (Spec Driven Development)
 
-## 1. Contexto
+A spec vem antes do código, e é o contrato:
 
-Projeto desenvolvido no âmbito de uma mentoria em **modelagem de crédito e banking analytics**.
+```
+Requisito (DESAFIO.md)  ──►  Spec (SPEC_0x)  ──►  Implementação  ──►  Validação contra os critérios de aceite
+                                   ▲                                            │
+                                   └──────── divergiu? atualiza a spec ◄────────┘
+```
 
-- **Mentoria:** ANALITICA
-- **Início:** setembro de 2026
-- **Registro das aulas:** [`MENTORIA.md`](MENTORIA.md)
+Três regras:
+1. **Código que diverge da spec está errado** até a spec ser atualizada — não o contrário.
+2. **Mudança de requisito entra pelo `DESAFIO.md` primeiro**, e desce para as specs.
+3. **Critérios de aceite são verificáveis por script**, não por opinião. Guard-rail conferido "a olho" não conta.
 
-## 2. Objetivo
+Por que isso importa aqui em particular: **o grupo trabalha em paralelo em três frentes**, e a interface entre elas é a spec. Quem faz a política precisa saber o contrato de saída do modelo antes de o modelo existir; quem faz a defesa precisa saber o que foi decidido e por quê, sem reconstituir a conversa.
 
-> *A definir com o escopo da mentoria.*
+## Divisão do grupo
 
-Uma frase que responda: **que decisão de negócio este projeto melhora?** Não "construir um scorecard", e sim "decidir a quem conceder crédito com perda esperada dentro do apetite".
+| Papel | Responsável | Entregável | Spec |
+| ----- | ----------- | ---------- | ---- |
+| Modelagem | *a definir* | Modelo de PD (40 pts) | [SPEC 01](SPEC_01_MODELO_PD.md) |
+| Política e precificação | *a definir* | Tabela de faixas + CSV (40 pts) | [SPEC 02](SPEC_02_POLITICA.md) |
+| Negócio e defesa | *a definir* | Apresentação ao conselho (20 pts) | — |
 
-## 3. Escopo
+**A interface entre as frentes é o contrato de saída do modelo** (`escorar(df) -> pd`, § 7 da SPEC 01). Com ele fixado, a política pode ser construída e testada com uma PD provisória enquanto o modelo final ainda está sendo escolhido — as duas frentes não se bloqueiam.
 
-### Em escopo
+## Dependências externas (bloqueiam o início)
 
-> *A definir.* Candidatos discutidos na abertura do projeto:
->
-> - [ ] **Credit scoring / PD** — scorecard, WOE/IV, regressão logística, KS/Gini, calibração, safra e vintage
-> - [ ] **Perda esperada (ECL)** — PD × EAD × LGD, provisão IFRS 9 / Res. 4.966, estágios 1/2/3
-> - [ ] **Framework de risco** — matriz de riscos inerente/residual, controles e mitigadores, apetite ([`MATRIZ_RISCOS.md`](MATRIZ_RISCOS.md))
-> - [ ] **Banking analytics geral** — churn, LTV, rentabilidade de carteira, comportamento transacional, segmentação
+| O que falta | De quem | Bloqueia |
+| ----------- | ------- | -------- |
+| Bases A, B e C (arquivo Excel) | Professor | Tudo |
+| Tabela de EAD e LGD | Professor | Perda esperada → política |
+| Documentação do simulador da Base C | Professor | Otimização da política |
+| Respostas às 5 perguntas da [SPEC 02 § 6](SPEC_02_POLITICA.md#6-perguntas-para-o-professor) | Professor | Precificação |
 
-### Fora de escopo
+## Cronograma
 
-> *A definir.* Registrar explicitamente o que **não** será feito é tão importante quanto o que será — evita o projeto crescer sem limite.
+Prazo: **25/09** (entrega por e-mail). Leaderboard: **26/09**.
 
-## 4. Decisões de modelagem
+| Quando | O quê | Frente |
+| ------ | ----- | ------ |
+| Ao receber as bases | Dicionário de dados; conferir o que existe no momento da proposta (anti-vazamento) | Modelagem |
+| | EDA: distribuições, missing, taxa de default por safra | Modelagem |
+| ~16–19/09 | Baseline logística → RF → XGBoost, validação out-of-time em 2024 | Modelagem |
+| | PSI de A/B contra C; avaliar o viés de seleção | Modelagem |
+| ~17–21/09 | Tabela de faixas v1 com PD provisória; validador do CSV | Política |
+| ~21–23/09 | Modelo escolhido e retreinado em A; escoragem de B e C | Modelagem |
+| | Busca da política sobre a Base C; verificação dos guard-rails | Política |
+| ~23–24/09 | Teste de sensibilidade; congelar a política | Política |
+| | Montar o encadeamento PD → EAD → LGD → perda → preço → ROI | Defesa |
+| **25/09** | **Validador roda → envio do e-mail com o CSV** | Todos |
 
-> Cada linha abaixo é uma decisão que muda todos os números do projeto. Enquanto estiver "a definir", nenhum resultado é comparável entre versões.
+> Folga proposital de um dia antes do prazo. Submissão em cima da hora é onde erro de formato acontece — e formato vale 10 pontos.
 
-| Decisão | Valor adotado | Justificativa | Definido em |
-| ------- | ------------- | ------------- | ----------- |
-| **Definição de default** | *a definir* (padrão de mercado: atraso ≥ 90 dias) | | |
-| **Janela de performance** | *a definir* (usual: 12 meses) | | |
-| **Janela de observação** | *a definir* | | |
-| **Unidade de análise** | *a definir* (cliente × contrato) | | |
-| **Horizonte da PD** | *a definir* (12 meses × lifetime) | | |
-| **Partição treino/teste** | *a definir* (aleatória × temporal out-of-time) | | |
-| **Tratamento de rejeitados** | *a definir* (reject inference?) | | |
-| **Métrica principal de aceite** | *a definir* (KS? Gini? ambos + calibração) | | |
+## Riscos do projeto
 
-## 5. Dados
-
-> *A definir.* Ver [`DICIONARIO_DADOS.md`](DICIONARIO_DADOS.md) para o detalhe por campo quando a base chegar.
-
-- **Fonte:**
-- **Período coberto:**
-- **Volume:**
-- **Contém dado pessoal (LGPD)?** Assumir que **sim** até prova em contrário — ver regras críticas em [`AGENTS.md`](../AGENTS.md).
-- **Condições de uso / confidencialidade:**
-
-## 6. Fases
-
-> Princípio: *"não dá pra construir o telhado sem as paredes"* — respeitar a ordem das dependências.
-
-1. **Fase 0 — Fundações** *(em andamento)*: estrutura do repositório, glossário, convenções. Definição de escopo, base de dados e das decisões de modelagem da seção 4.
-2. **Fase 1 — Dados**: ingestão, limpeza, dicionário de dados, construção da ABT (base analítica). Nenhuma modelagem antes de a ABT estar auditada.
-3. **Fase 2 — Exploração**: análise univariada, IV/WOE, safras, curvas de inadimplência por MOB.
-4. **Fase 3 — Modelagem**: o(s) modelo(s) dentro do escopo definido.
-5. **Fase 4 — Validação**: performance out-of-time, estabilidade (PSI), calibração, documentação do modelo.
-6. **Fase 5 — Decisão e comunicação**: cutoff, impacto em perda esperada e no negócio, relatório final.
-
-## 7. Critérios de sucesso
-
-> *A definir.* Tanto técnicos (métricas mínimas aceitáveis) quanto de aprendizado (o que a mentoria espera entregar).
-
-## 8. Perguntas em aberto
-
-- [ ] Qual o escopo exato do projeto da mentoria?
-- [ ] A base de dados é fornecida pela mentoria, pública ou construída por nós?
-- [ ] O entregável final é um modelo, um relatório, uma apresentação — ou os três?
-- [ ] Há restrição de confidencialidade que impeça publicar o repositório?
+| Risco | Mitigação |
+| ----- | --------- |
+| Bases chegam tarde e sobra pouco tempo | Specs, validador e esqueleto do pipeline prontos **antes** do dado. Quando a base chegar, é só rodar |
+| Viés de seleção (A/B aprovados × C mar aberto) | [SPEC 01 § 6](SPEC_01_MODELO_PD.md#6--risco-central-as-bases-a-e-b-são-de-aprovados-a-base-c-é-mar-aberto). Tratar a PD como ordenação confiável, nível suspeito |
+| Otimizar AuROC e perder no ROI | Os blocos valem 40 + 40. Modelo bom com política ruim perde |
+| Política no limite de um guard-rail | Escolher a robusta, não a máxima — margem deliberada |
+| Erro de formato no CSV | Validador obrigatório antes do envio |
