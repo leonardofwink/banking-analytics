@@ -148,7 +148,7 @@ Ajuste por avalista: **somar −0,061** à LGD da tabela. Workout: 24 meses.
 
 ## Artefatos gerados pela ingestão (S01)
 
-Produzidos por `.\scripts\py.cmd python\etl_ingestao.py`. **Nenhum é versionado.**
+Produzidos por `.\scripts\py.cmd python\etl\01_ingestao.py`. **Nenhum é versionado.**
 
 | Arquivo | Conteúdo | Consumido por |
 | ------- | -------- | ------------- |
