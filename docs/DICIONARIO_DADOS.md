@@ -146,6 +146,23 @@ Ajuste por avalista: **somar −0,061** à LGD da tabela. Workout: 24 meses.
 
 **Mês médio do default: 6,9.** Essa tabela é o que permite simular o ROI internamente: o enunciado diz que *"os juros de um contrato inadimplente contam apenas até o mês do calote"* — com a distribuição acima dá para calcular quantas parcelas um contrato que quebra chega a pagar.
 
+## Artefatos gerados pela ingestão (S01)
+
+Produzidos por `.\scripts\py.cmd python\etl_ingestao.py`. **Nenhum é versionado.**
+
+| Arquivo | Conteúdo | Consumido por |
+| ------- | -------- | ------------- |
+| `dados/processados/base_A.parquet` | 10.000 × 23 — preditoras + apoio + alvo | S03 a S06 |
+| `dados/processados/base_B.parquet` | 3.000 × 22 — sem alvo | S06 |
+| `dados/processados/base_C.parquet` | 5.000 × 20 — condições desejadas | S07, S09, S10 |
+| `dados/processados/base_A_realizados.parquet` | 10.000 × 5 — `id_contrato` + `mes_default`, `ead_realizado`, `lgd_realizado`, `perda_financeira` | **S02** (gabarito) |
+
+As colunas proibidas já saíram dos três primeiros. Os realizados foram para o quarto em vez de serem descartados: são o gabarito contra o qual o S02 confere a interpretação das tabelas de EAD e LGD.
+
+**Como ler:** `banking.dados.carregar_processada("A")` no Python, `arrow::read_parquet()` no R. Datas gravadas como `date32`, então o R recebe `Date` sem deslocamento de fuso (verificado no S01.5).
+
+**Os nulos continuam lá.** A ingestão não imputa nada — imputação aprende com o dado e pertence ao `Pipeline`, ajustada só no treino. Há teste travando isso.
+
 ## Formato dos entregáveis
 
 **`submissao_modelo.csv`** — 3.000 linhas (base B):
