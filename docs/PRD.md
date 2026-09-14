@@ -1,6 +1,8 @@
 # Plano de execução — Desafio AutoCred
 
-> **Requisitos** (o que o professor pediu): [`DESAFIO.md`](DESAFIO.md) · **Como faremos**: [`SPEC_01_MODELO_PD.md`](SPEC_01_MODELO_PD.md) e [`SPEC_02_POLITICA.md`](SPEC_02_POLITICA.md) · **Aulas**: [`MENTORIA.md`](MENTORIA.md)
+> **Passo a passo:** [`ROADMAP.md`](ROADMAP.md) — o objetivo final quebrado em 11 passos.
+>
+> **Requisitos** (o que o professor pediu): [`DESAFIO.md`](DESAFIO.md) · **Como faremos**: [`ENTREGAVEL_1_MODELO.md`](ENTREGAVEL_1_MODELO.md) e [`ENTREGAVEL_2_POLITICA.md`](ENTREGAVEL_2_POLITICA.md) · **Aulas**: [`MENTORIA.md`](MENTORIA.md)
 >
 > Este documento é só o **plano**: quem faz o quê, em que ordem, até quando.
 
@@ -9,7 +11,7 @@
 A spec vem antes do código, e é o contrato:
 
 ```
-Requisito (DESAFIO.md)  ──►  Spec (SPEC_0x)  ──►  Implementação  ──►  Validação contra os critérios de aceite
+Requisito (DESAFIO.md)  ──►  Spec do passo (docs/specs/S0x)  ──►  Implementação  ──►  Validação contra os critérios de aceite
                                    ▲                                            │
                                    └──────── divergiu? atualiza a spec ◄────────┘
 ```
@@ -25,8 +27,8 @@ Por que isso importa aqui em particular: **o grupo trabalha em paralelo em três
 
 | Papel | Responsável | Entregável | Spec |
 | ----- | ----------- | ---------- | ---- |
-| Modelagem | — | Modelo de PD (40 pts) | [SPEC 01](SPEC_01_MODELO_PD.md) |
-| **Política e precificação** | **Leonardo** | Tabela de faixas + CSV (40 pts) | [SPEC 02](SPEC_02_POLITICA.md) |
+| Modelagem | — | Modelo de PD (40 pts) | [Entregável 1](ENTREGAVEL_1_MODELO.md) |
+| **Política e precificação** | **Leonardo** | Tabela de faixas + CSV (40 pts) | [Entregável 2](ENTREGAVEL_2_POLITICA.md) |
 | Negócio e defesa | — | Apresentação ao conselho (20 pts) | — |
 
 **O grupo decidiu que todos desenvolvem todas as partes**, comparam resultados e juntam o melhor de cada um. Os papéis acima marcam quem responde pela entrega final de cada bloco, não quem trabalha nele.
@@ -43,7 +45,7 @@ Por que isso importa aqui em particular: **o grupo trabalha em paralelo em três
 | ----------- | ------- | -------- |
 | Documento "AutoCred — Regras da Competição" | Professor | Confirmação da rubrica e das regras de submissão |
 | E-mail de destino da entrega | Professor | Só o envio, no dia 25 |
-| Custo de captação e despesa operacional | Professor | Piso da taxa por faixa ([SPEC 02 § 6](SPEC_02_POLITICA.md#6-perguntas--o-que-o-enunciado-respondeu-e-o-que-falta)) |
+| Custo de captação e despesa operacional | Professor | Piso da taxa por faixa ([ENTREGÁVEL 2 § 6](ENTREGAVEL_2_POLITICA.md#6-perguntas--o-que-o-enunciado-respondeu-e-o-que-falta)) |
 
 > Não há simulador da Base C: **a submissão é única e sem feedback**. A política é decidida por raciocínio sobre o trade-off e testada por cenários internos, não calibrada por tentativa.
 
@@ -71,7 +73,7 @@ Prazo: **25/09** (entrega por e-mail). Leaderboard: **26/09**.
 | Risco | Mitigação |
 | ----- | --------- |
 | Bases chegam tarde e sobra pouco tempo | Specs, validador e esqueleto do pipeline prontos **antes** do dado. Quando a base chegar, é só rodar |
-| Viés de seleção (A/B aprovados × C mar aberto) | [SPEC 01 § 6](SPEC_01_MODELO_PD.md#6--risco-central-as-bases-a-e-b-são-de-aprovados-a-base-c-é-mar-aberto). Tratar a PD como ordenação confiável, nível suspeito |
+| Viés de seleção (A/B aprovados × C mar aberto) | [ENTREGÁVEL 1 § 6](ENTREGAVEL_1_MODELO.md#6--risco-central-as-bases-a-e-b-são-de-aprovados-a-base-c-é-mar-aberto). Tratar a PD como ordenação confiável, nível suspeito |
 | Otimizar AuROC e perder no ROI | Os blocos valem 40 + 40. Modelo bom com política ruim perde |
 | Política no limite de um guard-rail | Escolher a robusta, não a máxima — margem deliberada |
 | Erro de formato no CSV | Validador obrigatório antes do envio |

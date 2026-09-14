@@ -15,8 +15,9 @@ Repositório **poliglota (R + Python)**, organizado para reprodutibilidade: o gi
 | Documento | Para quê |
 | --------- | -------- |
 | 🎯 [`docs/DESAFIO.md`](docs/DESAFIO.md) | **O briefing da AutoCred** — requisitos, bases, guard-rails, rubrica e formato de submissão. Fonte única do que foi pedido |
-| 🧮 [`docs/SPEC_01_MODELO_PD.md`](docs/SPEC_01_MODELO_PD.md) | Spec do entregável 1 — modelo de PD (40 pts) |
-| 💰 [`docs/SPEC_02_POLITICA.md`](docs/SPEC_02_POLITICA.md) | Spec do entregável 2 — política e precificação (40 pts) |
+| 🗺️ [`docs/ROADMAP.md`](docs/ROADMAP.md) | **O objetivo quebrado em 11 passos** — o que fazer, por quê, como e quando está pronto |
+| 🧮 [`docs/ENTREGAVEL_1_MODELO.md`](docs/ENTREGAVEL_1_MODELO.md) | Decisões do entregável 1 — modelo de PD (40 pts) |
+| 💰 [`docs/ENTREGAVEL_2_POLITICA.md`](docs/ENTREGAVEL_2_POLITICA.md) | Decisões do entregável 2 — política e precificação (40 pts) |
 | 📋 [`docs/PRD.md`](docs/PRD.md) | Plano de execução: SDD, divisão do grupo, cronograma até 25/09, riscos |
 | 📖 [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md) | **O vocabulário do projeto.** Risco inerente/residual, mitigação, perda esperada, scorecard, regulação, rentabilidade |
 | 🎓 [`docs/MENTORIA.md`](docs/MENTORIA.md) | Diário de bordo das aulas: conceito → implicação → pendência |
@@ -110,4 +111,4 @@ Copy-Item .Renviron.example .Renviron   # depois preencha os valores
 
 ## Estado atual
 
-**Fase 0 — Fundações.** Estrutura do repositório criada; escopo da mentoria em definição. As pendências abertas estão em [`docs/PRD.md`](docs/PRD.md#8-perguntas-em-aberto) e [`docs/MENTORIA.md`](docs/MENTORIA.md).
+**Desafio AutoCred, fase 0.** Material do professor recebido e analisado; specs abertas; nenhum código de modelagem escrito ainda. Próximo passo: **S01 — ingestão** ([`docs/ROADMAP.md`](docs/ROADMAP.md)). Prazo: **25/09**.
