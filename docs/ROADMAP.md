@@ -97,9 +97,21 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ### S06 · Escoragem e submissão do modelo
 
-**O que é:** retreinar o modelo escolhido em **toda a base A** (2022–2024) e escorar a base B → `submissao_modelo.csv`.
+**O que é:** retreinar o modelo escolhido em **toda a base A** (2022–2024) e escorar a base B → `submissao_modelo.csv` (só duas colunas: `id_contrato`, `pd`).
 
-**Por que existe:** a validação 2024 serviu para **escolher**. Escolhido o modelo, treinar com mais dado melhora a estimativa — mesma receita, mais ingredientes. O que não pode é escolher olhando 2025, que não temos.
+**Por que a base B precisa ser escorada, se a política é aplicada na C:** porque **o professor tirou o alvo da base B e guardou**. Ele tem o gabarito, nós temos a régua — e o AuROC só existe cruzando os dois. Mandamos as 3.000 PDs, ele cruza pelo `id_contrato` e calcula. Sem essa entrega, os 30 pontos do AuROC ficam sem nota. É o formato de competição: o participante entrega as previsões, o organizador tem o resultado real.
+
+**Nenhuma política encosta na base B.** Ali os contratos **já foram fechados** sob a política antiga — ela inclusive traz `taxa_juros_am` e `prazo_meses` preenchidos. Não há o que decidir: a única pergunta é *"seu modelo teria acertado quem ia quebrar?"*. A base C é o oposto: não tem taxa nem prazo porque o negócio ainda não aconteceu, e quem decide somos nós.
+
+| | Base B | Base C |
+| - | ------ | ------ |
+| O que entregamos | só `id_contrato, pd` | `pd`, `score`, `decisao`, `taxa`, `prazo`, `entrada` |
+| O que é medido | **AuROC** (30 pts) | **ROI + coerência + volume** (40 pts) |
+| Aplicamos política? | **não** | sim |
+
+**Por que o AuROC não sai da base C:** ela não tem desfecho fixo — reage às nossas decisões, então não há "verdadeiro" estável contra o qual medir ordenação. E os dois blocos são avaliados separadamente de propósito: a B mede a **régua**, a C mede a **decisão**. Misturar faria um erro de política contaminar a nota do modelo.
+
+**Por que retreinar em A inteira:** a validação 2024 serviu para **escolher**. Escolhido o modelo, treinar com mais dado melhora a estimativa — mesma receita, mais ingredientes. O que não pode é escolher olhando 2025, que não temos.
 
 **Como faremos:** ajustar o pipeline em A inteira, prever `predict_proba` em B, gravar `id_contrato,pd`.
 
