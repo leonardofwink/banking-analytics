@@ -29,7 +29,10 @@ scikit-learn
 #   coeficiente. Em crédito isso não é luxo: um scorecard precisa justificar
 #   variável a variável, e o sklearn não reporta significância.
 statsmodels
-# lightgbm: modelo desafiante (challenger) contra o scorecard logístico.
+# xgboost e lightgbm: modelos desafiantes (challenger) contra o scorecard
+#   logístico. O desafio AutoCred pede explicitamente logística, random forest
+#   (vem no scikit-learn) e XGBoost — ver docs/SPEC_01_MODELO_PD.md.
+xgboost
 lightgbm
 # shap: explicabilidade. Modelo de crédito que nega crédito precisa dizer por quê
 #   — é exigência regulatória, não enfeite.

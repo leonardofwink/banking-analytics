@@ -76,10 +76,16 @@ $reqs = Join-Path $raiz 'requirements.txt'
 if (Test-Path -LiteralPath $lock) {
   Escrever 'Instalando a partir do requirements.lock.txt (versões travadas)'
   & $venvPy -m pip install -r $lock
-} else {
-  Escrever 'Sem lock ainda — instalando a partir do requirements.txt'
-  & $venvPy -m pip install -r $reqs
+  if ($LASTEXITCODE -ne 0) { Write-Error 'Falha ao instalar do lock.'; exit 1 }
 }
+
+# O requirements.txt roda SEMPRE, inclusive depois do lock. Sem isso, uma
+# dependência nova declarada no requirements nunca chega a ser instalada: o lock
+# (que ainda não a conhece) satisfaz o pip e o passo termina "com sucesso",
+# deixando o import quebrado. Rodando os dois, o lock fixa as versões do que já
+# existe e este passo só acrescenta o que falta.
+Escrever 'Conferindo o requirements.txt (pega dependência declarada depois do lock)'
+& $venvPy -m pip install -r $reqs
 if ($LASTEXITCODE -ne 0) { Write-Error 'Falha ao instalar as dependências.'; exit 1 }
 
 Escrever 'Registrando a biblioteca interna `banking` em modo editável'
