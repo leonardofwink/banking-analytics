@@ -32,11 +32,13 @@ Então a comparação tem de acontecer **dentro da base A**, e o split precisa *
 
 ```
 Base A (2022–2024, 10.000 contratos)
-├── treino      2022 – 2023        ajusta o modelo
-└── validação   2024               escolhe o modelo e o hiperparâmetro
+├── treino      2022 – 2023   6.670 contratos, default 8,80%   ajusta o modelo
+└── validação   2024          3.330 contratos, default 7,18%   escolhe o modelo
                                    ↓
-Base B (2025) ─────────────────► o professor mede o AuROC aqui
+Base B (jan–jun/2025, 3.000) ──► o professor mede o AuROC aqui
 ```
+
+A validação 2024 tem default de **7,18%** contra 8,80% do treino. A diferença é real e esperada — mais um motivo para não comparar modelos por acurácia ou por qualquer métrica sensível à prevalência. AuROC e KS não são.
 
 Split aleatório superestimaria a performance: embaralhar anos deixa o modelo ver o futuro. Como a avaliação é out-of-time (2025 contra 2022–2024), validar out-of-time é a única estimativa honesta do que vai acontecer.
 
@@ -56,6 +58,39 @@ Nesta ordem, e a ordem tem motivo:
 
 **Todos os três** entram no relatório de comparação, mesmo os perdedores — mostrar o que foi testado e descartado é parte da qualidade técnica.
 
+## 4.1 🚨 Primeira coisa a fazer: remover a armadilha
+
+Antes de qualquer EDA, `qtd_parcelas_em_atraso_12m` sai da base. Ela tem **correlação 0,74 com o alvo na base A** e vale **zero para todas as linhas das bases B e C** — o mecanismo completo está no [dicionário](DICIONARIO_DADOS.md#-a-armadilha-qtd_parcelas_em_atraso_12m).
+
+Usá-la produz AuROC excelente na validação e **≈ 0,5 na avaliação**, porque o termo dominante do modelo vira constante ao escorar a base B. Não dá erro em passo nenhum.
+
+**Lista de exclusão, aplicada na ingestão** (não na hora de treinar):
+
+```python
+PROIBIDAS = [
+    "qtd_parcelas_em_atraso_12m",  # pós-concessão — zerada em B e C
+    "default_90_12",               # o alvo
+    "mes_default", "ead_realizado", "lgd_realizado", "perda_financeira",  # realizados
+]
+```
+
+`ead_realizado` e `lgd_realizado` continuam úteis **fora do modelo**: servem para conferir os parâmetros de EAD/LGD contra o que de fato aconteceu na base A.
+
+## 4.2 Quatro preditoras não existem na base C
+
+`ltv`, `prazo_meses`, `valor_financiado` e `comprometimento_renda` estão em A e B, mas a base C traz só as versões **desejadas** — porque o contratado é decisão da política. Isso cria uma circularidade: o modelo precisa dessas variáveis, e elas dependem da política, que depende do modelo.
+
+**Decisão — escorar em duas passagens:**
+
+| Passagem | Com o quê | Para quê |
+| -------- | --------- | -------- |
+| **1ª** | Condições **desejadas** pelo cliente (`ltv_desejado`, `prazo_desejado_meses`, `valor_financiado_desejado`) | Obter a PD "como o cliente pediu" → faixa de score → decisão de aprovar/negar |
+| **2ª** | Condições **ofertadas** pela política (LTV recalculado com a entrada exigida, prazo definido, parcela na taxa da faixa) | Estimar a PD do que será de fato contratado — é ela que entra na perda esperada e no ROI |
+
+A `pd` que vai no CSV de submissão é a da **2ª passagem** para os aprovados: é a estimativa do risco do contrato que existirá. Para os negados, a da 1ª (não há oferta). Essa escolha precisa estar documentada na defesa — ela é discutível, e o grupo tem que saber justificá-la.
+
+> A 2ª passagem é também o instrumento que quantifica a alavanca da entrada: recalcular o LTV com a entrada exigida e re-escorar mostra **quanto de PD a entrada compra**, em vez de assumir que compra.
+
 ## 5. Qualidade técnica (os 10 pontos)
 
 A rubrica cobra quatro coisas explicitamente. Cada uma vira requisito verificável:
@@ -70,6 +105,16 @@ A rubrica cobra quatro coisas explicitamente. Cada uma vira requisito verificáv
 ## 6. ⚠️ Risco central: as bases A e B são de aprovados, a base C é mar aberto
 
 As bases A e B **só contêm contratos aprovados pela política antiga**. A base C é de **mar aberto** — inclui perfis que a política de 2022 recusava e sobre os quais não existe histórico.
+
+Não é retórica — está nos dados:
+
+| Indicador | Base A | Base B | **Base C** |
+| --------- | ------ | ------ | ---------- |
+| `score_bureau` médio | 645,5 | 646,2 | **549,5** |
+| `qtd_restricoes_ativas` média | 0,63 | 0,62 | **1,70** |
+| LTV médio | 0,743 | 0,746 | **0,778** (desejado) |
+
+Score de bureau **96 pontos menor** e **2,7× mais restrições ativas**. O modelo vai operar fora do domínio em que foi treinado.
 
 Isso é **viés de seleção** (o *reject inference* do [glossário](GLOSSARIO.md#3-modelagem-e-scorecard)), e tem uma consequência desagradável:
 
