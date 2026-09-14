@@ -26,6 +26,23 @@ Vocabulário completo em [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md).
 
 **Fase 0 — Fundações** *(atual)* → 1. Dados → 2. Exploração → 3. Modelagem → 4. Validação → 5. Decisão e comunicação.
 
+## Specs e DoD (Definition of Done)
+
+O trabalho é dividido em **passos pequenos** ([`docs/ROADMAP.md`](docs/ROADMAP.md)). Cada passo é uma **spec** em `docs/specs/`, e cada spec se quebra em **subetapas** numeradas (`S01.1`, `S01.2`, …) para dar rastreio.
+
+**Toda spec e toda subetapa tem um DoD explícito.** Sem exceção.
+
+O DoD é a lista de condições que definem "pronto". Ele **não descreve o trabalho** — descreve como se prova que o trabalho acabou. Quatro regras:
+
+1. **Verificável por comando**, não por opinião. "A ingestão está boa" não é DoD. "`pytest -k ingestao` passa e as três bases carregam com 10.000 / 3.000 / 5.000 linhas" é.
+2. **Escrito antes de implementar.** DoD redigido depois vira descrição do que foi feito, e aí ele aprova qualquer coisa. É SDD: a spec é o contrato.
+3. **Quando não dá para automatizar, diga como conferir à mão** — o comando a rodar, o número a olhar, o valor esperado. Um DoD manual é aceitável; um DoD vago não.
+4. **Nada é marcado como concluído com o DoD parcialmente satisfeito.** Se um item não vale mais, a spec é atualizada e o motivo fica registrado — não se apaga o item em silêncio.
+
+No `ROADMAP.md` o DoD de cada passo aparece como **"DoD — pronto quando"**. Nas specs, cada subetapa carrega o seu.
+
+> Por que isso importa neste projeto em particular: a maior parte dos erros de modelagem de crédito **não levanta exceção**. Vazamento de variável, imputação ajustada no conjunto errado, data deslocada por fuso — tudo isso roda, gera número e sai bonito no CSV. O DoD é o que transforma "parece certo" em "foi verificado".
+
 ## Estrutura do repositório
 
 > **Mapa central:** o [`README.md`](README.md) é a fonte única da estrutura — árvore de pastas, como rodar, mapa dos documentos. Atualize-o sempre que um script for adicionado ou renomeado. A tabela abaixo é o resumo de convenção.
@@ -130,6 +147,7 @@ Do lado R chega como `Date`, com o dia correto. Timestamp com hora só quando a 
 - **Logs:** helper `log_step()` de `banking.projeto`, com a mesma semântica de cor do lado R — a saída dos dois tem que parecer a mesma coisa.
 - **Reprodutibilidade:** chame `semear()` antes de qualquer amostragem, partição ou treino.
 - **Estilo:** `snake_case`, type hints nas assinaturas públicas, docstrings em pt-BR. Linha de até 100 colunas.
+- **Duas exceções declaradas à regra de biblioteca pura:** [`banking/projeto.py`](python/banking/projeto.py) (a âncora — resolve caminhos e cria diretórios por definição) e `banking/dados.py` (a porta de entrada dos dados — centralizar a carga em um lugar só é justamente o objetivo do passo S01). Qualquer outro módulo de `banking/` que leia ou escreva arquivo está no lugar errado.
 - **Notebooks:** úteis para explorar, **não** para entregar. O `.gitignore` bloqueia `.ipynb` de propósito: notebook guarda a saída das células junto com o código — inclusive tabelas com dado real. Conclusão que importa vira script em `python/` ou `scripts/`.
 
 ### Armadilhas específicas de modelagem de crédito

@@ -31,7 +31,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** uma função `carregar(base)` que aplica a lista de exclusão e devolve o DataFrame limpo. Um teste que **falha** se qualquer coluna proibida sobreviver.
 
-**Pronto quando:** as três bases carregam com 10.000 / 3.000 / 5.000 linhas, nenhuma coluna proibida presente, e o teste passa.
+**DoD — pronto quando:** as três bases carregam com 10.000 / 3.000 / 5.000 linhas, nenhuma coluna proibida presente, e o teste passa.
 
 **Depende de:** nada. É o primeiro.
 
@@ -45,7 +45,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** ler o `.xlsx`, mapear as faixas de LTV (`até 60%`, `60-70%`, `70-80%`, `80-90%`, `acima de 90%`) e de idade do veículo, e aplicar o ajuste de −0,061 quando há avalista.
 
-**Pronto quando:** os valores calculados **batem com `ead_realizado` e `lgd_realizado` dos inadimplentes da base A**. Esse é um luxo raro: temos o gabarito para conferir. Se não bater, ou entendemos a faixa errado, ou a tabela tem outra convenção — e é melhor descobrir agora do que na apuração.
+**DoD — pronto quando:** os valores calculados **batem com `ead_realizado` e `lgd_realizado` dos inadimplentes da base A**. Esse é um luxo raro: temos o gabarito para conferir. Se não bater, ou entendemos a faixa errado, ou a tabela tem outra convenção — e é melhor descobrir agora do que na apuração.
 
 **Depende de:** S01. **Pode rodar em paralelo com todo o bloco do modelo.**
 
@@ -61,7 +61,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** um relatório de EDA (tabelas e gráficos em `outputs/`) e uma função de split determinística.
 
-**Pronto quando:** o split está em código, a EDA aponta quais variáveis parecem discriminar e onde estão os missing.
+**DoD — pronto quando:** o split está em código, a EDA aponta quais variáveis parecem discriminar e onde estão os missing.
 
 **Depende de:** S01.
 
@@ -75,7 +75,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** `Pipeline` com todo o pré-processamento dentro. Isso não é preciosismo — é o que garante que a imputação seja **aprendida só no treino** e aplicada na validação, em vez de vazar a média do conjunto inteiro. É item explícito da nota.
 
-**Pronto quando:** AuROC e KS reportados na validação, e rodar duas vezes dá o mesmo número.
+**DoD — pronto quando:** AuROC e KS reportados na validação, e rodar duas vezes dá o mesmo número.
 
 **Depende de:** S03.
 
@@ -89,7 +89,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** mesma estrutura do S04, trocando só o estimador final. Se a diferença for menor que 0,01 de AuROC, **fica o mais simples** — o AuROC vale 30 pontos relativos ao melhor grupo, mas a defesa vale 20 absolutos.
 
-**Pronto quando:** tabela comparativa dos três, com a escolha justificada por escrito.
+**DoD — pronto quando:** tabela comparativa dos três, com a escolha justificada por escrito.
 
 **Depende de:** S04.
 
@@ -115,7 +115,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** ajustar o pipeline em A inteira, prever `predict_proba` em B, gravar `id_contrato,pd`.
 
-**Pronto quando:** 3.000 linhas, ids idênticos aos da base B, `pd` em [0,1] com distribuição plausível (sem massa em 0 ou 1).
+**DoD — pronto quando:** 3.000 linhas, ids idênticos aos da base B, `pd` em [0,1] com distribuição plausível (sem massa em 0 ou 1).
 
 **Depende de:** S05. **→ Entregável 1 pronto.**
 
@@ -131,7 +131,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** faixas por **corte de PD**, não por quantil. Quantil muda de sentido quando a população muda — e a base C é outra população (score de bureau 96 pontos menor). Se a faixa 5 significar "PD entre 8% e 11%", ela quer dizer a mesma coisa em qualquer base.
 
-**Pronto quando:** função determinística `pd → score`, com a distribuição das 5.000 propostas por faixa documentada.
+**DoD — pronto quando:** função determinística `pd → score`, com a distribuição das 5.000 propostas por faixa documentada.
 
 **Depende de:** S06 (ou uma PD provisória, para não bloquear).
 
@@ -150,7 +150,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 - **Perda realizada:** `fator_ead × financiado × lgd` (vem do S02).
 - **Aceite e seleção adversa:** como não sabemos a intensidade, entram como **cenários** — otimista, central, pessimista.
 
-**Pronto quando:** testado contra casos de resposta conhecida (carteira sem nenhum default → ROI = juros ÷ volume ÷ anos) e reproduzindo a fórmula oficial.
+**DoD — pronto quando:** testado contra casos de resposta conhecida (carteira sem nenhum default → ROI = juros ÷ volume ÷ anos) e reproduzindo a fórmula oficial.
 
 **Depende de:** S02.
 
@@ -164,7 +164,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** piso analítico por faixa (a taxa que cobre a perda esperada), depois simular candidatas no motor do S08 sob os três cenários, descartando quem fura guard-rail em **qualquer** cenário razoável. Escolher a **robusta**, não a máxima: como se submete uma vez só, uma política que entrega 18% nos três cenários vence uma que entrega 24% no central e fura o volume no pessimista — porque furar corta a nota pela metade.
 
-**Pronto quando:** tabela monotônica (score melhor nunca recebe condição pior), guard-rails verificados por script, e **cada linha com uma frase de justificativa** — que é o insumo da defesa.
+**DoD — pronto quando:** tabela monotônica (score melhor nunca recebe condição pior), guard-rails verificados por script, e **cada linha com uma frase de justificativa** — que é o insumo da defesa.
 
 **Depende de:** S07 e S08.
 
@@ -178,7 +178,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** gerar o CSV e rodar um **validador** que confere linha a linha: ids completos, score coerente com a PD, taxa/prazo/entrada iguais aos da tabela de faixas, campos vazios em todo `NEGAR`, taxa ≤ 3,5%, aprovação ≥ 35%. **Nenhum arquivo é enviado sem passar.**
 
-**Pronto quando:** 5.000 linhas e validador limpo.
+**DoD — pronto quando:** 5.000 linhas e validador limpo.
 
 **Depende de:** S09. **→ Entregável 2 pronto.**
 
@@ -194,7 +194,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Como faremos:** a narrativa segue a cadeia: PD → EAD → LGD → perda esperada → preço → ROI. Cada decisão da tabela do S09 já tem a frase de justificativa escrita; aqui elas viram argumento. Incluir o que **não** fizemos e por quê — a armadilha que evitamos, o viés de seleção que reconhecemos.
 
-**Pronto quando:** alguém de fora consegue seguir o raciocínio do número final até a proposta individual.
+**DoD — pronto quando:** alguém de fora consegue seguir o raciocínio do número final até a proposta individual.
 
 **Depende de:** S06 e S10.
 
