@@ -41,6 +41,24 @@ O DoD é a lista de condições que definem "pronto". Ele **não descreve o trab
 
 No `ROADMAP.md` o DoD de cada passo aparece como **"DoD — pronto quando"**. Nas specs, cada subetapa carrega o seu.
 
+### Formato de um arquivo de spec
+
+**Um arquivo por passo** (`docs/specs/S0X_NOME.md`), com as subetapas como seções `###` dentro dele — não um arquivo por subetapa. O que decide isso é que o contexto mais valioso de um passo (o "⛔ o que **não** fazemos aqui") vale para todas as subetapas: separado em arquivos, ele ficaria órfão ou repetido.
+
+O arquivo abre com uma **tabela de status das subetapas**, para o rastreio ficar visível sem precisar ler o documento inteiro:
+
+| Subetapa | Entrega | DoD | Status | Commit |
+| -------- | ------- | --- | ------ | ------ |
+| S0X.1 | o artefato que ela produz | itens cumpridos / total | ⬜ / 🔄 / ✅ | hash curto |
+
+Regras da tabela:
+- **`DoD` é uma fração** (`3/4`), não um rótulo. "Quase pronto" esconde qual item ficou faltando; `3/4` obriga a olhar qual.
+- **`Commit` é preenchido quando a subetapa fecha** — é o que liga a spec ao código e permite auditar depois o que foi entregue por qual mudança.
+- A última linha é o **passo inteiro**, com o DoD global.
+- Abaixo da tabela, uma linha com as **verificações que fecharam o passo** (os números que foram conferidos, não a promessa de conferir).
+
+Modelo de referência: [`docs/specs/S01_INGESTAO.md`](docs/specs/S01_INGESTAO.md).
+
 > Por que isso importa neste projeto em particular: a maior parte dos erros de modelagem de crédito **não levanta exceção**. Vazamento de variável, imputação ajustada no conjunto errado, data deslocada por fuso — tudo isso roda, gera número e sai bonito no CSV. O DoD é o que transforma "parece certo" em "foi verificado".
 
 ## Estrutura do repositório
