@@ -5,6 +5,21 @@
 > ✅ **CONCLUÍDO em 2026-09-14.** DoD verificado item a item; 28 testes verdes. Implementação em [`python/banking/dados.py`](../../python/banking/dados.py), [`python/etl/01_ingestao.py`](../../python/etl/01_ingestao.py) e [`tests/python/test_ingestao.py`](../../tests/python/test_ingestao.py).
 > Dados descritos em [`DICIONARIO_DADOS.md`](../DICIONARIO_DADOS.md).
 
+## Status das subetapas
+
+| Subetapa | Entrega | DoD | Status | Commit |
+| -------- | ------- | --- | ------ | ------ |
+| [S01.1](#s011--contrato-de-dados-constantes) | `banking/dados.py` — constantes e esquemas | 4/4 | ✅ | `4cdcfec` |
+| [S01.2](#s012--carga-e-tipagem) | `carregar_bruto(base)` | 4/4 | ✅ | `4cdcfec` |
+| [S01.3](#s013--separação-preditoras-alvo-e-realizados) | `carregar()` · `carregar_realizados()` | 6/6 | ✅ | `4cdcfec` |
+| [S01.4](#s014--validação-de-esquema) | `validar(df, base)` | 3/3 | ✅ | `4cdcfec` |
+| [S01.5](#s015--gravação-em-parquet) | `gravar_parquet()` + 4 arquivos | 4/4 | ✅ | `4cdcfec` |
+| [S01.6](#s016--testes) | `tests/python/test_ingestao.py` | 2/2 | ✅ | `4cdcfec` |
+| [S01.7](#s017--pipeline-orquestrador) | `python/etl/01_ingestao.py` | 3/3 | ✅ | `4cdcfec` |
+| **Passo** | **DoD do S01** | **8/8** | **✅** | `e15d1f0` |
+
+**Verificações que fecharam o passo:** 28 testes verdes · 10.000/3.000/5.000 linhas · 23/22/20 colunas · zero colunas proibidas · nulos preservados (770/1.207/327) · R lê `2022-01-01` como `Date` sem deslocamento · pipeline idempotente (md5 igual em duas execuções) · `git status` limpo de dados · **proteção removida de propósito derrubou 4 testes**, incluindo o dedicado à armadilha.
+
 ## Objetivo
 
 Ter as três bases carregadas, limpas das colunas proibidas, com os tipos corretos e gravadas em Parquet — e um teste que **falha** se a armadilha escapar.
