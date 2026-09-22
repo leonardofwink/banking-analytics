@@ -1,16 +1,18 @@
 # S07 · Faixas de score (PD → 1 a 10)
 
 > Passo 7 de 11 do [`ROADMAP.md`](../ROADMAP.md). Abre a frente da política.
+>
+> ✅ **CONCLUÍDO em 2026-09-22** — 117 testes verdes. Janela viável de aprovação: score ≥ 7 até score ≥ 4.
 
 ## Status das subetapas
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S07.1 | Critérios de uma boa faixa, declarados antes | 3/3 | ⬜ | — |
-| S07.2 | `banking/score.py` — cortes e `score_de_pd()` | 4/4 | ⬜ | — |
-| S07.3 | Distribuição verificada nas três bases | 3/3 | ⬜ | — |
-| S07.4 | Perda esperada por faixa | 3/3 | ⬜ | — |
-| S07.5 | Testes + relatório | 3/3 | ⬜ | — |
+| S07.1 | Critérios de uma boa faixa, declarados antes | 3/3 | ✅ | `8248b29` |
+| S07.2 | `banking/score.py` — cortes e `score_de_pd()` | 4/4 | ✅ | `8248b29` |
+| S07.3 | Distribuição verificada nas três bases | 3/3 | ✅ | `8248b29` |
+| S07.4 | Perda esperada por faixa | 3/3 | ✅ | `8248b29` |
+| S07.5 | Testes + relatório | 3/3 | ✅ | `8248b29` |
 
 ## Objetivo
 
@@ -86,36 +88,36 @@ Três leituras que mudam o plano da política:
 ### S07.1 · Critérios
 Declarar o que é uma boa faixa antes de escolher os cortes.
 
-**DoD:** ⬜ cinco critérios escritos · ⬜ a decisão quantil × absoluto justificada · ⬜ registrados nesta spec.
+**DoD:** ✅ cinco critérios escritos · ✅ a decisão quantil × absoluto justificada · ✅ registrados nesta spec.
 
 ### S07.2 · Implementação
 `banking/score.py` com `CORTES_PD` e `score_de_pd()`, vetorizada.
 
-**DoD:** ⬜ 10 = melhor, 1 = pior · ⬜ determinística · ⬜ toda PD em [0,1] recebe faixa · ⬜ o inverso (`faixa_de_score`) devolve o intervalo, para a tabela de política.
+**DoD:** ✅ 10 = melhor, 1 = pior · ✅ determinística · ✅ toda PD em [0,1] recebe faixa · ✅ o inverso (`faixa_de_score`) devolve o intervalo, para a tabela de política.
 
 ### S07.3 · Distribuição
 Conferir as três bases.
 
-**DoD:** ⬜ nenhuma faixa abaixo de 3% da base C · ⬜ monotonicidade verificada · ⬜ tabela em `outputs/`.
+**DoD:** ✅ nenhuma faixa abaixo de 3% da base C · ✅ monotonicidade verificada · ✅ tabela em `outputs/`.
 
 ### S07.4 · Perda esperada por faixa
 Cruzar com as funções do S02.
 
-**DoD:** ⬜ EL por faixa · ⬜ crescente com o risco · ⬜ faixas vizinhas distinguíveis.
+**DoD:** ✅ EL por faixa · ✅ crescente com o risco · ✅ faixas vizinhas distinguíveis.
 
 ### S07.5 · Testes e relatório
-**DoD:** ⬜ testes verdes · ⬜ o acumulado de aprovação por corte documentado · ⬜ pipeline roda do zero.
+**DoD:** ✅ testes verdes · ✅ o acumulado de aprovação por corte documentado · ✅ pipeline roda do zero.
 
 ---
 
 ## DoD do S07 (o passo inteiro)
 
-- [ ] `score_de_pd()` determinística e monotônica
-- [ ] Cortes absolutos, não quantis, com a razão registrada
-- [ ] Nenhuma faixa irrelevante na base C
-- [ ] Perda esperada crescente e distinguível entre vizinhas
-- [ ] O acumulado de aprovação documentado — insumo direto do S09
-- [ ] `pytest` verde
+- [x] `score_de_pd()` determinística e monotônica
+- [x] Cortes absolutos, não quantis, com a razão registrada
+- [x] Nenhuma faixa irrelevante na base C
+- [x] Perda esperada crescente e distinguível entre vizinhas
+- [x] O acumulado de aprovação documentado — insumo direto do S09
+- [x] `pytest` verde
 
 ## O que este passo **não** faz
 
