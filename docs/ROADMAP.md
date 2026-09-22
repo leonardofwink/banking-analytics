@@ -57,7 +57,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ## Fase 1 — O modelo de PD (entregável 1, 40 pontos)
 
-### S03 · Exploratória e split temporal
+### S03 · Exploratória e split temporal ✅
 
 **O que é:** olhar as variáveis (distribuição, missing, relação com o alvo) e **fixar** a divisão treino/validação: treino 2022–2023 (6.670 contratos), validação 2024 (3.330).
 
@@ -68,6 +68,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **DoD — pronto quando:** o split está em código, a EDA aponta quais variáveis parecem discriminar e onde estão os missing.
 
 **Depende de:** S01.
+
+**Status:** ✅ concluído em 2026-09-22 — split fixado; PSI mostra que  (0,50) e  (5,93) explodem na base C. Spec em [`specs/S03_EDA_E_SPLIT.md`](specs/S03_EDA_E_SPLIT.md).
 
 ---
 

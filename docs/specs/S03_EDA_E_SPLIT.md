@@ -8,12 +8,12 @@
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S03.1 | `banking/split.py` — `dividir_temporal()` | 4/4 | ✅ | `PENDENTE` |
-| S03.2 | `banking/metricas.py` — `ks()`, `iv()`, `psi()` | 4/4 | ✅ | `PENDENTE` |
-| S03.3 | EDA: missing, safras, default por faixa | 3/3 | ✅ | `PENDENTE` |
-| S03.4 | IV univariado (só no treino) | 3/3 | ✅ | `PENDENTE` |
-| S03.5 | PSI de A/B contra C — medir a extrapolação | 3/3 | ✅ | `PENDENTE` |
-| S03.6 | Testes + pipeline + relatório | 3/3 | ✅ | `PENDENTE` |
+| S03.1 | `banking/split.py` — `dividir_temporal()` | 4/4 | ✅ | `e308913` |
+| S03.2 | `banking/metricas.py` — `ks()`, `iv()`, `psi()` | 4/4 | ✅ | `e308913` |
+| S03.3 | EDA: missing, safras, default por faixa | 3/3 | ✅ | `e308913` |
+| S03.4 | IV univariado (só no treino) | 3/3 | ✅ | `e308913` |
+| S03.5 | PSI de A/B contra C — medir a extrapolação | 3/3 | ✅ | `e308913` |
+| S03.6 | Testes + pipeline + relatório | 3/3 | ✅ | `e308913` |
 
 ## Objetivo
 
