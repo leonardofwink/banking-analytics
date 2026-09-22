@@ -1,18 +1,20 @@
 # S02 · Perda esperada (EAD e LGD)
 
 > Passo 2 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S01. **Libera a frente de política.**
+>
+> ✅ **CONCLUÍDO em 2026-09-22** — commit `2d2bfcd`, 49 testes verdes.
 
 ## Status das subetapas
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S02.1 | `carregar_parametros_ead_lgd()` em `banking/dados.py` | 3/3 | ✅ | — |
-| S02.2 | `faixa_ltv()` · `faixa_idade_veiculo()` | 3/3 | ✅ | — |
-| S02.3 | `fator_ead()` · `ead()` | 3/3 | ✅ | — |
-| S02.4 | `lgd()` com os dois modos de avalista | 4/4 | ✅ | — |
-| S02.5 | `perda_esperada()` | 3/3 | ✅ | — |
-| S02.6 | Validação contra o gabarito da base A | 4/4 | ✅ | — |
-| S02.7 | Testes + pipeline | 3/3 | ✅ | — |
+| S02.1 | `carregar_parametros_ead_lgd()` em `banking/dados.py` | 3/3 | ✅ | `2d2bfcd` |
+| S02.2 | `faixa_ltv()` · `faixa_idade_veiculo()` | 3/3 | ✅ | `2d2bfcd` |
+| S02.3 | `fator_ead()` · `ead()` | 3/3 | ✅ | `2d2bfcd` |
+| S02.4 | `lgd()` com os dois modos de avalista | 4/4 | ✅ | `2d2bfcd` |
+| S02.5 | `perda_esperada()` | 3/3 | ✅ | `2d2bfcd` |
+| S02.6 | Validação contra o gabarito da base A | 4/4 | ✅ | `2d2bfcd` |
+| S02.7 | Testes + pipeline | 3/3 | ✅ | `2d2bfcd` |
 
 ## Objetivo
 
