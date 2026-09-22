@@ -12,7 +12,17 @@
 
 **O que deixamos de fazer:** as bases A e B só têm contratos **aprovados** pela política antiga; a base C é mar aberto. O tratamento formal desse descasamento (*reject inference*: parcelling, augmentation, fuzzy augmentation) não entra nesta entrega.
 
-**O risco:** a base C tem score de bureau **96 pontos menor** e **2,7× mais restrições ativas** que a A/B. O modelo vai extrapolar para uma população que nunca viu. A **ordenação** tende a sobreviver; o **nível** da PD, não — e provavelmente **subestima** o risco de quem a política velha recusava. Como a política precifica em cima dessa PD, o efeito prático é **cobrar barato demais de quem é caro**.
+**O risco, agora medido (S03):** o PSI confirma e dimensiona. A base B é praticamente idêntica à A; a base C é outro mundo — e justamente nas duas variáveis **mais preditivas**:
+
+| Variável | IV (poder no treino) | PSI A→B | PSI A→C |
+| -------- | -------------------- | ------- | ------- |
+| `score_bureau` | **0,176** (1º lugar) | 0,002 | **0,496** 🔴 |
+| `qtd_restricoes_ativas` | **0,133** (2º lugar) | 0,000 | **5,93** 🔴🔴 |
+| `renda_mensal_declarada` | 0,114 | 0,005 | 0,141 🟡 |
+
+PSI de 5,93 está fora de qualquer escala usual (a referência de mercado trata 0,25 como instável). As demais variáveis ficam abaixo de 0,09 — ou seja, **a instabilidade é concentrada, não difusa**, o que é uma boa notícia: sabemos exatamente onde o modelo vai extrapolar.
+
+O modelo vai apoiar-se nas duas variáveis mais fortes exatamente onde elas menos se parecem com o treino. A **ordenação** tende a sobreviver; o **nível** da PD, não — e provavelmente **subestima** o risco de quem a política velha recusava. Como a política precifica em cima dessa PD, o efeito prático é **cobrar barato demais de quem é caro**.
 
 **Mitigação adotada:** tratar a PD como *ordenação confiável, nível suspeito*; medir o PSI entre A/B e C para dimensionar a extrapolação; embutir margem de segurança no preço das faixas baixas.
 
