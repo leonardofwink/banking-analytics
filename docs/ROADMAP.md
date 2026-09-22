@@ -151,7 +151,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ---
 
-### S08 · Motor de simulação do ROI
+### S08 · Motor de simulação do ROI ✅
 
 **O que é:** uma função que recebe uma política e um cenário e devolve os quatro números que importam: **ROI anualizado, inadimplência, volume originado e taxa de aprovação**.
 
@@ -167,6 +167,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **DoD — pronto quando:** testado contra casos de resposta conhecida (carteira sem nenhum default → ROI = juros ÷ volume ÷ anos) e reproduzindo a fórmula oficial.
 
 **Depende de:** S02.
+
+**Status:** ✅ concluído em 2026-09-22 — taxa de mercado ancorada na base A (1,59% a.m.). Spec em [specs/S08_MOTOR_DE_ROI.md](specs/S08_MOTOR_DE_ROI.md).
 
 ---
 
