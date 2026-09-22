@@ -69,7 +69,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S01.
 
-**Status:** ✅ concluído em 2026-09-22 — split fixado; PSI mostra que  (0,50) e  (5,93) explodem na base C. Spec em [`specs/S03_EDA_E_SPLIT.md`](specs/S03_EDA_E_SPLIT.md).
+**Status:** ✅ concluído em 2026-09-22 — split fixado; PSI mostra que `score_bureau` (0,50) e `qtd_restricoes_ativas` (5,93) explodem na base C. Spec em [`specs/S03_EDA_E_SPLIT.md`](specs/S03_EDA_E_SPLIT.md).
 
 ---
 
