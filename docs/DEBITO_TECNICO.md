@@ -62,6 +62,12 @@ O modelo vai apoiar-se nas duas variáveis mais fortes exatamente onde elas meno
 
 **Mitigação adotada:** decidir por **cenários** (otimista, central, pessimista) e escolher a política **robusta nos três**, não a ótima no central. Testar sensibilidade do ROI a ±10 pontos de aceite.
 
+**⚠️ Recalibração no S09.** A primeira calibração (β_taxa de 1,5 / 3,0 / 5,0) fez a busca **degenerar**: 896 das 960 políticas morriam por volume, e a vencedora usava **preço único para todo risco** — exatamente a patologia que o conselho diagnosticou na política antiga. Um resultado que reproduz a doença é sintoma de premissa errada, não de política certa.
+
+A âncora que corrigiu: **o professor impôs um teto de 3,5% a.m. como guard-rail**. Um teto só é guard-rail se as políticas quiserem chegar perto dele. Se o aceite morresse a 2%, o teto seria decorativo. Recalibramos para β_taxa de 0,8 / 1,5 / 2,5, de modo que cobrar no teto deixe um aceite baixo mas não nulo (16% do nível de referência, no central).
+
+**O risco que fica:** essa âncora é um argumento, não uma medição. Se o simulador do professor for mais elástico que a nossa calibração central, o volume realizado virá abaixo do projetado — e o volume é guard-rail. A política escolhida mantém 12,7% de folga justamente por isso.
+
 **Com mais tempo:** nada mudaria — é limitação do desafio, não nossa. Mas daria para explorar mais cenários e mapear a fronteira de quebra de cada guard-rail.
 
 ---
