@@ -39,7 +39,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ---
 
-### S02 · Perda esperada (EAD e LGD)
+### S02 · Perda esperada (EAD e LGD) ✅
 
 **O que é:** transformar as duas tabelas do professor em funções: `fator_ead(prazo, ltv)` e `lgd(idade_veiculo, ltv, tem_avalista)`, e com elas `perda_esperada = pd × fator_ead × valor_financiado × lgd`.
 
@@ -50,6 +50,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **DoD — pronto quando:** os valores calculados **batem com `ead_realizado` e `lgd_realizado` dos inadimplentes da base A**. Esse é um luxo raro: temos o gabarito para conferir. Se não bater, ou entendemos a faixa errado, ou a tabela tem outra convenção — e é melhor descobrir agora do que na apuração.
 
 **Depende de:** S01. **Pode rodar em paralelo com todo o bloco do modelo.**
+
+**Status:** ✅ concluído em 2026-09-22 — LGD com erro de 0,0003 e EAD 0,0005 contra o gabarito. Spec em [`specs/S02_PERDA_ESPERADA.md`](specs/S02_PERDA_ESPERADA.md).
 
 ---
 
