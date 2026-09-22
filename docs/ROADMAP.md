@@ -105,7 +105,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ---
 
-### S06 · Escoragem e submissão do modelo
+### S06 · Escoragem e submissão do modelo ✅
 
 **O que é:** retreinar o modelo escolhido em **toda a base A** (2022–2024) e escorar a base B → `submissao_modelo.csv` (só duas colunas: `id_contrato`, `pd`).
 
@@ -128,6 +128,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **DoD — pronto quando:** 3.000 linhas, ids idênticos aos da base B, `pd` em [0,1] com distribuição plausível (sem massa em 0 ou 1).
 
 **Depende de:** S05. **→ Entregável 1 pronto.**
+
+**Status:** ✅ concluído em 2026-09-22 — arquivo em outputs/submissao/. Spec em [specs/S06_SUBMISSAO_MODELO.md](specs/S06_SUBMISSAO_MODELO.md).
 
 ---
 
