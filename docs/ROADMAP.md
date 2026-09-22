@@ -73,7 +73,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ---
 
-### S04 · Baseline: regressão logística
+### S04 · Baseline: regressão logística ✅
 
 **O que é:** o primeiro modelo, dentro de um `Pipeline` do scikit-learn: imputação dos missing + tratamento das categóricas + regressão logística. Medir **AuROC** e **KS** na validação 2024.
 
@@ -85,9 +85,11 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S03.
 
+**Status:** ✅ concluído em 2026-09-22 — AuROC 0,6489. Spec em [specs/S04_BASELINE_LOGISTICA.md](specs/S04_BASELINE_LOGISTICA.md).
+
 ---
 
-### S05 · Desafiantes: Random Forest e XGBoost
+### S05 · Desafiantes: Random Forest e XGBoost ✅
 
 **O que é:** treinar os dois com **o mesmo pipeline, o mesmo split e a mesma semente**, e comparar na mesma tabela.
 
@@ -98,6 +100,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **DoD — pronto quando:** tabela comparativa dos três, com a escolha justificada por escrito.
 
 **Depende de:** S04.
+
+**Status:** ✅ concluído em 2026-09-22 — XGBoost vence com AuROC 0,7234. Spec em [specs/S05_DESAFIANTES.md](specs/S05_DESAFIANTES.md).
 
 ---
 

@@ -1,17 +1,19 @@
 # S05 · Desafiantes — Random Forest e XGBoost
 
 > Passo 5 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S04. **Encerra a escolha do modelo.**
+>
+> ✅ **CONCLUÍDO em 2026-09-22** — XGBoost escolhido: AuROC 0,7234 · KS 0,3660 na validação 2024 (+0,0745 sobre a logística).
 
 ## Status das subetapas
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S05.1 | Busca de hiperparâmetros com CV temporal **dentro do treino** | 3/3 | ⬜ | — |
-| S05.2 | Random Forest no mesmo pipeline | 3/3 | ⬜ | — |
-| S05.3 | XGBoost no mesmo pipeline | 3/3 | ⬜ | — |
-| S05.4 | Comparação final na validação — **medida uma vez só** | 3/3 | ⬜ | — |
-| S05.5 | Escolha pela regra declarada antes | 2/2 | ⬜ | — |
-| S05.6 | Testes | 2/2 | ⬜ | — |
+| S05.1 | Busca de hiperparâmetros com CV temporal **dentro do treino** | 3/3 | ✅ | `88f3e87` |
+| S05.2 | Random Forest no mesmo pipeline | 3/3 | ✅ | `88f3e87` |
+| S05.3 | XGBoost no mesmo pipeline | 3/3 | ✅ | `88f3e87` |
+| S05.4 | Comparação final na validação — **medida uma vez só** | 3/3 | ✅ | `88f3e87` |
+| S05.5 | Escolha pela regra declarada antes | 2/2 | ✅ | `88f3e87` |
+| S05.6 | Testes | 2/2 | ✅ | `88f3e87` |
 
 ## Objetivo
 
@@ -78,31 +80,31 @@ O desbalanceamento (8,8% de default) entra como opção na grade em vez de premi
 ### S05.1 · Busca com CV temporal
 `TimeSeriesSplit` de 3 dobras sobre o treino ordenado por data, otimizando AuROC.
 
-**DoD:** ⬜ as dobras respeitam a ordem temporal · ⬜ a validação 2024 não é tocada na busca · ⬜ melhor configuração registrada.
+**DoD:** ✅ as dobras respeitam a ordem temporal · ✅ a validação 2024 não é tocada na busca · ✅ melhor configuração registrada.
 
 ### S05.2 · Random Forest
-**DoD:** ⬜ mesmo `ColumnTransformer` da logística · ⬜ AuROC na CV e na validação · ⬜ folga treino-validação reportada.
+**DoD:** ✅ mesmo `ColumnTransformer` da logística · ✅ AuROC na CV e na validação · ✅ folga treino-validação reportada.
 
 ### S05.3 · XGBoost
-**DoD:** ⬜ mesmo pipeline · ⬜ AuROC na CV e na validação · ⬜ folga reportada.
+**DoD:** ✅ mesmo pipeline · ✅ AuROC na CV e na validação · ✅ folga reportada.
 
 ### S05.4 · Comparação
 Tabela com os três, mesma validação, mesmas métricas.
 
-**DoD:** ⬜ AuROC, KS, Gini, Brier e erro de calibração dos três · ⬜ validação medida uma vez · ⬜ tabela em `outputs/`.
+**DoD:** ✅ AuROC, KS, Gini, Brier e erro de calibração dos três · ✅ validação medida uma vez · ✅ tabela em `outputs/`.
 
 ### S05.5 · Escolha
-**DoD:** ⬜ regra aplicada e registrada · ⬜ modelo escolhido salvo para o S06.
+**DoD:** ✅ regra aplicada e registrada · ✅ modelo escolhido salvo para o S06.
 
 ### S05.6 · Testes
-**DoD:** ⬜ testes verdes · ⬜ um teste garante que os três usam o mesmo pré-processamento.
+**DoD:** ✅ testes verdes · ✅ um teste garante que os três usam o mesmo pré-processamento.
 
 ---
 
 ## DoD do S05 (o passo inteiro)
 
-- [ ] Os três modelos comparados na mesma validação
-- [ ] Hiperparâmetros escolhidos **sem** tocar a validação
-- [ ] Escolha pela regra declarada antes
-- [ ] Sobreajuste verificado em cada um
-- [ ] `pytest` verde
+- [x] Os três modelos comparados na mesma validação
+- [x] Hiperparâmetros escolhidos **sem** tocar a validação
+- [x] Escolha pela regra declarada antes
+- [x] Sobreajuste verificado em cada um
+- [x] `pytest` verde
