@@ -1,17 +1,19 @@
 # S04 · Baseline — regressão logística
 
 > Passo 4 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S03. **O primeiro número de verdade.**
+>
+> ✅ **CONCLUÍDO em 2026-09-22** — AuROC 0,6489 · KS 0,2432 na validação 2024. Venceu a variante independente de política.
 
 ## Status das subetapas
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S04.1 | `banking/modelo.py` — pré-processamento no `Pipeline` | 4/4 | ⬜ | — |
-| S04.2 | Logística treinada no treino 2022–2023 | 3/3 | ⬜ | — |
-| S04.3 | `avaliar()` — AuROC, KS, Gini, calibração | 4/4 | ⬜ | — |
-| S04.4 | Variante sem variáveis dependentes da política | 3/3 | ⬜ | — |
-| S04.5 | Coeficientes — a explicação para a defesa | 2/2 | ⬜ | — |
-| S04.6 | Testes + pipeline | 3/3 | ⬜ | — |
+| S04.1 | `banking/modelo.py` — pré-processamento no `Pipeline` | 4/4 | ✅ | `bfa3c5f` |
+| S04.2 | Logística treinada no treino 2022–2023 | 3/3 | ✅ | `bfa3c5f` |
+| S04.3 | `avaliar()` — AuROC, KS, Gini, calibração | 4/4 | ✅ | `bfa3c5f` |
+| S04.4 | Variante sem variáveis dependentes da política | 3/3 | ✅ | `bfa3c5f` |
+| S04.5 | Coeficientes — a explicação para a defesa | 2/2 | ✅ | `bfa3c5f` |
+| S04.6 | Testes + pipeline | 3/3 | ✅ | `bfa3c5f` |
 
 ## Objetivo
 
@@ -62,40 +64,40 @@ Isso cria a circularidade descrita na [SPEC do entregável 1](../ENTREGAVEL_1_MO
 ### S04.1 · Pipeline de pré-processamento
 `banking/modelo.py` com `construir_pipeline()`, montando `ColumnTransformer` + estimador.
 
-**DoD:** ⬜ imputação e escala só aprendidas no treino · ⬜ indicador de ausência presente · ⬜ categoria desconhecida não quebra · ⬜ o objeto inteiro serializa.
+**DoD:** ✅ imputação e escala só aprendidas no treino · ✅ indicador de ausência presente · ✅ categoria desconhecida não quebra · ✅ o objeto inteiro serializa.
 
 ### S04.2 · Treino
 Ajustar no treino 2022–2023 com `SEMENTE` fixa.
 
-**DoD:** ⬜ converge sem aviso · ⬜ duas execuções dão o mesmo AuROC · ⬜ nenhuma coluna proibida entre as usadas.
+**DoD:** ✅ converge sem aviso · ✅ duas execuções dão o mesmo AuROC · ✅ nenhuma coluna proibida entre as usadas.
 
 ### S04.3 · Avaliação
 `avaliar()` devolvendo AuROC, KS, Gini e erro de calibração.
 
-**DoD:** ⬜ AuROC e KS na validação · ⬜ Gini = 2×AuROC−1 conferido · ⬜ PD média prevista comparada à taxa observada · ⬜ resultado em tabela.
+**DoD:** ✅ AuROC e KS na validação · ✅ Gini = 2×AuROC−1 conferido · ✅ PD média prevista comparada à taxa observada · ✅ resultado em tabela.
 
 ### S04.4 · Variante independente de política
 Mesmo pipeline, sem `comprometimento_renda`.
 
-**DoD:** ⬜ as duas treinadas com o mesmo split e semente · ⬜ diferença de AuROC reportada · ⬜ escolha registrada pela regra declarada acima.
+**DoD:** ✅ as duas treinadas com o mesmo split e semente · ✅ diferença de AuROC reportada · ✅ escolha registrada pela regra declarada acima.
 
 ### S04.5 · Coeficientes
 Tabela de coeficientes com sinal e magnitude — o insumo da defesa.
 
-**DoD:** ⬜ coeficientes exportados · ⬜ **sinais conferidos contra o senso de crédito** (mais restrições deve aumentar a PD; score de bureau maior deve reduzir).
+**DoD:** ✅ coeficientes exportados · ✅ **sinais conferidos contra o senso de crédito** (mais restrições deve aumentar a PD; score de bureau maior deve reduzir).
 
 ### S04.6 · Testes e pipeline
 `tests/python/test_modelo.py` e `python/modelagem/04_baseline_logistica.py`.
 
-**DoD:** ⬜ testes verdes · ⬜ pipeline roda do zero · ⬜ artefato do modelo salvo fora do git.
+**DoD:** ✅ testes verdes · ✅ pipeline roda do zero · ✅ artefato do modelo salvo fora do git.
 
 ---
 
 ## DoD do S04 (o passo inteiro)
 
-- [ ] AuROC e KS reportados na validação 2024
-- [ ] Todo o pré-processamento dentro do `Pipeline`
-- [ ] Reprodutível: duas execuções, mesmo número
-- [ ] Variante escolhida pela regra declarada **antes** do resultado
-- [ ] Sinais dos coeficientes coerentes com o domínio
-- [ ] `pytest` verde
+- [x] AuROC e KS reportados na validação 2024
+- [x] Todo o pré-processamento dentro do `Pipeline`
+- [x] Reprodutível: duas execuções, mesmo número
+- [x] Variante escolhida pela regra declarada **antes** do resultado
+- [x] Sinais dos coeficientes coerentes com o domínio
+- [x] `pytest` verde
