@@ -18,6 +18,7 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import brier_score_loss, roc_auc_score
@@ -61,7 +62,7 @@ def preditoras(incluir_dependentes_de_politica: bool = True) -> tuple[list[str],
 
 
 def construir_pipeline(
-    tipo: Literal["logistica"] = "logistica",
+    tipo: Literal["logistica", "random_forest", "xgboost"] = "logistica",
     incluir_dependentes_de_politica: bool = True,
     **parametros,
 ) -> Pipeline:
@@ -76,9 +77,14 @@ def construir_pipeline(
     ``handle_unknown="ignore"`` — uma categoria que apareça só na base C não
     pode derrubar a escoragem.
 
-    :param tipo: por ora só ``"logistica"``; os desafiantes entram no S05.
+    **Os três modelos compartilham exatamente este pré-processamento.** É o que
+    torna a comparação do S05 legítima: se o preparo variasse junto com o
+    estimador, não saberíamos a que atribuir a diferença de AuROC.
+
+    :param tipo: ``"logistica"`` (baseline), ``"random_forest"`` ou ``"xgboost"``.
     :param incluir_dependentes_de_politica: ver :func:`preditoras`.
-    :param parametros: repassados ao estimador final.
+    :param parametros: repassados ao estimador final — é por aqui que a busca
+        de hiperparâmetros do S05 injeta cada configuração.
     """
     numericas, categoricas = preditoras(incluir_dependentes_de_politica)
 
@@ -109,8 +115,41 @@ def construir_pipeline(
             random_state=SEMENTE,
             **{"C": 1.0, "solver": "lbfgs", **parametros},
         )
+    elif tipo == "random_forest":
+        # Padrões rasos e regularizados de propósito: o treino tem 587
+        # defaults, e árvore profunda decora com facilidade nesse volume.
+        estimador = RandomForestClassifier(
+            random_state=SEMENTE,
+            n_jobs=-1,
+            **{
+                "n_estimators": 300,
+                "max_depth": 6,
+                "min_samples_leaf": 20,
+                **parametros,
+            },
+        )
+    elif tipo == "xgboost":
+        from xgboost import XGBClassifier
+
+        estimador = XGBClassifier(
+            random_state=SEMENTE,
+            n_jobs=-1,
+            eval_metric="auc",
+            **{
+                "n_estimators": 300,
+                "max_depth": 3,
+                "learning_rate": 0.05,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "min_child_weight": 5,
+                "reg_lambda": 1.0,
+                **parametros,
+            },
+        )
     else:
-        raise ValueError(f"tipo desconhecido: {tipo!r}")
+        raise ValueError(
+            f"tipo desconhecido: {tipo!r}. Use 'logistica', 'random_forest' ou 'xgboost'."
+        )
 
     return Pipeline([("preparo", preparo), ("modelo", estimador)])
 
