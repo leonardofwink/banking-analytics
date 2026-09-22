@@ -135,7 +135,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ## Fase 2 — A política (entregável 2, 40 pontos)
 
-### S07 · Faixas de score (PD → 1 a 10)
+### S07 · Faixas de score (PD → 1 a 10) ✅
 
 **O que é:** decidir como agrupar as PDs em dez faixas, sendo 1 o pior risco e 10 o melhor.
 
@@ -146,6 +146,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **DoD — pronto quando:** função determinística `pd → score`, com a distribuição das 5.000 propostas por faixa documentada.
 
 **Depende de:** S06 (ou uma PD provisória, para não bloquear).
+
+**Status:** ✅ concluído em 2026-09-22 — cortes absolutos de PD; janela viável score ≥ 7 a ≥ 4. Spec em [specs/S07_FAIXAS_DE_SCORE.md](specs/S07_FAIXAS_DE_SCORE.md).
 
 ---
 
