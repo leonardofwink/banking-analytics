@@ -1,16 +1,18 @@
 # S09 · A tabela de política
 
 > Passo 9 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S07 e do S08. **É o entregável.**
+>
+> ✅ **CONCLUÍDO em 2026-09-22** — 155 testes verdes. Aprovar score ≥ 5, taxa 1,50% + 0,1×perda, entrada 10%. ROI 11,3% central, folga de 12,7%.
 
 ## Status das subetapas
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S09.1 | Parametrização do espaço de políticas | 3/3 | ⬜ | — |
-| S09.2 | Busca com os guard-rails como restrição dura | 4/4 | ⬜ | — |
-| S09.3 | Critério de robustez — escolher a que sobrevive aos três cenários | 3/3 | ⬜ | — |
-| S09.4 | A tabela final, com justificativa linha a linha | 3/3 | ⬜ | — |
-| S09.5 | Testes | 2/2 | ⬜ | — |
+| S09.1 | Parametrização do espaço de políticas | 3/3 | ✅ | `0e79a98` |
+| S09.2 | Busca com os guard-rails como restrição dura | 4/4 | ✅ | `0e79a98` |
+| S09.3 | Critério de robustez — escolher a que sobrevive aos três cenários | 3/3 | ✅ | `0e79a98` |
+| S09.4 | A tabela final, com justificativa linha a linha | 3/3 | ✅ | `0e79a98` |
+| S09.5 | Testes | 2/2 | ✅ | `0e79a98` |
 
 ## Objetivo
 
@@ -101,36 +103,36 @@ A escolhida está registrada em `banking/politica.POLITICA_ESCOLHIDA`, com a jus
 ### S09.1 · Parametrização
 `gerar_politica(corte, taxa_base, k_risco, prazo_max, entrada_base, entrada_passo)`.
 
-**DoD:** ⬜ devolve as 10 linhas · ⬜ monotônica por construção · ⬜ taxa truncada no teto de 3,5%.
+**DoD:** ✅ devolve as 10 linhas · ✅ monotônica por construção · ✅ taxa truncada no teto de 3,5%.
 
 ### S09.2 · Busca
 Varrer a grade, simular nos três cenários, registrar tudo.
 
-**DoD:** ⬜ 960 combinações avaliadas · ⬜ re-escoragem em cache (a PD não depende da taxa) · ⬜ resultado completo em `outputs/` · ⬜ determinística.
+**DoD:** ✅ 960 combinações avaliadas · ✅ re-escoragem em cache (a PD não depende da taxa) · ✅ resultado completo em `outputs/` · ✅ determinística.
 
 ### S09.3 · Escolha
 Aplicar o critério de três passos.
 
-**DoD:** ⬜ sobreviventes identificadas · ⬜ critério aplicado na ordem declarada · ⬜ a escolhida e as vice-campeãs registradas.
+**DoD:** ✅ sobreviventes identificadas · ✅ critério aplicado na ordem declarada · ✅ a escolhida e as vice-campeãs registradas.
 
 ### S09.4 · A tabela final
 Com a justificativa de cada linha — o insumo direto da defesa.
 
-**DoD:** ⬜ 10 linhas completas · ⬜ cada uma com uma frase de razão · ⬜ gravada em `outputs/`.
+**DoD:** ✅ 10 linhas completas · ✅ cada uma com uma frase de razão · ✅ gravada em `outputs/`.
 
 ### S09.5 · Testes
-**DoD:** ⬜ monotonicidade travada em teste · ⬜ a política escolhida passa nos guard-rails dos três cenários.
+**DoD:** ✅ monotonicidade travada em teste · ✅ a política escolhida passa nos guard-rails dos três cenários.
 
 ---
 
 ## DoD do S09 (o passo inteiro)
 
-- [ ] Tabela de 10 linhas, monotônica nas quatro alavancas
-- [ ] Guard-rails respeitados nos **três** cenários
-- [ ] Escolha pelo critério declarado antes da busca
-- [ ] Folga até o guard-rail mais apertado registrada
-- [ ] Cada linha com justificativa
-- [ ] `pytest` verde
+- [x] Tabela de 10 linhas, monotônica nas quatro alavancas
+- [x] Guard-rails respeitados nos **três** cenários
+- [x] Escolha pelo critério declarado antes da busca
+- [x] Folga até o guard-rail mais apertado registrada
+- [x] Cada linha com justificativa
+- [x] `pytest` verde
 
 ## O que este passo **não** faz
 
