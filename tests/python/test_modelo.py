@@ -227,3 +227,61 @@ def test_pd_da_base_c_e_maior_que_a_da_validacao(particoes) -> None:
     pd_c = modelo.predict_proba(c)[:, 1].mean()
     pd_val = modelo.predict_proba(validacao)[:, 1].mean()
     assert pd_c > pd_val, f"PD em C ({pd_c:.4f}) deveria superar a da validação ({pd_val:.4f})"
+
+
+# --- S05 · Desafiantes -------------------------------------------------------
+def test_os_tres_modelos_compartilham_o_mesmo_preparo() -> None:
+    """A comparação do S05 só é legítima se só o estimador mudar.
+
+    Se o pré-processamento variasse junto, não saberíamos a que atribuir a
+    diferença de AuROC — e a conclusão "XGBoost ganha da logística" poderia
+    ser, na verdade, "este preparo ganha daquele".
+    """
+    preparos = {}
+    for tipo in ("logistica", "random_forest", "xgboost"):
+        preparo = construir_pipeline(tipo).named_steps["preparo"]
+        preparos[tipo] = [(nome, cols) for nome, _, cols in preparo.transformers]
+
+    assert preparos["logistica"] == preparos["random_forest"] == preparos["xgboost"]
+
+
+def test_xgboost_treina_e_escora(particoes) -> None:
+    treino, validacao = particoes
+    modelo = construir_pipeline("xgboost", incluir_dependentes_de_politica=False)
+    modelo.fit(treino, treino[ALVO])
+    r = avaliar(modelo, validacao, "xgboost", "validação")
+    assert r.auroc > 0.65, "o XGBoost deveria superar o baseline da logística"
+
+
+def test_tipo_de_modelo_desconhecido_falha_claro() -> None:
+    with pytest.raises(ValueError, match="tipo desconhecido"):
+        construir_pipeline("rede_neural")
+
+
+def test_class_weight_balanced_destroi_a_calibracao(particoes) -> None:
+    """Achado do S05, travado em teste porque é contraintuitivo.
+
+    `class_weight="balanced"` melhora a ordenação do Random Forest, mas
+    reponderar as classes empurra a probabilidade prevista para perto de 0,5 —
+    a PD média sai em ~0,42 contra uma taxa real de 7,2%.
+
+    Para **ordenar** isso não atrapalha; para **precificar**, inviabiliza: a
+    perda esperada é `PD × EAD × LGD`, e uma PD seis vezes maior que a real
+    produziria um preço absurdo. É a razão de o Brier entrar na decisão do
+    modelo, e não só o AuROC.
+    """
+    treino, validacao = particoes
+
+    equilibrado = construir_pipeline(
+        "random_forest", incluir_dependentes_de_politica=False, class_weight="balanced"
+    )
+    equilibrado.fit(treino, treino[ALVO])
+    r_eq = avaliar(equilibrado, validacao, "rf_balanced", "validação")
+
+    natural = construir_pipeline("random_forest", incluir_dependentes_de_politica=False)
+    natural.fit(treino, treino[ALVO])
+    r_nat = avaliar(natural, validacao, "rf", "validação")
+
+    assert r_eq.pd_media > 5 * r_eq.taxa_observada, "a PD reponderada deveria explodir"
+    assert r_nat.pd_media < 3 * r_nat.taxa_observada, "sem reponderar, a PD fica no nível certo"
+    assert r_eq.brier > r_nat.brier, "reponderar piora a calibração"
