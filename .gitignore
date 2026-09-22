@@ -58,6 +58,11 @@ outputs/
 renv/library/
 renv/staging/
 
+# --- Node (gerador das apresentacoes em pptxgenjs) ---
+node_modules/
+package-lock.json
+package.json
+
 # --- Python ---
 # O .venv é recriado por scripts/setup_python.cmd; o requirements.lock.txt (que
 # É versionado) é o que garante que ele saia igual em qualquer máquina.
