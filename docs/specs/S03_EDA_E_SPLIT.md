@@ -43,6 +43,48 @@ Base B (jan–jun/2025, 3.000) ──► o professor mede o AuROC aqui
 
 **Por que a prevalência muda e tudo bem:** o treino tem 8,80% de default e a validação 7,18%. A diferença é real. Por isso a comparação de modelos usa **AuROC e KS**, que medem ordenação e não dependem da prevalência — e não acurácia, que dependeria.
 
+## ❓ "Mas a regra não é 70/30 aleatório?" — provável pergunta na defesa
+
+A regra existe e está certa: **70–80% para treino**, 20–30% para teste. Ela responde à pergunta da **proporção**. O split tem, porém, **duas** decisões independentes:
+
+| Decisão | Pergunta | Nossa resposta |
+| ------- | -------- | -------------- |
+| **Proporção** | quanto vai para cada lado? | **67% / 33%** — dentro da convenção |
+| **Critério** | *quais* linhas vão para cada lado? | **corte temporal**, não sorteio |
+
+**Não violamos o 70/30.** Trocamos o critério de atribuição, não a proporção.
+
+### O experimento (mesmo modelo, mesma semente, mesma proporção)
+
+| Critério | Treino | Validação | AuROC |
+| -------- | ------ | --------- | ----- |
+| Temporal (2022–23 / 2024) | 6.670 · 8,80% | 3.330 · 7,18% | 0,7229 |
+| Aleatório 67/33 estratificado | 6.670 · 8,26% | 3.330 · 8,26% | **0,7268** |
+
+O aleatório parece **+0,0039 melhor**. A diferença é pequena — menor do que o discurso costuma sugerir — porque nesta base a população é estável entre 2022 e 2024 (PSI A→B de ~0,002). Mas é otimismo **de graça**: nada no mundo real corresponde a ele, e a nota vem da base B.
+
+### O que o sorteio apaga
+
+| Ano | n | Default |
+| --- | - | ------- |
+| 2022 | 3.380 | 8,67% |
+| 2023 | 3.290 | 8,94% |
+| **2024** | 3.330 | **7,18%** |
+
+Num sorteio aleatório os dois lados ficariam com ~8,26% cada, e **a diferença entre os anos desapareceria** — junto com o aviso de que algo mudou no tempo. Esse aviso é informação de negócio, não ruído.
+
+### O argumento decisivo
+
+O modelo será aplicado na base B (jan–jun/2025) e na C (jul–dez/2025) — ambas no futuro em relação ao treino. A validação não precisa responder *"funciona em contratos parecidos com estes?"*, e sim *"funciona nos contratos que vêm depois?"*. Só o corte temporal responde à segunda.
+
+### Quando o 70/30 aleatório é o certo
+
+Quando as observações são **intercambiáveis**: sem ordem temporal, sem agrupamento, mesma população na aplicação. Três situações quebram isso:
+
+- **Ordem temporal** → corte temporal *(nosso caso)*.
+- **Agrupamento** — o mesmo cliente com vários contratos. O sorteio colocaria contratos do mesmo cliente nos dois lados e o modelo "reconheceria" a pessoa. Pede `GroupKFold`. *(Verificado: aqui cada `id_contrato` é único.)*
+- **Evento raro** — poucos positivos podem faltar em um dos lados. Pede estratificação.
+
 ---
 
 ## Subetapas
