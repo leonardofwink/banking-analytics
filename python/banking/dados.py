@@ -191,6 +191,68 @@ ESQUEMAS: dict[str, Esquema] = {
 ARQUIVO_PROCESSADO = {"A": "base_A.parquet", "B": "base_B.parquet", "C": "base_C.parquet"}
 ARQUIVO_REALIZADOS = "base_A_realizados.parquet"
 
+# --- Parâmetros de EAD e LGD (S02) -------------------------------------------
+ARQUIVO_PARAMETROS = "AutoCred_parametros_ead_lgd.xlsx"
+
+# Rótulos das faixas de LTV, exatamente como no Excel do professor. A ordem é
+# significativa: é a ordem das colunas nas duas tabelas.
+FAIXAS_LTV = ("até 60%", "60% a 70%", "70% a 80%", "80% a 90%", "acima de 90%")
+
+# Rótulos das faixas de idade do veículo, na ordem das linhas da tabela de LGD.
+FAIXAS_IDADE_VEICULO = ("0 a 2 anos", "3 a 5 anos", "6 a 8 anos", "9 anos ou mais")
+
+
+@dataclass(frozen=True)
+class Parametros:
+    """As três tabelas de parâmetros dadas pelo professor.
+
+    :param fator_ead: linhas = prazo (24/36/48/60), colunas = faixa de LTV.
+        Multiplicado pelo valor financiado, dá o EAD em reais.
+    :param lgd: linhas = faixa de idade do veículo, colunas = faixa de LTV.
+        Fração perdida sobre o EAD após o workout de 24 meses.
+    :param dist_mes_default: frequência do mês em que o default ocorre (1 a 12).
+        É o que permite calcular quantas parcelas um contrato que quebra chega
+        a pagar — insumo do motor de ROI (S08).
+    """
+
+    fator_ead: pd.DataFrame
+    lgd: pd.DataFrame
+    dist_mes_default: pd.Series
+
+
+def carregar_parametros_ead_lgd() -> Parametros:
+    """Lê `AutoCred_parametros_ead_lgd.xlsx` e devolve as três tabelas.
+
+    As tabelas são **médias por célula** dos contratos inadimplentes da base A
+    — não valores por contrato. Ver ``docs/specs/S02_PERDA_ESPERADA.md``.
+
+    :raises FileNotFoundError: se o arquivo do professor não estiver em
+        ``dados/brutos/professor/bases/``.
+    """
+    caminho = DIR_PROFESSOR / ARQUIVO_PARAMETROS
+    if not caminho.exists():
+        raise FileNotFoundError(
+            f"Parâmetros de EAD/LGD não encontrados em {caminho}.\n"
+            "Copie 'AutoCred_Arquivos do Desafio/bases' para dados/brutos/professor/."
+        )
+
+    excel = pd.ExcelFile(caminho)
+
+    fator = excel.parse("Fator_EAD").set_index(excel.parse("Fator_EAD").columns[0])
+    fator.columns = list(FAIXAS_LTV)
+    fator.index.name = "prazo_meses"
+
+    lgd = excel.parse("LGD").set_index(excel.parse("LGD").columns[0])
+    lgd.columns = list(FAIXAS_LTV)
+    lgd.index = list(FAIXAS_IDADE_VEICULO)
+    lgd.index.name = "faixa_idade_veiculo"
+
+    dist = excel.parse("Distribuicao_Mes_Default")
+    dist = pd.Series(dist.iloc[:, 1].to_numpy(), index=dist.iloc[:, 0].to_numpy(), name="frequencia")
+    dist.index.name = "mes_default"
+
+    return Parametros(fator_ead=fator, lgd=lgd, dist_mes_default=dist)
+
 
 def _esquema(base: str) -> Esquema:
     """Resolve o esquema da base, aceitando 'a' ou 'A'."""
