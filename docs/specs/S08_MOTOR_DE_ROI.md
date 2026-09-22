@@ -1,16 +1,18 @@
 # S08 · Motor de simulação do ROI
 
 > Passo 8 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S02. **O passo mais trabalhoso da frente de política.**
+>
+> ✅ **CONCLUÍDO em 2026-09-22** — 141 testes verdes. Price validada contra a base A (erro 0,0003%).
 
 ## Status das subetapas
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S08.1 | Tabela Price — parcela, saldo e juros pagos até o mês *m* | 4/4 | ⬜ | — |
-| S08.2 | `aplicar_politica()` — da proposta à oferta | 4/4 | ⬜ | — |
-| S08.3 | Aceite e seleção adversa como **cenários** | 3/3 | ⬜ | — |
-| S08.4 | `simular()` — ROI, inadimplência, volume, aprovação | 4/4 | ⬜ | — |
-| S08.5 | Testes contra casos de resposta conhecida | 3/3 | ⬜ | — |
+| S08.1 | Tabela Price — parcela, saldo e juros pagos até o mês *m* | 4/4 | ✅ | `c5b6ade` |
+| S08.2 | `aplicar_politica()` — da proposta à oferta | 4/4 | ✅ | `c5b6ade` |
+| S08.3 | Aceite e seleção adversa como **cenários** | 3/3 | ✅ | `c5b6ade` |
+| S08.4 | `simular()` — ROI, inadimplência, volume, aprovação | 4/4 | ✅ | `c5b6ade` |
+| S08.5 | Testes contra casos de resposta conhecida | 3/3 | ✅ | `c5b6ade` |
 
 ## Objetivo
 
@@ -102,36 +104,36 @@ O aceite entra como **probabilidade ponderando cada proposta**, não como sortei
 ### S08.1 · Tabela Price
 `parcela()`, `saldo_devedor()` e `juros_pagos_ate()`.
 
-**DoD:** ⬜ a parcela reproduz a base A com erro < 0,01% · ⬜ saldo no último mês é zero · ⬜ juros até o fim = `parcela×n − P` · ⬜ taxa zero não divide por zero.
+**DoD:** ✅ a parcela reproduz a base A com erro < 0,01% · ✅ saldo no último mês é zero · ✅ juros até o fim = `parcela×n − P` · ✅ taxa zero não divide por zero.
 
 ### S08.2 · Da proposta à oferta
 `aplicar_politica(propostas, politica, escorar)`.
 
-**DoD:** ⬜ entrada efetiva = máximo entre desejada e exigida · ⬜ LTV e financiado recalculados · ⬜ PD re-escorada com o LTV ofertado · ⬜ negados saem com campos vazios.
+**DoD:** ✅ entrada efetiva = máximo entre desejada e exigida · ✅ LTV e financiado recalculados · ✅ PD re-escorada com o LTV ofertado · ✅ negados saem com campos vazios.
 
 ### S08.3 · Cenários
 `CENARIOS` com os três conjuntos de parâmetros.
 
-**DoD:** ⬜ os três implementados · ⬜ aceite em [0,1] · ⬜ PD efetiva ≥ PD do modelo.
+**DoD:** ✅ os três implementados · ✅ aceite em [0,1] · ✅ PD efetiva ≥ PD do modelo.
 
 ### S08.4 · Simulação
 `simular(ofertas, cenario)`.
 
-**DoD:** ⬜ reproduz a fórmula oficial · ⬜ devolve os quatro indicadores · ⬜ diz quais guard-rails foram violados · ⬜ determinística.
+**DoD:** ✅ reproduz a fórmula oficial · ✅ devolve os quatro indicadores · ✅ diz quais guard-rails foram violados · ✅ determinística.
 
 ### S08.5 · Testes
-**DoD:** ⬜ casos de resposta conhecida · ⬜ carteira sem default → ROI = juros ÷ volume ÷ anos · ⬜ testes verdes.
+**DoD:** ✅ casos de resposta conhecida · ✅ carteira sem default → ROI = juros ÷ volume ÷ anos · ✅ testes verdes.
 
 ---
 
 ## DoD do S08 (o passo inteiro)
 
-- [ ] Tabela Price validada contra a base A
-- [ ] ROI reproduzindo a fórmula oficial, peça por peça
-- [ ] Aceite e seleção adversa como cenários declarados, não números escondidos
-- [ ] Efeito da entrada sobre a PD **medido** pelo modelo, não assumido
-- [ ] Determinístico
-- [ ] `pytest` verde
+- [x] Tabela Price validada contra a base A
+- [x] ROI reproduzindo a fórmula oficial, peça por peça
+- [x] Aceite e seleção adversa como cenários declarados, não números escondidos
+- [x] Efeito da entrada sobre a PD **medido** pelo modelo, não assumido
+- [x] Determinístico
+- [x] `pytest` verde
 
 ## O que este passo **não** faz
 
