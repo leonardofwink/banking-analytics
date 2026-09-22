@@ -172,7 +172,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ---
 
-### S09 · A tabela de política
+### S09 · A tabela de política ✅
 
 **O que é:** decidir, para cada uma das dez faixas, as quatro alavancas: **aprovar ou negar, taxa, prazo, entrada mínima**.
 
@@ -183,6 +183,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **DoD — pronto quando:** tabela monotônica (score melhor nunca recebe condição pior), guard-rails verificados por script, e **cada linha com uma frase de justificativa** — que é o insumo da defesa.
 
 **Depende de:** S07 e S08.
+
+**Status:** ✅ concluído em 2026-09-22 — ROI 11,3% nos três cenários, com folga. Spec em [specs/S09_TABELA_DE_POLITICA.md](specs/S09_TABELA_DE_POLITICA.md).
 
 ---
 
