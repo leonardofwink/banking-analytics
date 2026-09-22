@@ -1,17 +1,19 @@
 # S06 · Escoragem e submissão do modelo
 
 > Passo 6 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S05. **→ Entregável 1 pronto (40 pts).**
+>
+> ✅ **CONCLUÍDO em 2026-09-22** — 3.000 PDs escoradas, PD média 0,0788, validador limpo.
 
 ## Status das subetapas
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S06.1 | Configuração vencedora registrada **em código** | 3/3 | ⬜ | — |
-| S06.2 | Retreino na base A inteira | 3/3 | ⬜ | — |
-| S06.3 | Escoragem da base B | 3/3 | ⬜ | — |
-| S06.4 | `banking/submissao.py` — validador do arquivo | 4/4 | ⬜ | — |
-| S06.5 | `submissao_modelo.csv` gerado | 3/3 | ⬜ | — |
-| S06.6 | Testes | 2/2 | ⬜ | — |
+| S06.1 | Configuração vencedora registrada **em código** | 3/3 | ✅ | `f21ec72` |
+| S06.2 | Retreino na base A inteira | 3/3 | ✅ | `f21ec72` |
+| S06.3 | Escoragem da base B | 3/3 | ✅ | `f21ec72` |
+| S06.4 | `banking/submissao.py` — validador do arquivo | 4/4 | ✅ | `f21ec72` |
+| S06.5 | `submissao_modelo.csv` gerado | 3/3 | ✅ | `f21ec72` |
+| S06.6 | Testes | 2/2 | ✅ | `f21ec72` |
 
 ## Objetivo
 
@@ -59,38 +61,38 @@ O mesmo módulo servirá o `submissao_politica.csv` no S10, com as regras própr
 ### S06.1 · Configuração vencedora em código
 `MODELO_ESCOLHIDO` e `HIPERPARAMETROS_ESCOLHIDOS` em `banking/modelo.py`, com a procedência documentada.
 
-**DoD:** ⬜ constantes importáveis · ⬜ docstring cita a busca do S05 · ⬜ S05 avisa se divergir.
+**DoD:** ✅ constantes importáveis · ✅ docstring cita a busca do S05 · ✅ S05 avisa se divergir.
 
 ### S06.2 · Retreino
 `treinar_modelo_final(base_a)` — ajusta na base A inteira com `SEMENTE` fixa.
 
-**DoD:** ⬜ treina nos 10.000 · ⬜ duas execuções produzem PDs idênticas · ⬜ mesmo pipeline do S05.
+**DoD:** ✅ treina nos 10.000 · ✅ duas execuções produzem PDs idênticas · ✅ mesmo pipeline do S05.
 
 ### S06.3 · Escoragem da base B
-**DoD:** ⬜ 3.000 PDs · ⬜ nenhum nulo · ⬜ PD média coerente com a prevalência da base A (~8,3%).
+**DoD:** ✅ 3.000 PDs · ✅ nenhum nulo · ✅ PD média coerente com a prevalência da base A (~8,3%).
 
 ### S06.4 · Validador
 `banking/submissao.py` com `validar_submissao_modelo()`.
 
-**DoD:** ⬜ as seis verificações acima · ⬜ mensagem diz qual falhou · ⬜ testado com arquivo adulterado · ⬜ reaproveitável no S10.
+**DoD:** ✅ as seis verificações acima · ✅ mensagem diz qual falhou · ✅ testado com arquivo adulterado · ✅ reaproveitável no S10.
 
 ### S06.5 · Geração do arquivo
 `outputs/submissao/submissao_modelo.csv`.
 
-**DoD:** ⬜ validador passa · ⬜ formato idêntico ao exemplo do professor · ⬜ gerado por pipeline, sem passo manual.
+**DoD:** ✅ validador passa · ✅ formato idêntico ao exemplo do professor · ✅ gerado por pipeline, sem passo manual.
 
 ### S06.6 · Testes
-**DoD:** ⬜ testes verdes · ⬜ o validador falha de verdade quando adulterado.
+**DoD:** ✅ testes verdes · ✅ o validador falha de verdade quando adulterado.
 
 ---
 
 ## DoD do S06 (o passo inteiro)
 
-- [ ] `submissao_modelo.csv` com 3.000 linhas e ids batendo com a base B
-- [ ] Modelo retreinado na base A inteira
-- [ ] Validador passa em todas as verificações
-- [ ] Reprodutível: duas execuções, arquivo idêntico
-- [ ] `pytest` verde
+- [x] `submissao_modelo.csv` com 3.000 linhas e ids batendo com a base B
+- [x] Modelo retreinado na base A inteira
+- [x] Validador passa em todas as verificações
+- [x] Reprodutível: duas execuções, arquivo idêntico
+- [x] `pytest` verde
 
 ## O que este passo **não** faz
 
