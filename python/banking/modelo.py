@@ -27,15 +27,41 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from banking.dados import ALVO, PREDITORAS_CATEGORICAS, PREDITORAS_NUMERICAS
 from banking.metricas import ks
-from banking.projeto import SEMENTE
+from banking.projeto import SEMENTE, semear
 
 __all__ = [
+    "HIPERPARAMETROS_ESCOLHIDOS",
+    "MODELO_ESCOLHIDO",
     "PREDITORAS_DEPENDENTES_DE_POLITICA",
     "Resultado",
     "avaliar",
     "construir_pipeline",
     "preditoras",
+    "treinar_modelo_final",
 ]
+
+# --- A decisão do S05 --------------------------------------------------------
+# Vencedor da comparação dos três modelos, por margem larga (validação 2024):
+#
+#   logistica       AuROC 0,6489 · KS 0,2432 · Brier 0,06477
+#   random_forest   AuROC 0,7159 · KS 0,3390 · Brier 0,18880  <- calibração ruim
+#   xgboost         AuROC 0,7234 · KS 0,3660 · Brier 0,06206  <- escolhido
+#
+# Isto é uma DECISÃO do projeto, não um artefato gerado — por isso mora em
+# código versionado e não em outputs/. Os hiperparâmetros vieram da busca com
+# CV temporal dentro do treino (docs/specs/S05_DESAFIANTES.md); o script do S05
+# avisa se uma nova busca encontrar configuração diferente desta.
+MODELO_ESCOLHIDO = "xgboost"
+
+HIPERPARAMETROS_ESCOLHIDOS = {
+    "max_depth": 4,
+    "learning_rate": 0.05,
+    "min_child_weight": 20,
+}
+
+# A variante independente de política venceu no S04 por diferença dentro do
+# ruído (+0,0060), e elimina a circularidade na escoragem da base C.
+INCLUIR_DEPENDENTES_DE_POLITICA = False
 
 # Variáveis que só existem depois que a política decide as condições do
 # contrato. Existem em A e B (lá o contrato já foi fechado), mas em C teriam de
@@ -250,3 +276,29 @@ def coeficientes(modelo: Pipeline) -> pd.DataFrame:
     tabela["abs"] = tabela["coeficiente"].abs()
     tabela["direcao"] = np.where(tabela["coeficiente"] > 0, "aumenta a PD", "reduz a PD")
     return tabela.sort_values("abs", ascending=False).drop(columns="abs").reset_index(drop=True)
+
+
+def treinar_modelo_final(base_a: pd.DataFrame) -> Pipeline:
+    """Treina o modelo da submissão na base A **inteira** (2022–2024).
+
+    A validação 2024 cumpriu seu papel no S04/S05: escolher o modelo e os
+    hiperparâmetros. Decidido isso, deixar 3.330 contratos de fora seria
+    desperdiçar um terço da amostra — retreinar com tudo é a mesma receita com
+    mais ingredientes.
+
+    ⚠️ O modelo devolvido **não tem conjunto de teste**. O AuROC de 0,7234 veio
+    do modelo treinado só até 2023; este viu mais dado e provavelmente é um
+    pouco melhor, mas isso não é medível por nós. Qualquer número calculado
+    sobre a base A aqui seria treino, e treino não vale como estimativa.
+
+    :param base_a: base A completa, de ``carregar_processada("A")``.
+    :return: pipeline treinado, pronto para escorar B e C.
+    """
+    semear()
+    modelo = construir_pipeline(
+        MODELO_ESCOLHIDO,
+        incluir_dependentes_de_politica=INCLUIR_DEPENDENTES_DE_POLITICA,
+        **HIPERPARAMETROS_ESCOLHIDOS,
+    )
+    modelo.fit(base_a, base_a[ALVO])
+    return modelo
