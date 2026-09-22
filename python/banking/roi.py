@@ -80,10 +80,23 @@ class Cenario:
 # Os três cenários bracketam a premissa. Como a submissão é única e a
 # intensidade real é desconhecida, a política escolhida tem de sobreviver aos
 # três — não ser ótima no central.
+#
+# ⚠️ CALIBRAÇÃO REVISADA (S09). A primeira versão usava beta_taxa de 1,5/3,0/5,0
+# e a busca degenerou: 896 das 960 políticas morriam por volume, e a vencedora
+# era PREÇO ÚNICO para todo risco — exatamente a patologia que o conselho
+# diagnosticou na política antiga. Isso é sintoma de premissa errada, não de
+# política certa.
+#
+# A âncora que corrigiu: o professor impôs um TETO de 3,5% a.m. como guard-rail.
+# Um teto só é guard-rail se as políticas quiserem chegar perto dele. Se o
+# aceite morresse a 2%, o teto seria decorativo — ninguém o alcançaria. A
+# existência do teto implica que o simulador permite operar bem acima do
+# mercado, e as elasticidades foram recalibradas para que cobrar no teto deixe
+# um aceite baixo mas não nulo (16% do nível de referência, no central).
 CENARIOS = {
-    "otimista": Cenario("otimista", a0=0.95, beta_taxa=1.5, beta_entrada=1.5, beta_prazo=0.5, gama=0.2),
-    "central": Cenario("central", a0=0.85, beta_taxa=3.0, beta_entrada=3.0, beta_prazo=1.0, gama=0.5),
-    "pessimista": Cenario("pessimista", a0=0.70, beta_taxa=5.0, beta_entrada=5.0, beta_prazo=2.0, gama=1.0),
+    "otimista": Cenario("otimista", a0=0.95, beta_taxa=0.8, beta_entrada=1.2, beta_prazo=0.4, gama=0.2),
+    "central": Cenario("central", a0=0.85, beta_taxa=1.5, beta_entrada=2.0, beta_prazo=0.8, gama=0.5),
+    "pessimista": Cenario("pessimista", a0=0.70, beta_taxa=2.5, beta_entrada=3.5, beta_prazo=1.5, gama=1.0),
 }
 
 

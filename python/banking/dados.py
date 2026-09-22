@@ -41,6 +41,7 @@ __all__ = [
     "carregar_processada",
     "carregar_realizados",
     "gravar_parquet",
+    "preparar_base_c",
     "validar",
 ]
 
@@ -432,6 +433,35 @@ def gravar_parquet(df: pd.DataFrame, caminho: Path, coluna_data: str | None = No
     caminho.parent.mkdir(parents=True, exist_ok=True)
     pq.write_table(tabela, caminho)
     return caminho
+
+
+def preparar_base_c(base_c: pd.DataFrame) -> pd.DataFrame:
+    """Acrescenta à base C os nomes de coluna que o modelo espera.
+
+    A base C traz o que o cliente **pediu** (``ltv_desejado``,
+    ``prazo_desejado_meses``, ``valor_financiado_desejado``), porque o
+    contratado é decisão da política. O modelo foi treinado em A e B, onde as
+    mesmas grandezas se chamam ``ltv``, ``prazo_meses`` e ``valor_financiado``.
+
+    ⚠️ **Copia, não renomeia.** As colunas «desejadas» precisam sobreviver: o
+    motor de ROI usa ``prazo_desejado_meses`` para medir o encurtamento que a
+    política impõe, e ``pct_entrada_desejada`` para medir a entrada extra.
+    Renomear destruiria os dois — e foi exatamente o bug que este comentário
+    existe para não deixar voltar.
+
+    :param base_c: base C, de ``carregar_processada("C")``.
+    :return: cópia com as colunas acrescentadas.
+    """
+    preparada = base_c.copy()
+    for destino, origem in (
+        ("ltv", "ltv_desejado"),
+        ("prazo_meses", "prazo_desejado_meses"),
+        ("valor_financiado", "valor_financiado_desejado"),
+    ):
+        if origem not in preparada.columns:
+            raise ValueError(f"base C sem a coluna {origem!r}")
+        preparada[destino] = preparada[origem]
+    return preparada
 
 
 def carregar_processada(base: str) -> pd.DataFrame:

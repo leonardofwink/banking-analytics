@@ -17,7 +17,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-from banking.dados import carregar_processada
+from banking.dados import carregar_processada, preparar_base_c
 from banking.modelo import treinar_modelo_final
 from banking.perda import fator_ead, lgd
 from banking.projeto import DIR_TABELAS, log_step
@@ -30,23 +30,6 @@ OCUPACAO_MINIMA = 0.03
 APROVACAO_MINIMA = 0.35
 INADIMPLENCIA_MAXIMA = 0.08
 VOLUME_MINIMO = 40_000_000
-
-
-def preparar_base_c(base_c: pd.DataFrame) -> pd.DataFrame:
-    """Renomeia as colunas «desejadas» da base C para os nomes que o modelo espera.
-
-    A base C traz o que o cliente **pediu** — ``ltv_desejado``,
-    ``prazo_desejado_meses`` —, porque o contratado é decisão da política. Como
-    o modelo escolhido é o independente de política (S04), basta o renomeio:
-    não há segunda passagem a fazer.
-    """
-    return base_c.rename(
-        columns={
-            "ltv_desejado": "ltv",
-            "prazo_desejado_meses": "prazo_meses",
-            "valor_financiado_desejado": "valor_financiado",
-        }
-    )
 
 
 def main() -> int:
