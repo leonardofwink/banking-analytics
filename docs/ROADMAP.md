@@ -222,6 +222,24 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ---
 
+### S12 · A meta de 15% de ROI é alcançável?
+
+> Passo não previsto no plano original. Entrou depois do S11, para responder a uma pergunta que o documento levantava e não respondia.
+
+**O que é:** varrer 5.600 políticas — abrindo prazo e entrada, que o S09 manteve estreitos — para medir se alguma combinação viável chega aos 15% de ROI que o template pede.
+
+**Por que existe:** a nossa projeção é 11,3% e o template pede acima de 15%. Ou a busca do S09 foi incompleta, ou a meta é incompatível com os guard-rails — e as duas hipóteses levam a ações opostas na defesa. Não dá para escolher por argumento, só medindo.
+
+**Como faremos:** mesma mecânica do S09, com a grade aberta até onde o problema permite. O prazo só aceita 24, 36, 48 e 60 — é o que a tabela de EAD do professor define.
+
+**DoD — pronto quando:** sabemos qual guard-rail bloqueia a meta, e o documento de política passa a sustentar a escolha por medição em vez de leitura do enunciado.
+
+**Depende de:** S09 e S11.
+
+**Status:** ✅ concluído em 2026-09-23 — nenhuma das 4.044 políticas que batem a meta é viável, e o único guard-rail que as bloqueia é o volume. Teto viável: 11,46%. Spec em [specs/S12_FRONTEIRA_ROI_VOLUME.md](specs/S12_FRONTEIRA_ROI_VOLUME.md).
+
+---
+
 ## Dependências e paralelismo
 
 ```
