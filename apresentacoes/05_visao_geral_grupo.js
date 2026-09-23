@@ -66,7 +66,98 @@ const MONO = "Courier New";
 }
 
 /* ========================================================================== */
-/* 2 · O que está pronto                                                       */
+/* 2 · As siglas                                                               */
+/* ========================================================================== */
+{
+  const s = pres.addSlide();
+  s.background = { color: OFFWHITE };
+  titulo(s, "As siglas, antes de tudo", "Crédito é um campo com vocabulário próprio — vale fixar isto antes de olhar qualquer número");
+
+  // A fórmula da perda, que é o eixo de tudo.
+  cartao(s, { x: M, y: 1.9, w: 11.9, h: 2.15, fill: NAVY, linha: NAVY });
+  s.addText(
+    [
+      { text: "EL", options: { color: CORAL, bold: true } },
+      { text: "  =  ", options: { color: GREY_ESCURO } },
+      { text: "PD", options: { color: WHITE, bold: true } },
+      { text: "  ×  ", options: { color: GREY_ESCURO } },
+      { text: "EAD", options: { color: WHITE, bold: true } },
+      { text: "  ×  ", options: { color: GREY_ESCURO } },
+      { text: "LGD", options: { color: WHITE, bold: true } },
+    ],
+    { x: M, y: 2.1, w: 11.9, h: 0.55, fontSize: 28, fontFace: SERIF, align: "center", isTextBox: true, margin: 0 }
+  );
+  s.addText("a conta que sustenta o preço de cada faixa", {
+    x: M, y: 2.68, w: 11.9, h: 0.3,
+    fontSize: 12.5, italic: true, color: GREY_ESCURO, fontFace: SANS, align: "center", isTextBox: true, margin: 0,
+  });
+
+  [
+    { g: "EL", n: "Expected Loss", d: "perda esperada — quanto,\nem média, se perde" },
+    { g: "PD", n: "Probability of Default", d: "chance de o cliente\nficar 90 dias em atraso" },
+    { g: "EAD", n: "Exposure at Default", d: "quanto ainda se deve\nna hora do calote" },
+    { g: "LGD", n: "Loss Given Default", d: "quanto não se recupera\ndepois de tomar o carro" },
+  ].forEach((x, i) => {
+    const px = M + 0.35 + i * 2.87;
+    s.addText(x.g, {
+      x: px, y: 3.08, w: 2.7, h: 0.32,
+      fontSize: 16, bold: true, color: CORAL, fontFace: SERIF, align: "center", isTextBox: true, margin: 0,
+    });
+    s.addText(x.n, {
+      x: px, y: 3.4, w: 2.7, h: 0.26,
+      fontSize: 10.5, italic: true, color: WHITE, fontFace: SANS, align: "center", isTextBox: true, margin: 0,
+    });
+    s.addText(x.d, {
+      x: px, y: 3.64, w: 2.7, h: 0.4,
+      fontSize: 10.5, color: GREY_ESCURO, fontFace: SANS, align: "center", lineSpacing: 13, isTextBox: true, margin: 0,
+    });
+  });
+
+  // As outras, em dois blocos.
+  const blocos = [
+    {
+      t: "Como se mede um modelo",
+      itens: [
+        ["AuROC", "de 0,5 (chute) a 1,0 (perfeito): o quanto o modelo ordena bem quem vai quebrar"],
+        ["KS", "a maior distância entre as curvas de bons e maus — quanto ele separa os dois"],
+        ["PSI", "deriva: o quanto a população mudou entre duas bases. Acima de 0,25 é muita"],
+        ["Brier", "calibração: se o modelo diz 7%, quebram 7% — e não 42%"],
+      ],
+    },
+    {
+      t: "Como se descreve um contrato",
+      itens: [
+        ["LTV", "Loan to Value: quanto do carro está financiado. Entrada de 10% dá LTV de 90%"],
+        ["ROI", "aqui sempre anualizado: (juros − perda) ÷ volume ÷ prazo em anos"],
+        ["CET", "Custo Efetivo Total — o teto regulatório de 3,5% ao mês é sobre ele"],
+        ["a.m.", "ao mês. Uma taxa de 1,63% a.m. é ~21% ao ano"],
+      ],
+    },
+  ];
+
+  blocos.forEach((b, i) => {
+    const x = M + i * 6.15;
+    cartao(s, { x, y: 4.25, w: 5.75, h: 2.4, fill: WHITE });
+    s.addText(b.t, {
+      x: x + 0.35, y: 4.45, w: 5.05, h: 0.32,
+      fontSize: 14.5, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
+    });
+    b.itens.forEach((it, j) => {
+      const y = 4.85 + j * 0.45;
+      s.addText(it[0], {
+        x: x + 0.35, y, w: 0.85, h: 0.3,
+        fontSize: 12, bold: true, color: CORAL, fontFace: MONO, isTextBox: true, margin: 0,
+      });
+      s.addText(it[1], {
+        x: x + 1.25, y, w: 4.15, h: 0.42,
+        fontSize: 10.5, color: GREY, fontFace: SANS, lineSpacing: 13, isTextBox: true, margin: 0,
+      });
+    });
+  });
+}
+
+/* ========================================================================== */
+/* 3 · O que está pronto                                                       */
 /* ========================================================================== */
 {
   const s = pres.addSlide();
@@ -758,7 +849,167 @@ const MONO = "Courier New";
 }
 
 /* ========================================================================== */
-/* 13 · O que falta — a conversa de hoje                                       */
+/* 13 · O volume foi o problema?                                               */
+/* ========================================================================== */
+{
+  const s = pres.addSlide();
+  s.background = { color: OFFWHITE };
+  titulo(s, "O volume foi o problema?", "Não da nossa política — mas é ele que limita o que ela pode ambicionar");
+
+  cartao(s, { x: M, y: 1.9, w: 11.9, h: 1.1, fill: WHITE });
+  [
+    { v: "R$ 167,1 mi", r: "teto teórico\ntodas aprovadas, aceite de 100%", cor: GREY },
+    { v: "R$ 66,7 mi", r: "o que entregamos\n40% do teto", cor: NAVY },
+    { v: "R$ 45,1 mi", r: "no pior cenário\nainda 12,7% de folga", cor: NAVY },
+    { v: "R$ 40,0 mi", r: "o piso do guard-rail\n24% do teto", cor: CORAL },
+  ].forEach((d, i) => {
+    s.addText(d.v, {
+      x: M + 0.3 + i * 2.87, y: 2.05, w: 2.7, h: 0.4,
+      fontSize: 19, bold: true, color: d.cor, fontFace: SERIF, align: "center", isTextBox: true, margin: 0,
+    });
+    s.addText(d.r, {
+      x: M + 0.3 + i * 2.87, y: 2.45, w: 2.7, h: 0.45,
+      fontSize: 10.5, color: GREY, fontFace: SANS, align: "center", lineSpacing: 13, isTextBox: true, margin: 0,
+    });
+  });
+
+  s.addText("Movendo uma alavanca de cada vez, a partir da nossa política", {
+    x: M, y: 3.15, w: 11.9, h: 0.32,
+    fontSize: 14, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
+
+  const linhas = [
+    ["", "ROI", "vs hoje", "Volume", "vs hoje", ""],
+    ["k de risco 0,10 → 0,00  (preço único)", "8,72%", "−2,60pp", "R$ 87,9 mi", "+21,2", "viável"],
+    ["taxa base 1,50% → 1,25%", "9,63%", "−1,70pp", "R$ 79,6 mi", "+12,9", "viável"],
+    ["corte score 5 → 4  (aprovar 68,7%)", "11,42%", "+0,09pp", "R$ 71,1 mi", "+4,4", "viável"],
+    ["prazo 48 → 60 meses", "11,14%", "−0,19pp", "R$ 68,9 mi", "+2,2", "FURA"],
+    ["entrada 10% → 0%", "11,24%", "−0,08pp", "R$ 67,7 mi", "+1,1", "viável"],
+    ["nossa política", "11,33%", "—", "R$ 66,7 mi", "—", "viável"],
+    ["taxa base 1,50% → 1,75%", "13,09%", "+1,76pp", "R$ 52,7 mi", "−14,0", "FURA"],
+    ["k de risco 0,10 → 0,20", "13,54%", "+2,21pp", "R$ 48,0 mi", "−18,6", "FURA"],
+  ];
+
+  const cx = [M + 0.3, M + 5.0, M + 6.3, M + 7.6, M + 9.2, M + 10.4];
+  const cw = [4.6, 1.2, 1.2, 1.5, 1.1, 1.3];
+
+  linhas.forEach((linha, r) => {
+    const y = 3.44 + r * 0.322;
+    const cab = r === 0;
+    const nossa = linha[0] === "nossa política";
+    if (nossa) {
+      s.addShape(pres.ShapeType.rect, {
+        x: M + 0.15, y: y - 0.03, w: 11.6, h: 0.31,
+        fill: { color: CORAL_SOFT }, line: { color: CORAL_SOFT, width: 0 },
+      });
+    }
+    linha.forEach((cel, c) => {
+      const fura = cel === "FURA";
+      s.addText(cel, {
+        x: cx[c], y, w: cw[c], h: 0.3,
+        fontSize: cab ? 10.5 : 11.5,
+        bold: cab || nossa || (c === 0),
+        italic: cab,
+        color: cab ? GREY : (fura ? CORAL : (c === 5 ? GREY : NAVY)),
+        fontFace: SANS,
+        align: c === 0 ? "left" : (c === 5 ? "left" : "right"),
+        isTextBox: true, margin: 0,
+      });
+    });
+  });
+
+  cartao(s, { x: M, y: 6.35, w: 11.9, h: 0.75, fill: NAVY, linha: NAVY });
+  s.addText(
+    [
+      { text: "Só uma alavanca dá volume E ROI ao mesmo tempo:  ", options: { color: GREY_ESCURO } },
+      { text: "baixar o corte para score 4", options: { color: WHITE, bold: true } },
+      { text: "  (+R$ 4,4 mi e +0,09pp). Deixamos de fazer por folga: a de corte 4 sobra 7,7% até o guard-rail, a nossa sobra 12,7%.", options: { color: GREY_ESCURO } },
+    ],
+    { x: M + 0.4, y: 6.55, w: 11.1, h: 0.4, fontSize: 12, fontFace: SANS, isTextBox: true, margin: 0 }
+  );
+}
+
+/* ========================================================================== */
+/* 14 · O que precisaria ser verdade                                           */
+/* ========================================================================== */
+{
+  const s = pres.addSlide();
+  s.background = { color: NAVY };
+
+  s.addText("A PERGUNTA INVERTIDA", {
+    x: M, y: 0.6, w: W - 2 * M, h: 0.35,
+    fontSize: 12, bold: true, color: CORAL, fontFace: SANS, charSpacing: 2, isTextBox: true, margin: 0,
+  });
+  s.addText("O que precisaria ser verdade para os 15% saírem", {
+    x: M, y: 1.0, w: 11.5, h: 0.7,
+    fontSize: 32, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
+  s.addText(
+    "Em vez de perguntar «qual política chega lá», perguntamos «que mundo teria que existir». Escalamos todas as elasticidades de aceite por um fator e refizemos a varredura.",
+    { x: M, y: 1.72, w: 11.3, h: 0.45, fontSize: 13.5, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0 }
+  );
+
+  cartao(s, { x: M, y: 2.35, w: 6.5, h: 3.2, fill: NAVY_MID, linha: NAVY_MID });
+  s.addText("Sensibilidade do cliente a preço", {
+    x: M + 0.35, y: 2.55, w: 5.8, h: 0.32,
+    fontSize: 15, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
+
+  const fs = [
+    ["1,0 ×", "a nossa premissa", "11,42%", "0", false],
+    ["0,5 ×", "metade", "13,87%", "0", false],
+    ["0,3 ×", "um terço", "14,86%", "0", false],
+    ["0,2 ×", "um quinto", "15,05%", "1", true],
+    ["0,1 ×", "um décimo", "16,78%", "6", true],
+  ];
+  s.addText("fator", { x: M + 0.35, y: 2.95, w: 0.9, h: 0.25, fontSize: 9.5, italic: true, color: GREY, fontFace: SANS, isTextBox: true, margin: 0 });
+  s.addText("melhor ROI viável", { x: M + 3.1, y: 2.95, w: 1.6, h: 0.25, fontSize: 9.5, italic: true, color: GREY, fontFace: SANS, align: "right", isTextBox: true, margin: 0 });
+  s.addText("com 15%", { x: M + 4.9, y: 2.95, w: 1.2, h: 0.25, fontSize: 9.5, italic: true, color: GREY, fontFace: SANS, align: "right", isTextBox: true, margin: 0 });
+
+  fs.forEach((l, i) => {
+    const y = 3.28 + i * 0.43;
+    if (l[4]) {
+      s.addShape(pres.ShapeType.rect, {
+        x: M + 0.25, y: y - 0.04, w: 5.95, h: 0.4,
+        fill: { color: "3A2A2E" }, line: { color: "3A2A2E", width: 0 },
+      });
+    }
+    s.addText(l[0], { x: M + 0.35, y, w: 0.9, h: 0.3, fontSize: 13, bold: true, color: l[4] ? CORAL : WHITE, fontFace: SANS, isTextBox: true, margin: 0 });
+    s.addText(l[1], { x: M + 1.3, y: y + 0.02, w: 1.7, h: 0.3, fontSize: 11, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0 });
+    s.addText(l[2], { x: M + 3.1, y, w: 1.6, h: 0.3, fontSize: 13, bold: true, color: l[4] ? CORAL : WHITE, fontFace: SANS, align: "right", isTextBox: true, margin: 0 });
+    s.addText(l[3], { x: M + 4.9, y, w: 1.2, h: 0.3, fontSize: 13, bold: true, color: l[4] ? CORAL : GREY_ESCURO, fontFace: SANS, align: "right", isTextBox: true, margin: 0 });
+  });
+
+  cartao(s, { x: M + 6.9, y: 2.35, w: 5.0, h: 3.2, fill: CORAL, linha: CORAL });
+  s.addText("5×", {
+    x: M + 7.25, y: 2.6, w: 4.3, h: 0.85,
+    fontSize: 52, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
+  s.addText("menos sensível a preço", {
+    x: M + 7.25, y: 3.45, w: 4.3, h: 0.3,
+    fontSize: 14, bold: true, color: WHITE, fontFace: SANS, isTextBox: true, margin: 0,
+  });
+  s.addText(
+    "é o quanto o cliente teria que ser para a primeira política de 15% sobreviver aos guard-rails. Nesse mundo, cobrar 45% acima do mercado quase não afastaria ninguém.",
+    { x: M + 7.25, y: 3.85, w: 4.3, h: 1.3, fontSize: 12.5, color: CORAL_SOFT, fontFace: SANS, lineSpacing: 17, isTextBox: true, margin: 0 }
+  );
+
+  cartao(s, { x: M, y: 5.75, w: 11.9, h: 1.15, fill: NAVY_MID, linha: NAVY_MID });
+  s.addText(
+    [
+      { text: "E o próprio enunciado diz o contrário:  ", options: { color: WHITE, bold: true } },
+      { text: "«Taxa alta afasta o cliente. Ele tem concorrente. Preço acima do mercado derruba a taxa de aceite, e proposta não aceita não gera receita nenhuma.»", options: { color: GREY_ESCURO, italic: true } },
+    ],
+    { x: M + 0.4, y: 5.95, w: 11.1, h: 0.45, fontSize: 12.5, fontFace: SANS, lineSpacing: 17, isTextBox: true, margin: 0 }
+  );
+  s.addText(
+    "A saída que sobra não é de política, é de modelo: prever melhor permite cobrar menos de quem merece e recusar melhor quem não merece — margem sem preço. É a única alavanca que não troca ROI por volume.",
+    { x: M + 0.4, y: 6.4, w: 11.1, h: 0.4, fontSize: 12.5, color: WHITE, fontFace: SANS, isTextBox: true, margin: 0 }
+  );
+}
+
+/* ========================================================================== */
+/* 15 · O que falta — a conversa de hoje                                       */
 /* ========================================================================== */
 {
   const s = pres.addSlide();
