@@ -23,7 +23,7 @@ const {
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";
-pres.author = "Leonardo Wink";
+pres.author = "Grupo 3";
 pres.title = "AutoCred — Motor de ROI";
 
 const cartao = (slide, opts) => C.cartao(pres, slide, opts);
@@ -418,9 +418,9 @@ const cartao = (slide, opts) => C.cartao(pres, slide, opts);
   const linhas = [
     ["", "Otimista", "Central", "Pessimista"],
     ["Aceite na referência", "95%", "85%", "70%"],
-    ["Sensibilidade à taxa", "1,5", "3,0", "5,0"],
-    ["Sensibilidade à entrada", "1,5", "3,0", "5,0"],
-    ["Sensibilidade ao prazo", "0,5", "1,0", "2,0"],
+    ["Sensibilidade à taxa", "0,8", "1,5", "2,5"],
+    ["Sensibilidade à entrada", "1,2", "2,0", "3,5"],
+    ["Sensibilidade ao prazo", "0,4", "0,8", "1,5"],
     ["Seleção adversa", "0,2", "0,5", "1,0"],
   ];
   cartao(s, { x: M, y: 1.9, w: 6.6, h: 3.5, fill: WHITE });
@@ -472,8 +472,8 @@ const cartao = (slide, opts) => C.cartao(pres, slide, opts);
     fontSize: 13, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0,
   });
   [
-    ["Cobrar 2,0% a.m.", "26% acima do mercado", "aceite cai para 46%  ·  PD sobe 13%"],
-    ["Cobrar 3,0% a.m.", "89% acima do mercado", "aceite cai para 7%  ·  PD sobe 45%"],
+    ["Cobrar 2,0% a.m.", "26% acima do mercado", "aceite cai para 58%  ·  PD sobe 13%"],
+    ["Cobrar 3,0% a.m.", "89% acima do mercado", "aceite cai para 22%  ·  PD sobe 44%"],
   ].forEach((b, i) => {
     const y = 2.95 + i * 1.15;
     s.addText(b[0], {
@@ -505,7 +505,7 @@ const cartao = (slide, opts) => C.cartao(pres, slide, opts);
     pres.ChartType.bar,
     [
       { name: "ROI anualizado da política", labels: ["Otimista", "Central", "Pessimista"], values: [0.102, 0.100, 0.098] },
-      { name: "ROI exigido pelo conselho", labels: ["Otimista", "Central", "Pessimista"], values: [0.15, 0.15, 0.15] },
+      { name: "Meta do conselho", labels: ["Otimista", "Central", "Pessimista"], values: [0.15, 0.15, 0.15] },
     ],
     {
       x: M, y: 1.95, w: 6.3, h: 4.0,
@@ -554,7 +554,7 @@ const cartao = (slide, opts) => C.cartao(pres, slide, opts);
     fontSize: 14, bold: true, color: NAVY, fontFace: SANS, isTextBox: true, margin: 0,
   });
   s.addText(
-    "ROI de 10% contra os 15% exigidos, e o volume fura no cenário pessimista. Subir o preço mata o aceite; aprovar mais fundo sobe a inadimplência.",
+    "ROI de 10% contra a meta de 15%, e o volume fura no cenário pessimista. Subir o preço mata o aceite; aprovar mais fundo sobe a inadimplência.",
     { x: M + 7.05, y: 4.92, w: 4.55, h: 1.0, fontSize: 12, color: NAVY, fontFace: SANS, lineSpacing: 16, isTextBox: true, margin: 0 }
   );
 

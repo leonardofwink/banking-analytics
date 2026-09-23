@@ -57,14 +57,23 @@ A tabela de indicadores do template tem cinco linhas. Projetamos:
 | Taxa média ao mês | 1,91% | teto de 3,5% | ✅ |
 | **ROI anualizado** | **11,3%** | **meta acima de 15%** | ❌ |
 
-Medimos a fronteira na varredura do S09 antes de escrever qualquer coisa:
+Medimos a fronteira antes de escrever qualquer coisa. A primeira versão deste
+documento usou a varredura do S09 (960 políticas); depois o [S12](S12_FRONTEIRA_ROI_VOLUME.md)
+refez a conta com a grade aberta, e **é o número do S12 que está no documento
+entregue**:
 
-- **543 das 960 políticas batem 15% de ROI. Nenhuma é viável.** A de maior
+- **4.044 das 5.600 políticas batem 15% de ROI. Nenhuma é viável.** A de maior
   volume entre elas origina R$ 20,5 milhões — metade do mínimo exigido.
-- **A correlação entre ROI e volume na varredura é −0,914.** São antagônicos por
-  construção: o ROI é uma razão, e o jeito de aumentá-lo é cobrar mais caro, o
-  que derruba o aceite.
-- **Com volume acima de R$ 40 milhões, o teto que encontramos foi 11,9%.**
+- **Só o volume as bloqueia.** Inadimplência (mínimo de 5,26%) e aprovação
+  (máximo de 68,7%) passam folgado.
+- **O melhor ROI compatível com os quatro guard-rails é 11,46%**, e a nossa
+  política entrega 11,33%.
+
+> ⚠️ **Um número foi corrigido aqui.** A redação anterior dizia "com volume
+> acima de R$ 40 milhões, o teto é 11,9%". Aquele 11,86% saiu de um filtro só
+> por volume, sem exigir os demais guard-rails nos três cenários — não era um
+> teto viável. O teto viável é 11,46%. Citar 11,9% no documento e 11,46% na
+> defesa teria virado pergunta na banca.
 
 Ou seja: **sob as nossas premissas de elasticidade, a meta de 15% e o piso de
 R$ 40 milhões são incompatíveis.** O documento declara isso em vez de omitir.
