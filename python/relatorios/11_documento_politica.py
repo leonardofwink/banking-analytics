@@ -19,6 +19,7 @@ import sys
 
 import docx
 import pandas as pd
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
 
 from banking.dados import DIR_PROFESSOR, carregar_processada, preparar_base_c
@@ -226,10 +227,11 @@ def main() -> int:
     p = _achar(doc, "Por que estas taxas")
     _escrever(
         p,
-        "A taxa de cada faixa é 1,50% ao mês mais 10% da perda esperada daquela faixa — uma regra "
-        "auditável em uma linha, monotônica no risco, e que em toda faixa aprovada cobre a perda e ainda "
-        f"deixa margem: o ROI por faixa vai de {pct(por_faixa[10].roi_anual)} a {pct(por_faixa[5].roi_anual)}. "
-        "A tabela abaixo registra as quatro alavancas e o porquê de cada uma.",
+        "A taxa de cada faixa sai de uma conta só: 1,50% ao mês, mais 10% da perda esperada da faixa. "
+        "Na faixa 8, que perde 2,92%, isso dá 1,50% + 0,29% = 1,792%; na faixa 5, que perde 7,92%, dá "
+        "2,292%. Quem traz mais risco paga mais, e o quanto mais é proporcional ao risco que traz — "
+        "não a um valor arbitrado. Em toda faixa aprovada os juros cobrem a perda e ainda deixam margem: "
+        f"o ROI por faixa vai de {pct(por_faixa[10].roi_anual)} a {pct(por_faixa[5].roi_anual)}.",
     )
     p = _inserir_depois(
         p,
@@ -249,18 +251,19 @@ def main() -> int:
     p = _inserir_depois(
         p,
         f"O que varia é o volume: de R$ {num(d['otimista'].volume_originado/1e6)} milhões a "
-        f"R$ {num(pessimista.volume_originado/1e6)} milhões. Foi por ele que medimos a folga, e escolhemos a "
-        "política com 12,7% de margem em vez do ROI máximo — 0,1 ponto maior, com metade da margem.",
+        f"R$ {num(pessimista.volume_originado/1e6)} milhões. Foi por ele que medimos a folga: ficamos com "
+        "12,7% de margem até o guard-rail mais apertado, em vez de espremer o último décimo de ROI.",
     )
     _inserir_depois(
         p,
-        "Ficamos abaixo da meta de 15% de ROI, e vale dizer por quê: sob as nossas premissas de aceite ela "
-        "é incompatível com o piso de volume. Das 960 políticas que varremos, 543 batem 15% e nenhuma é "
-        "viável — a de maior volume origina R$ 20,5 milhões, metade do mínimo. ROI e volume têm correlação "
-        "de −0,914 na varredura, porque aumentar o ROI passa por cobrar mais caro, o que derruba o aceite; "
-        "acima de R$ 40 milhões o teto que achamos foi 11,9%. Tratamos os quatro limites como restrição e "
-        "o ROI como o que se maximiza dentro deles — e o enunciado sustenta isso ao chamar os outros de "
-        "mínimo, máximo e teto, e este de meta.",
+        "Ficamos abaixo da meta de 15% de ROI, e fomos atrás de saber se dava para chegar lá. O ROI é uma "
+        "razão — retorno por real emprestado, por ano — e o jeito fácil de aumentá-la é emprestar menos, "
+        "para os melhores, mais caro. Varremos 5.600 combinações de corte, preço, prazo e entrada: 4.044 "
+        "batem os 15% e nenhuma respeita o piso de R$ 40 milhões — a de maior volume origina R$ 20,5 "
+        "milhões. E é só o volume que as bloqueia; em inadimplência e aprovação elas passam. Encurtar o "
+        "prazo piora (a 24 meses o teto viável cai para 7,6%, porque a Price cobra juros sobre um saldo "
+        "que amortiza rápido) e exigir mais entrada troca R$ 6 milhões de volume por 0,04 ponto de ROI. "
+        "O melhor ROI compatível com os quatro guard-rails é 11,5% — e é onde estamos.",
     )
 
     # --- 7. Riscos ----------------------------------------------------------
@@ -387,8 +390,13 @@ def main() -> int:
             paragrafo.paragraph_format.space_after = Pt(4)
             # Sem isto, o título 3 ficava sozinho no pé da página 1.
             paragrafo.paragraph_format.keep_with_next = True
-        elif paragrafo.paragraph_format.space_after == Pt(6):
+            continue
+        if paragrafo.paragraph_format.space_after == Pt(6):
             paragrafo.paragraph_format.space_after = Pt(4)
+        # Texto corrido justificado. Só o corpo — títulos e células de tabela
+        # ficam com o alinhamento do template.
+        if paragrafo.text.strip():
+            paragrafo.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
     # Um parágrafo logo depois de uma tabela encostava nela.
     corpo = list(doc.element.body)
