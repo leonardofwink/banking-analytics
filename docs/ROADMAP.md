@@ -218,6 +218,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S06 e S10.
 
+**Status:** ✅ concluído em 2026-09-23 — documento de 3 páginas em outputs/submissao/, gerado a partir do template do professor. Spec em [specs/S11_DOCUMENTO_E_DEFESA.md](specs/S11_DOCUMENTO_E_DEFESA.md).
+
 ---
 
 ## Dependências e paralelismo
