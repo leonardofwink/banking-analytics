@@ -188,7 +188,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 ---
 
-### S10 · Aplicação à base C e submissão
+### S10 · Aplicação à base C e submissão ✅
 
 **O que é:** aplicar a política às 5.000 propostas e gerar `submissao_politica.csv`.
 
@@ -199,6 +199,8 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **DoD — pronto quando:** 5.000 linhas e validador limpo.
 
 **Depende de:** S09. **→ Entregável 2 pronto.**
+
+**Status:** ✅ concluído em 2026-09-22 — arquivo em outputs/submissao/. Spec em [specs/S10_SUBMISSAO_POLITICA.md](specs/S10_SUBMISSAO_POLITICA.md).
 
 ---
 

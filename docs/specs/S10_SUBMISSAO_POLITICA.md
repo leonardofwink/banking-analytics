@@ -1,16 +1,18 @@
 # S10 · Aplicação à base C e submissão
 
 > Passo 10 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S09. **→ Entregável 2 pronto (40 pts).**
+>
+> ✅ **CONCLUÍDO em 2026-09-22** — 5.000 linhas, 59,5% aprovadas, 167 testes verdes.
 
 ## Status das subetapas
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S10.1 | Decisão de formato: qual PD vai no arquivo | 2/2 | ⬜ | — |
-| S10.2 | Aplicação da política às 5.000 propostas | 3/3 | ⬜ | — |
-| S10.3 | Validador de coerência tabela ↔ CSV | 5/5 | ⬜ | — |
-| S10.4 | `submissao_politica.csv` gerado | 3/3 | ⬜ | — |
-| S10.5 | Testes | 2/2 | ⬜ | — |
+| S10.1 | Decisão de formato: qual PD vai no arquivo | 2/2 | ✅ | `bd827bd` |
+| S10.2 | Aplicação da política às 5.000 propostas | 3/3 | ✅ | `bd827bd` |
+| S10.3 | Validador de coerência tabela ↔ CSV | 5/5 | ✅ | `bd827bd` |
+| S10.4 | `submissao_politica.csv` gerado | 3/3 | ✅ | `bd827bd` |
+| S10.5 | Testes | 2/2 | ✅ | `bd827bd` |
 
 ## Objetivo
 
@@ -67,33 +69,33 @@ Nenhum arquivo sai sem passar. Erro de formato custa os 40 pontos do bloco, e s�
 ### S10.1 · Decisão de formato
 Registrar qual PD e de onde vêm as condições.
 
-**DoD:** ⬜ decisão documentada nesta spec · ⬜ `score_1a10 == score_de_pd(pd)` garantido por construção.
+**DoD:** ✅ decisão documentada nesta spec · ✅ `score_1a10 == score_de_pd(pd)` garantido por construção.
 
 ### S10.2 · Aplicação
 Escorar a base C, atribuir faixa, aplicar a tabela.
 
-**DoD:** ⬜ 5.000 linhas · ⬜ aprovação de 59,5% · ⬜ nenhuma proposta sem decisão.
+**DoD:** ✅ 5.000 linhas · ✅ aprovação de 59,5% · ✅ nenhuma proposta sem decisão.
 
 ### S10.3 · Validador
 `validar_submissao_politica()` em `banking/submissao.py`.
 
-**DoD:** ⬜ as onze verificações · ⬜ mensagem diz qual falhou · ⬜ testado com arquivo adulterado em cada regra · ⬜ recusa incoerência entre `pd` e `score` · ⬜ recusa condição divergente da tabela.
+**DoD:** ✅ as onze verificações · ✅ mensagem diz qual falhou · ✅ testado com arquivo adulterado em cada regra · ✅ recusa incoerência entre `pd` e `score` · ✅ recusa condição divergente da tabela.
 
 ### S10.4 · O arquivo
 `outputs/submissao/submissao_politica.csv`.
 
-**DoD:** ⬜ validador limpo · ⬜ formato idêntico ao exemplo · ⬜ gerado por pipeline, sem passo manual.
+**DoD:** ✅ validador limpo · ✅ formato idêntico ao exemplo · ✅ gerado por pipeline, sem passo manual.
 
 ### S10.5 · Testes
-**DoD:** ⬜ testes verdes · ⬜ o arquivo real validado no teste.
+**DoD:** ✅ testes verdes · ✅ o arquivo real validado no teste.
 
 ---
 
 ## DoD do S10 (o passo inteiro)
 
-- [ ] `submissao_politica.csv` com 5.000 linhas e ids batendo com a base C
-- [ ] `score_1a10` coerente com `pd` em todas as linhas
-- [ ] Condições idênticas à tabela do S09, faixa a faixa
-- [ ] Validador passa em todas as verificações
-- [ ] Reprodutível
-- [ ] `pytest` verde
+- [x] `submissao_politica.csv` com 5.000 linhas e ids batendo com a base C
+- [x] `score_1a10` coerente com `pd` em todas as linhas
+- [x] Condições idênticas à tabela do S09, faixa a faixa
+- [x] Validador passa em todas as verificações
+- [x] Reprodutível
+- [x] `pytest` verde
