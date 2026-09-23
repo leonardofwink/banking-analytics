@@ -15,6 +15,7 @@ script roda igual seja chamado da raiz, de dentro de ``python/`` ou de um notebo
 from __future__ import annotations
 
 import random
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -128,4 +129,12 @@ def log_step(msg: str, nivel: Nivel = "info") -> None:
     """
     cor = _CORES.get(nivel, _CORES["info"])
     ts = datetime.now().strftime("%H:%M:%S")
-    print(f"{cor}[{ts}] {msg}{_RESET}")
+    try:
+        print(f"{cor}[{ts}] {msg}{_RESET}")
+    except UnicodeEncodeError:
+        # O console do Windows usa cp1252, que não cobre símbolos como ↔ ou ≥.
+        # Um pipeline inteiro não pode morrer por causa de um caractere de
+        # mensagem: substitui o que não couber e segue.
+        codificacao = sys.stdout.encoding or "ascii"
+        seguro = msg.encode(codificacao, errors="replace").decode(codificacao)
+        print(f"{cor}[{ts}] {seguro}{_RESET}")
