@@ -22,7 +22,7 @@ const {
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";
-pres.author = "Leonardo Wink";
+pres.author = "Grupo 3";
 pres.title = "AutoCred — A submissão";
 
 const cartao = (slide, opts) => C.cartao(pres, slide, opts);
@@ -423,7 +423,7 @@ const MONO = "Courier New";
     x: M, y: 1.1, w: W - 2 * M, h: 0.35,
     fontSize: 12, bold: true, color: CORAL, fontFace: SANS, charSpacing: 2, isTextBox: true, margin: 0,
   });
-  s.addText("Os dois entregáveis estão prontos", {
+  s.addText("Os três entregáveis estão prontos", {
     x: M, y: 1.5, w: 10, h: 0.85,
     fontSize: 38, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
   });
@@ -431,7 +431,7 @@ const MONO = "Courier New";
   const itens = [
     { a: "submissao_modelo.csv", d: "3.000 PDs · PD média 0,0788 · 3.000 valores distintos", ok: true },
     { a: "submissao_politica.csv", d: "5.000 decisões · 59,5% aprovadas · coerente com a tabela", ok: true },
-    { a: "Documento de política", d: "o template .docx do professor — é o próximo passo", ok: false },
+    { a: "documento_politica_AutoCred.docx", d: "3 páginas · preenchido no template do professor · números vindos do pipeline", ok: true },
   ];
   itens.forEach((it, i) => {
     const y = 2.8 + i * 1.05;

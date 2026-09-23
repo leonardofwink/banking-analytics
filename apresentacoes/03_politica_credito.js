@@ -24,7 +24,7 @@ const {
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";
-pres.author = "Leonardo Wink";
+pres.author = "Grupo 3";
 pres.title = "AutoCred — Política de crédito";
 
 const cartao = (slide, opts) => C.cartao(pres, slide, opts);
@@ -207,8 +207,14 @@ const cartao = (slide, opts) => C.cartao(pres, slide, opts);
     { x: M + 0.4, y: 4.85, w: 11.1, h: 0.55, fontSize: 14, fontFace: SANS, lineSpacing: 20, isTextBox: true, margin: 0 }
   );
   s.addText(
-    "Então o problema não é «chegar a 15%». É maximizar o ROI sujeito às quatro restrições — e respeitá-las nos três cenários, porque a intensidade real do aceite é desconhecida e só submetemos uma vez.",
-    { x: M + 0.4, y: 5.45, w: 11.1, h: 0.75, fontSize: 14, color: WHITE, fontFace: SANS, lineSpacing: 20, isTextBox: true, margin: 0 }
+    [
+      { text: "E não é escolha de conveniência: medimos. Das ", options: { color: WHITE } },
+      { text: "5.600 políticas", options: { color: CORAL, bold: true } },
+      { text: " que varremos, ", options: { color: WHITE } },
+      { text: "4.044 batem os 15% — e nenhuma é viável", options: { color: CORAL, bold: true } },
+      { text: ". A de maior volume origina R$ 20,5 mi, metade do mínimo. Só o volume as bloqueia; inadimplência e aprovação passam. O teto viável é 11,46%.", options: { color: WHITE } },
+    ],
+    { x: M + 0.4, y: 5.45, w: 11.1, h: 0.75, fontSize: 14, fontFace: SANS, lineSpacing: 20, isTextBox: true, margin: 0 }
   );
 }
 

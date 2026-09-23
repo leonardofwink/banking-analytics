@@ -30,7 +30,7 @@ const SANS = "Calibri";
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE"; // 13.3 x 7.5
-pres.author = "Leonardo Wink";
+pres.author = "Grupo 3";
 pres.title = "AutoCred — Modelo de PD";
 
 const W = 13.3;
@@ -108,7 +108,7 @@ function numerao(slide, { x, y, w, valor, rotulo, cor = CORAL, tamanho = 44, cor
     numerao(s, { x: M + i * 3.0, y: 5.1, w: 2.6, valor: d.v, rotulo: d.r, cor: WHITE, tamanho: 30, corRotulo: GREY_ESCURO });
   });
 
-  s.addText("Leonardo Wink · setembro de 2026", {
+  s.addText("Grupo 3 — Deni Alan · Leonardo Wink · Marcelo Félix · Renato · setembro de 2026", {
     x: M, y: 6.75, w: 8, h: 0.35,
     fontSize: 11, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0,
   });
