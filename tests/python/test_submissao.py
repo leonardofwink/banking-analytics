@@ -173,3 +173,195 @@ def test_escoragem_e_reprodutivel() -> None:
     primeira = treinar_modelo_final(base_a).predict_proba(base_b)[:, 1]
     segunda = treinar_modelo_final(base_a).predict_proba(base_b)[:, 1]
     assert np.array_equal(primeira, segunda)
+
+
+# =============================================================================
+# S10 · O arquivo da política
+# =============================================================================
+from banking.politica import POLITICA_ESCOLHIDA, gerar_politica  # noqa: E402
+from banking.submissao import (  # noqa: E402
+    COLUNAS_SUBMISSAO_POLITICA,
+    validar_submissao_politica,
+)
+from banking.score import score_de_pd  # noqa: E402
+
+N_C = 5_000
+PERDA = {10: 0.0134, 9: 0.0207, 8: 0.0292, 7: 0.0407, 6: 0.0577,
+         5: 0.0792, 4: 0.1118, 3: 0.1561, 2: 0.2128, 1: 0.3331}
+
+
+@pytest.fixture(scope="module")
+def politica_teste() -> pd.DataFrame:
+    return gerar_politica(**POLITICA_ESCOLHIDA, perda_por_faixa=PERDA)
+
+
+@pytest.fixture
+def ids_c() -> pd.Series:
+    return pd.Series([f"P{i:06d}" for i in range(1, N_C + 1)])
+
+
+@pytest.fixture
+def politica_valida(ids_c, politica_teste) -> pd.DataFrame:
+    """Submissão coerente: o score vem da PD, as condições vêm da tabela."""
+    rng = np.random.default_rng(7)
+    pds = rng.beta(1.6, 9.0, N_C)  # espalha por todas as faixas
+    scores = score_de_pd(pds)
+    regras = politica_teste.set_index("score")
+    return pd.DataFrame(
+        {
+            "id_proposta": ids_c,
+            "pd": pds.round(6),
+            "score_1a10": scores,
+            "decisao": pd.Series(scores).map(regras["decisao"]).to_numpy(),
+            "taxa_am": pd.Series(scores).map(regras["taxa_am"]).to_numpy(),
+            "prazo_meses": pd.Series(scores).map(regras["prazo_meses"]).to_numpy(),
+            "pct_entrada_minima": pd.Series(scores).map(regras["pct_entrada_minima"]).to_numpy(),
+        },
+        columns=list(COLUNAS_SUBMISSAO_POLITICA),
+    )
+
+
+def test_submissao_de_politica_valida_passa(politica_valida, ids_c, politica_teste) -> None:
+    validar_submissao_politica(politica_valida, ids_c, politica_teste)
+
+
+def test_score_incoerente_com_a_pd_e_recusado(politica_valida, ids_c, politica_teste) -> None:
+    """A verificação que vale 10 pontos da rubrica.
+
+    Se o score não vier da PD reportada, a tabela e o submetido contam
+    histórias diferentes — e é exatamente isso que o professor confere.
+    """
+    adulterada = politica_valida.copy()
+    adulterada.loc[0, "score_1a10"] = 1 if adulterada.loc[0, "score_1a10"] != 1 else 2
+    with pytest.raises(ValidacaoFalhou, match="incoerente"):
+        validar_submissao_politica(adulterada, ids_c, politica_teste)
+
+
+def test_condicao_diferente_da_tabela_e_recusada(politica_valida, ids_c, politica_teste) -> None:
+    """Duas linhas da mesma faixa com taxas diferentes: qual é a política?"""
+    adulterada = politica_valida.copy()
+    aprovada = adulterada.index[adulterada["decisao"] == "APROVAR"][0]
+    adulterada.loc[aprovada, "taxa_am"] = 0.0199
+    with pytest.raises(ValidacaoFalhou, match="diferente da tabela"):
+        validar_submissao_politica(adulterada, ids_c, politica_teste)
+
+
+def test_negar_com_campo_preenchido_e_recusado(politica_valida, ids_c, politica_teste) -> None:
+    """O exemplo do professor mostra NEGAR com taxa, prazo e entrada em branco."""
+    adulterada = politica_valida.copy()
+    negada = adulterada.index[adulterada["decisao"] == "NEGAR"][0]
+    adulterada.loc[negada, "taxa_am"] = 0.02
+    with pytest.raises(ValidacaoFalhou, match="NEGAR com"):
+        validar_submissao_politica(adulterada, ids_c, politica_teste)
+
+
+def test_aprovar_sem_condicao_e_recusado(politica_valida, ids_c, politica_teste) -> None:
+    """Linha aprovada sem taxa é proposta sem oferta."""
+    adulterada = politica_valida.copy()
+    aprovada = adulterada.index[adulterada["decisao"] == "APROVAR"][0]
+    adulterada.loc[aprovada, "prazo_meses"] = np.nan
+    with pytest.raises(ValidacaoFalhou, match="APROVAR sem"):
+        validar_submissao_politica(adulterada, ids_c, politica_teste)
+
+
+def test_decisao_em_minusculas_e_recusada(politica_valida, ids_c, politica_teste) -> None:
+    adulterada = politica_valida.copy()
+    adulterada.loc[0, "decisao"] = "aprovar"
+    with pytest.raises(ValidacaoFalhou, match="decisões inválidas"):
+        validar_submissao_politica(adulterada, ids_c, politica_teste)
+
+
+def test_taxa_acima_do_teto_e_recusada(politica_valida, ids_c, politica_teste) -> None:
+    adulterada = politica_valida.copy()
+    aprovada = adulterada.index[adulterada["decisao"] == "APROVAR"][0]
+    adulterada.loc[aprovada, "taxa_am"] = 0.05
+    with pytest.raises(ValidacaoFalhou, match="acima do teto"):
+        validar_submissao_politica(adulterada, ids_c, politica_teste)
+
+
+def test_aprovacao_abaixo_do_minimo_e_recusada(ids_c, politica_teste) -> None:
+    """Aprovar menos de 35% corta a nota de política pela metade."""
+    pds = np.full(N_C, 0.30)  # todos no score 2 → todos negados
+    scores = score_de_pd(pds)
+    submissao = pd.DataFrame(
+        {
+            "id_proposta": ids_c, "pd": pds, "score_1a10": scores,
+            "decisao": "NEGAR", "taxa_am": np.nan,
+            "prazo_meses": np.nan, "pct_entrada_minima": np.nan,
+        },
+        columns=list(COLUNAS_SUBMISSAO_POLITICA),
+    )
+    with pytest.raises(ValidacaoFalhou, match="aprovação"):
+        validar_submissao_politica(submissao, ids_c, politica_teste)
+
+
+def test_id_faltando_e_recusado(politica_valida, ids_c, politica_teste) -> None:
+    with pytest.raises(ValidacaoFalhou, match="linhas|faltando"):
+        validar_submissao_politica(politica_valida.iloc[:-1], ids_c, politica_teste)
+
+
+def test_colunas_fora_de_ordem_sao_recusadas(politica_valida, ids_c, politica_teste) -> None:
+    trocada = politica_valida[list(reversed(COLUNAS_SUBMISSAO_POLITICA))]
+    with pytest.raises(ValidacaoFalhou, match="colunas"):
+        validar_submissao_politica(trocada, ids_c, politica_teste)
+
+
+# --- O arquivo de verdade ----------------------------------------------------
+def test_arquivo_de_politica_gerado_esta_conforme() -> None:
+    """Valida o `submissao_politica.csv` que será realmente enviado.
+
+    A política de referência é **reconstruída do zero** a partir da base C —
+    o mesmo caminho do pipeline. Usar uma tabela com valores arredondados à
+    mão faria o teste falhar por diferença de casa decimal, que foi
+    exatamente o que aconteceu na primeira versão deste teste.
+
+    Reconstruir também verifica que a geração é determinística: se a política
+    mudasse entre execuções, o arquivo deixaria de bater com ela.
+    """
+    from banking.dados import preparar_base_c
+    from banking.modelo import treinar_modelo_final
+    from banking.perda import fator_ead, lgd
+    from banking.projeto import DIR_OUTPUTS
+
+    caminho = DIR_OUTPUTS / "submissao" / "submissao_politica.csv"
+    if not caminho.exists():
+        pytest.skip("rode python/modelagem/10_submissao_politica.py primeiro")
+
+    try:
+        base_a = carregar_processada("A")
+        base_c = carregar_processada("C")
+    except FileNotFoundError as erro:
+        pytest.skip(str(erro))
+
+    modelo = treinar_modelo_final(base_a)
+    propostas = preparar_base_c(base_c)
+    propostas["pd"] = modelo.predict_proba(propostas)[:, 1]
+    el = (
+        propostas["pd"]
+        * fator_ead(propostas["prazo_meses"], propostas["ltv"])
+        * lgd(propostas["idade_veiculo_anos"], propostas["ltv"], propostas["possui_avalista"])
+    )
+    perda = (
+        pd.DataFrame({"score": score_de_pd(propostas["pd"]), "el": el})
+        .groupby("score")["el"].mean().to_dict()
+    )
+    politica = gerar_politica(**POLITICA_ESCOLHIDA, perda_por_faixa=perda)
+
+    submissao = pd.read_csv(caminho)
+    validar_submissao_politica(submissao, base_c["id_proposta"], politica)
+    assert len(submissao) == N_C
+
+
+def test_arquivo_de_politica_tem_negados_com_campos_vazios() -> None:
+    """Confere no CSV cru, não no DataFrame: é o arquivo que o professor lê."""
+    from banking.projeto import DIR_OUTPUTS
+
+    caminho = DIR_OUTPUTS / "submissao" / "submissao_politica.csv"
+    if not caminho.exists():
+        pytest.skip("rode python/modelagem/10_submissao_politica.py primeiro")
+
+    linhas = caminho.read_text(encoding="utf-8").splitlines()
+    negadas = [linha for linha in linhas[1:] if ",NEGAR," in linha]
+    assert negadas, "nenhuma linha negada no arquivo"
+    for linha in negadas[:50]:
+        assert linha.endswith(",NEGAR,,,"), f"linha negada com campo preenchido: {linha}"

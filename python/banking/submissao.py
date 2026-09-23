@@ -15,10 +15,12 @@ import pandas as pd
 
 __all__ = [
     "COLUNAS_SUBMISSAO_MODELO",
+    "COLUNAS_SUBMISSAO_POLITICA",
     "ValidacaoFalhou",
     "formatar_submissao",
     "resumo_distribuicao",
     "validar_submissao_modelo",
+    "validar_submissao_politica",
 ]
 
 # Nomes e ordem exatos do `submissao_modelo_EXEMPLO.csv` do professor.
@@ -123,3 +125,141 @@ def resumo_distribuicao(valores) -> dict[str, float]:
         "max": float(v.max()),
         "distintos": int(len(np.unique(v))),
     }
+
+
+# --- S10 · O arquivo da política ---------------------------------------------
+# Nomes e ordem exatos do `submissao_politica_EXEMPLO.csv` do professor.
+COLUNAS_SUBMISSAO_POLITICA = (
+    "id_proposta",
+    "pd",
+    "score_1a10",
+    "decisao",
+    "taxa_am",
+    "prazo_meses",
+    "pct_entrada_minima",
+)
+
+DECISOES_VALIDAS = frozenset({"APROVAR", "NEGAR"})
+
+# Colunas que precisam estar vazias em toda linha negada, e preenchidas em toda
+# linha aprovada. O exemplo do professor mostra o NEGAR com os três em branco.
+COLUNAS_CONDICAO = ("taxa_am", "prazo_meses", "pct_entrada_minima")
+
+
+def validar_submissao_politica(
+    submissao: pd.DataFrame,
+    ids_esperados,
+    politica: pd.DataFrame,
+    taxa_maxima: float = 0.035,
+    aprovacao_minima: float = 0.35,
+    arquivo: str = "submissao_politica.csv",
+) -> None:
+    """Confere o arquivo do entregável 2 contra as regras e contra a política.
+
+    A verificação que dá nome ao passo é a **coerência**: o ``score_1a10`` tem
+    de ser exatamente o que a ``pd`` da mesma linha produz, e as condições de
+    cada linha têm de ser exatamente as da faixa correspondente na tabela.
+    Divergência aqui é o que a rubrica chama de incoerência entre a tabela e o
+    submetido — 10 pontos.
+
+    :param submissao: DataFrame com as sete colunas.
+    :param ids_esperados: os ``id_proposta`` da base C, na íntegra.
+    :param politica: a tabela do S09, indexada por ``score``.
+    :raises ValidacaoFalhou: com a lista de todos os problemas encontrados.
+    """
+    from banking.score import SCORE_MAXIMO, SCORE_MINIMO, score_de_pd
+
+    problemas: list[str] = []
+    esperados = pd.Index(ids_esperados)
+
+    # 1. Cabeçalho — sem ele, o resto não faz sentido.
+    if tuple(submissao.columns) != COLUNAS_SUBMISSAO_POLITICA:
+        problemas.append(
+            f"colunas {tuple(submissao.columns)}, esperado {COLUNAS_SUBMISSAO_POLITICA}"
+        )
+        _conferir(problemas, arquivo)
+
+    # 2. Linhas e ids.
+    if len(submissao) != len(esperados):
+        problemas.append(f"{len(submissao)} linhas, esperado {len(esperados)}")
+
+    faltando = esperados.difference(submissao["id_proposta"])
+    sobrando = pd.Index(submissao["id_proposta"]).difference(esperados)
+    if len(faltando):
+        problemas.append(f"{len(faltando)} ids faltando (ex.: {list(faltando[:3])})")
+    if len(sobrando):
+        problemas.append(f"{len(sobrando)} ids inexistentes (ex.: {list(sobrando[:3])})")
+    if submissao["id_proposta"].duplicated().any():
+        problemas.append(f"{int(submissao['id_proposta'].duplicated().sum())} ids duplicados")
+
+    # 3. A PD.
+    pd_valores = submissao["pd"]
+    if pd_valores.isna().any():
+        problemas.append(f"{int(pd_valores.isna().sum())} PDs nulas")
+    elif not pd_valores.between(0.0, 1.0).all():
+        problemas.append(
+            f"PD fora de [0, 1] — min {pd_valores.min():.4f}, max {pd_valores.max():.4f}"
+        )
+
+    # 4. A coerência que vale 10 pontos: o score tem de vir da PD reportada.
+    scores = submissao["score_1a10"]
+    if scores.isna().any():
+        problemas.append(f"{int(scores.isna().sum())} scores nulos")
+    else:
+        fora = ~scores.between(SCORE_MINIMO, SCORE_MAXIMO)
+        if fora.any():
+            problemas.append(f"{int(fora.sum())} scores fora de [1, 10]")
+        elif not pd_valores.isna().any():
+            divergentes = int((scores.to_numpy() != score_de_pd(pd_valores)).sum())
+            if divergentes:
+                problemas.append(
+                    f"{divergentes} linhas com score_1a10 incoerente com a pd reportada — "
+                    "é a checagem de coerência da rubrica"
+                )
+
+    # 5. A decisão.
+    decisoes = submissao["decisao"].astype(str)
+    invalidas = sorted(set(decisoes) - DECISOES_VALIDAS)
+    if invalidas:
+        problemas.append(f"decisões inválidas: {invalidas} (esperado APROVAR/NEGAR maiúsculos)")
+
+    aprovadas = decisoes == "APROVAR"
+    negadas = decisoes == "NEGAR"
+
+    # 6. Negada tem de vir vazia; aprovada, preenchida.
+    for coluna in COLUNAS_CONDICAO:
+        preenchida_em_negada = int(submissao.loc[negadas, coluna].notna().sum())
+        if preenchida_em_negada:
+            problemas.append(f"{preenchida_em_negada} linhas NEGAR com {coluna!r} preenchido")
+
+        vazia_em_aprovada = int(submissao.loc[aprovadas, coluna].isna().sum())
+        if vazia_em_aprovada:
+            problemas.append(f"{vazia_em_aprovada} linhas APROVAR sem {coluna!r}")
+
+    # 7. Guard-rails observáveis no próprio arquivo.
+    taxas = submissao.loc[aprovadas, "taxa_am"]
+    if taxas.notna().any() and taxas.max() > taxa_maxima + 1e-9:
+        problemas.append(f"taxa {taxas.max():.4f} acima do teto de {taxa_maxima:.1%} a.m.")
+
+    taxa_aprovacao = float(aprovadas.mean()) if len(submissao) else 0.0
+    if taxa_aprovacao < aprovacao_minima:
+        problemas.append(
+            f"aprovação {taxa_aprovacao:.1%} abaixo do mínimo de {aprovacao_minima:.0%}"
+        )
+
+    # 8. Coerência com a tabela: mesma faixa, mesmas condições.
+    regras = politica.set_index("score") if "score" in politica.columns else politica
+    for score, grupo in submissao[aprovadas].groupby("score_1a10"):
+        if score not in regras.index:
+            problemas.append(f"score {score} aprovado, mas ausente da tabela de política")
+            continue
+        for coluna in COLUNAS_CONDICAO:
+            esperado = regras.loc[score, coluna]
+            diferentes = int((~np.isclose(grupo[coluna].to_numpy(dtype=float), float(esperado))).sum())
+            if diferentes:
+                problemas.append(
+                    f"faixa {score}: {diferentes} linhas com {coluna!r} diferente da tabela "
+                    f"(esperado {esperado})"
+                )
+
+    _conferir(problemas, arquivo)
