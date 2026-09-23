@@ -37,10 +37,12 @@ TEMPLATE = DIR_PROFESSOR.parent / "entregaveis" / "template_documento_politica.d
 DESTINO = DIR_OUTPUTS / "submissao" / "documento_politica_AutoCred.docx"
 
 # ⚠️ Preencher antes de enviar: o template pede os três nomes.
+GRUPO = "Grupo 3"
+
 INTEGRANTES = {
-    "Modelagem (PD)": "a definir",
+    "Modelagem (PD)": "Deni Alan",
     "Política e precificação": "Leonardo Wink",
-    "Negócio e defesa": "a definir",
+    "Negócio e defesa": "Marcelo Félix e Renato",
 }
 
 
@@ -165,7 +167,7 @@ def main() -> int:
     # --- cabeçalho ----------------------------------------------------------
     _escrever(
         _achar(doc, "Modelo de documento"),
-        "Desafio de Risco de Crédito · setembro de 2026",
+        f"{GRUPO} · Desafio de Risco de Crédito · setembro de 2026",
     )
     _remover(_achar(doc, "Este é o documento que o conselho"))
 
