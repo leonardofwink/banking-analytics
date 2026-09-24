@@ -24,22 +24,32 @@ LGD do professor e as premissas de aceite dele:
 
 | Política | Aprovação | ROI | Volume central | Volume pior | Inadimpl. pior | Viável |
 | -------- | --------- | --- | -------------- | ----------- | -------------- | ------ |
-| **Léo** (score ≥ 5) | 59,5% | **11,33%** | R$ 66,7 mi | R$ 45,1 mi | 6,58% | ✅ **sim** |
-| Deni (corte PD 11%) | 50,2% | 13,78% | **R$ 38,2 mi** | R$ 22,3 mi | 7,95% | ❌ volume |
-| Marcelo, sem as regras dele | 62,8% | 11,78% | R$ 66,7 mi | R$ 43,4 mi | **9,55%** | ❌ inadimplência |
-| Marcelo, com as regras dele | 54,5% | 11,85% | R$ 60,3 mi | **R$ 39,5 mi** | **8,82%** | ❌ ambos |
+| **Léo** (score ≥ 5) | 59,5% | 11,33% | **R$ 66,7 mi** | **R$ 45,1 mi** | **6,58%** | ✅ **sim** |
+| Marcelo (submissão dele, PD dele) | 49,2% | **12,32%** | R$ 52,8 mi | R$ 34,6 mi | 7,03% | ❌ volume |
+| Deni (tabela reconstruída) | 50,2% | **13,78%** | R$ 38,2 mi | R$ 22,3 mi | 7,95% | ❌ volume |
 
-> ⚠️ **Estes números não são os que cada um reporta.** São o resultado de rodar
-> a tabela de preços de cada um no mesmo motor, com as mesmas premissas de
-> aceite e os parâmetros de EAD e LGD do professor. O Deni reporta R$ 46,7 mi
-> de volume e 77,9% de aprovação; a seção 3 explica de onde vem cada diferença.
+> ⚠️ **Estes números não são os que cada um reporta.** São o resultado de
+> passar cada política pelo mesmo motor, com as mesmas premissas de aceite e
+> os parâmetros de EAD e LGD do professor.
+>
+> A linha do **Marcelo** é a submissão dele rodada como entregou — as PDs
+> dele, as ofertas dele, sem reconstrução. A do **Deni** teve de ser
+> reconstruída da tabela, porque ele não submeteu decisões por proposta; a
+> seção 3 mostra que a conclusão não muda com nenhuma das versões da tabela
+> dele.
+>
+> **O ROI cresce de cima para baixo, e a viabilidade cai junto.** É a mesma
+> troca que aparece em todo o resto: ROI se compra com volume.
 
-**A do Léo é a única que sobrevive aos guard-rails nos três cenários.**
+**A do Léo é a única que sobrevive aos guard-rails nos três cenários** — e é
+a que entrega o menor ROI das três. Não é coincidência: é o preço da folga.
 
 Com a ressalva honesta: isso é no simulador do Léo, com as elasticidades dele.
 O Marcelo usa premissas de aceite diferentes e, com elas, a política dele
-passa. Ninguém sabe qual está certa — é a premissa mais frágil dos três
-trabalhos, e os três a declaram.
+passa no volume. Ninguém sabe qual está certa — é a premissa mais frágil dos
+três trabalhos, e os três a declaram. O que o motor comum mostra não é quem
+está certo, e sim **quanta folga cada política tem se o cliente for mais
+sensível a preço do que se supôs**.
 
 ---
 
@@ -177,6 +187,48 @@ Mas o erro que mais custa a ele não é esse: é o volume 3× subestimado, que f
 a política dele parecer mais apertada do que é. **Vale avisar, porque corrigir
 joga a favor dele.**
 
+## 3b. ⚠️ O material do Deni é internamente inconsistente
+
+A tabela de política aparece **duas vezes** no material dele, com números
+diferentes. Comparando linha a linha:
+
+| Score | Faixa de PD no CSV | Faixa de PD no documento | Perda no CSV | Perda no doc | ROI no CSV | ROI no doc |
+| ----- | ------------------ | ------------------------ | ------------ | ------------ | ---------- | ---------- |
+| 10 | 0,74% – 3,03% | 0,8% – 2,1% | R$ 142,00 | R$ 87,00 | 21,2% | 21,2% |
+| 9 | 3,04% – 4,01% | 2,1% – 3,4% | R$ 212,24 | R$ 165,00 | **24,0%** | **20,4%** |
+| 8 | 4,01% – 4,92% | 3,4% – 4,8% | R$ 268,69 | R$ 246,00 | **27,0%** | **19,8%** |
+| 7 | 4,92% – 5,77% | 4,8% – 6,2% | R$ 320,33 | R$ 330,00 | **30,1%** | **19,1%** |
+| 6 | 5,77% – 6,78% | 6,2% – 7,8% | R$ 377,23 | R$ 420,00 | **33,2%** | **18,5%** |
+| 5 | 6,78% – 7,86% | 7,8% – 9,5% | R$ 438,10 | R$ 519,00 | **36,3%** | **17,6%** |
+| 4 | 7,86% – 9,41% | 9,5% – 11,2% | R$ 515,05 | R$ 621,00 | **39,6%** | **16,8%** |
+
+- **As 10 faixas de PD divergem.** Todas.
+- **As 10 perdas esperadas divergem.**
+- **O ROI por faixa diverge em 6 das 7 aprovadas** — e não só no valor: no CSV
+  ele **cresce** com o risco (21,2% → 39,6%), no documento ele **cai**
+  (21,2% → 16,8%). São afirmações opostas sobre qual faixa dá mais retorno.
+- **Taxa, prazo e entrada batem** nas duas fontes. Essas são as únicas que a
+  reconstrução usou.
+
+Parece uma versão antiga que ficou para trás em um dos arquivos. Vale conferir
+qual é a boa antes de submeter — se o professor abrir os dois, a pergunta é
+imediata.
+
+### A conclusão muda conforme a versão?
+
+Não. Rodando as três leituras possíveis do material dele:
+
+| Leitura | Aprovação | ROI | Volume central | Viável |
+| ------- | --------- | --- | -------------- | ------ |
+| faixas do CSV + corte do CSV (0,0941) | 50,2% | 13,78% | R$ 38,2 mi | ❌ volume |
+| faixas do CSV + corte do texto (0,11) | 50,2% | 13,78% | R$ 38,2 mi | ❌ volume |
+| faixas do documento + corte dele (0,112) | 55,6% | 14,69% | R$ 37,4 mi | ❌ volume e inadimplência |
+
+**As três furam o volume.** A conclusão não depende de qual tabela se use — o
+que muda é o tamanho da violação.
+
+---
+
 ## 4. O que o Marcelo fez melhor
 
 Três coisas, e todas são adotáveis.
@@ -197,6 +249,21 @@ de 0,06 contra 0,147 do Léo**, com AuROC igual ou melhor.
 São **exatamente os limites da Base A** que apareceram quando o Léo foi
 investigar as hard rules do Deni: bureau mínimo 460, máximo 2 restrições. O
 Marcelo chegou lá por conta própria, e com o argumento de domínio.
+
+### 4.0 A submissão dele está completa e consistente
+
+Conferido item a item contra o documento:
+
+| | No CSV dele | No documento dele | |
+| - | ----------- | ----------------- | - |
+| Aprovação | 49,2% | 49,2% | ✅ |
+| Taxa | 1,85% a 2,18%, média 1,96% | 1,85% a 2,18%, ~1,95% | ✅ |
+| Prazos ofertados | 48 e 60 | 60 (48 nos scores 2 e 3) | ✅ |
+| Entradas | 5%, 10%, 15% | 5% a 15% | ✅ |
+| Score mínimo aprovado | 2 | "scores 2 a 10" | ✅ |
+
+**Nenhuma divergência.** É o único dos três materiais em que o CSV e o
+documento contam a mesma história.
 
 ### 4.3 Uma validação que ninguém mais fez
 
@@ -270,9 +337,10 @@ ser justo:
 | política do Léo, modelo do Léo | 59,5% | 11,40% | **R$ 45,1 mi** | **6,11%** |
 | política do Léo, modelo do Marcelo | 59,2% | **11,54%** | R$ 41,6 mi | 7,02% |
 
-**+0,14 ponto de ROI, e a folga cai de 12,7% para 4%.** A correlação de
-Spearman entre os dois modelos é 0,907 — eles ordenam quase igual, e a
-diferença econômica é pequena.
+**+0,14 ponto de ROI, e a folga cai de 12,7% para 4%.** Na Base C os dois
+modelos têm correlação de Spearman de **0,907**, PD média de 14,84% contra
+14,59% e máximo de 81,2% contra 83,8% — ordenam quase igual, e a diferença
+econômica é pequena.
 
 ### O que isso fecha
 
