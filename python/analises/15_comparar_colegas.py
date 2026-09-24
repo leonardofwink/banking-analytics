@@ -10,6 +10,8 @@ Este script compara o que é comparável:
 2. **Modelos** — as PDs na Base B, lado a lado.
 3. **Políticas** — cada uma rodada no MESMO motor de ROI, o do Léo. É a
    única forma de saber se 18,4% é política melhor ou conta diferente.
+4. **A decomposição do ROI do Deni** — separando o que é preço do que é
+   premissa de perda. O EAD fixo dele muda o volume, não o retorno.
 
 Rodar::
 
@@ -28,6 +30,7 @@ from banking.dados import DIR_BRUTOS, carregar_processada, preparar_base_c
 from banking.modelo import treinar_modelo_final
 from banking.perda import fator_ead, lgd
 from banking.politica import POLITICA_ESCOLHIDA, gerar_politica
+from banking.price import juros_totais
 from banking.projeto import DIR_TABELAS, log_step
 from banking.roi import CENARIOS, aplicar_politica, simular
 from banking.score import score_de_pd
@@ -280,51 +283,82 @@ def main() -> int:
     print("4. DE ONDE VEM O ROI DE 18,4% DO DENI")
     print("=" * 78)
 
-    aprovadas = p[score_de_pd(p["pd"]) >= 5]
-    ead_real = (fator_ead(aprovadas["prazo_meses"], aprovadas["ltv"])
-                * aprovadas["valor_financiado"]).mean()
-    lgd_real = lgd(aprovadas["idade_veiculo_anos"], aprovadas["ltv"],
-                   aprovadas["possui_avalista"]).mean()
+    of_leo = aplicar_politica(p, nossa, escorar=escorar)
+    ap = of_leo[of_leo["aprovada"]].copy()
+    principal = ap["valor_financiado_ofertado"].to_numpy()
+    taxa = ap["taxa_am"].to_numpy()
+    prazo = ap["prazo_meses"].to_numpy()
+    pd_ap = ap["pd_ofertada"].to_numpy()
+    anos = prazo.mean() / 12.0
+    juros = juros_totais(principal, taxa, prazo)
+    ead_fator = fator_ead(ap["prazo_meses"], ap["ltv_ofertado"])
+    lgd_real = lgd(ap["idade_veiculo_anos"], ap["ltv_ofertado"], ap["possui_avalista"])
 
-    print(f"\n{'':32} {'Deni':>14} {'tabelas do professor':>22}")
-    print(f"{'EAD por contrato':<32} R$ {DENI_EAD_FIXO:>10,.0f} R$ {ead_real:>19,.0f}")
-    print(f"{'LGD':<32} {DENI_LGD_FIXO:>13.0%} {lgd_real:>21.1%}")
-    perda_deni = DENI_EAD_FIXO * DENI_LGD_FIXO
-    perda_real = ead_real * lgd_real
-    print(f"{'perda por unidade de PD':<32} R$ {perda_deni:>10,.0f} R$ {perda_real:>19,.0f}")
-    print(f"\n  A perda dele é {perda_real/perda_deni:.1f}x menor que a dos parâmetros do desafio.")
-    print(f"  EAD fixo de R$ 15.000 contra R$ {ead_real:,.0f} reais, e LGD de 40% contra {lgd_real:.0%}.")
+    print(f"\n{'':34} {'Deni':>12} {'tabelas do professor':>22}")
+    print(f"{'EAD por contrato':<34} R$ {DENI_EAD_FIXO:>8,.0f} "
+          f"R$ {(ead_fator * principal).mean():>19,.0f}")
+    print(f"{'LGD':<34} {DENI_LGD_FIXO:>11.0%} {lgd_real.mean():>21.1%}")
+
+    # ⚠️ O ROI é uma RAZÃO. Se o contrato inteiro encolhe, juros, perda e
+    # volume encolhem juntos e o retorno não se move. Um EAD fixo distorce o
+    # VOLUME reportado, não o ROI — separar os dois efeitos é o que esta
+    # decomposição faz.
+    print("\n--- o que cada premissa faz com o ROI, uma de cada vez ---")
+
+    def _roi(perda_vetor, volume_vetor):
+        return (juros.sum() - perda_vetor.sum()) / volume_vetor.sum() / anos
+
+    perda_real = pd_ap * ead_fator * principal * lgd_real
+    base_roi = _roi(perda_real, principal)
+    print(f"  (a) parâmetros do professor                  : ROI {base_roi:>6.2%}")
+
+    r_lgd = _roi(pd_ap * ead_fator * principal * DENI_LGD_FIXO, principal)
+    print(f"  (b) só a LGD em 40%, EAD real                : ROI {r_lgd:>6.2%}"
+          f"   ({(r_lgd - base_roi) * 100:+.2f} pp)")
+
+    juros_15k = juros_totais(np.full_like(principal, DENI_EAD_FIXO), taxa, prazo)
+    vol_15k = DENI_EAD_FIXO * len(principal)
+    r_15k = ((juros_15k.sum() - (pd_ap * ead_fator * DENI_EAD_FIXO * lgd_real).sum())
+             / vol_15k / anos)
+    print(f"  (c) contrato fixo de R$ 15.000, LGD real     : ROI {r_15k:>6.2%}"
+          f"   ({(r_15k - base_roi) * 100:+.2f} pp)  <- quase não muda")
+
+    print(f"\n  O EAD fixo distorce o VOLUME, não o retorno. Quem move o ROI é a")
+    print(f"  LGD de 40% contra os {lgd_real.mean():.0%} da tabela: "
+          f"{(r_lgd - base_roi) * 100:+.2f} pp.")
 
     # ================================================================= 5
     print("\n" + "=" * 78)
-    print("5. E SE O LÉO USASSE OS PARÂMETROS DELE?")
+    print("5. E OS R$ 46,7 MILHÕES DE VOLUME?")
     print("=" * 78)
-    print("\nMesma política nossa, só trocando EAD e LGD pelos números do Deni.\n")
 
-    of_nosso = aplicar_politica(p, nossa, escorar=escorar)
-    r_real = simular(of_nosso, "central")
+    n_aprov = 0.779 * len(p)
+    print(f"\n  Ele reporta 77,9% de aprovação ({n_aprov:,.0f} contratos) e "
+          f"R$ 46,7 mi.")
+    print(f"  Ticket médio implícito: R$ {46.7e6 / n_aprov:,.0f} por contrato.")
+    print(f"  O financiado médio pedido na base C é "
+          f"R$ {p['valor_financiado_desejado'].mean():,.0f}.")
+    print(f"\n  {n_aprov:,.0f} x R$ 15.000 x 0,80 (entrada 20%) = "
+          f"R$ {n_aprov * 15000 * 0.8 / 1e6:.1f} mi — exatamente o que ele reporta.")
+    print(f"  Ou seja: o contrato foi fixado em R$ 15.000, o mesmo número do EAD.")
 
-    ap = of_nosso[of_nosso["aprovada"]]
-    juros = None
-    try:
-        from banking.price import juros_totais
-        principal = ap["valor_financiado_ofertado"].to_numpy()
-        juros = juros_totais(principal, ap["taxa_am"].to_numpy(),
-                             ap["prazo_meses"].to_numpy())
-        pd_ap = ap["pd_ofertada"].to_numpy()
-        prazo_anos = ap["prazo_meses"].to_numpy().mean() / 12.0
+    ordenado = p.sort_values("pd").head(int(round(n_aprov)))
+    vol_real = (ordenado["valor_bem"]
+                * (1 - np.maximum(ordenado["pct_entrada_desejada"], 0.20))).sum()
+    print(f"\n  Com os valores REAIS e os mesmos 77,9% aprovados, sem modelar")
+    print(f"  nenhuma recusa: R$ {vol_real / 1e6:.0f} mi.")
+    print(f"  O volume dele não está inflado — está cerca de "
+          f"{vol_real / 46.7e6:.0f}x subestimado.")
 
-        perda_com_deni = pd_ap * DENI_EAD_FIXO * DENI_LGD_FIXO
-        perda_com_real = pd_ap * fator_ead(ap["prazo_meses"], ap["ltv_ofertado"]) * principal * \
-            lgd(ap["idade_veiculo_anos"], ap["ltv_ofertado"], ap["possui_avalista"])
-
-        for rotulo, perda_v in (("parâmetros do professor", perda_com_real),
-                                ("parâmetros do Deni", perda_com_deni)):
-            roi = (juros.sum() - perda_v.sum()) / principal.sum() / prazo_anos
-            print(f"  {rotulo:<28}: ROI {roi:>6.2%} · perda total R$ {perda_v.sum()/1e6:>5.1f} mi")
-        print(f"\n  Mesma carteira, mesmas taxas. A diferença é só a conta da perda.")
-    except Exception as erro:  # pragma: no cover - diagnóstico
-        log_step(f"não deu para isolar os juros: {erro}", "aviso")
+    print("\n  A política dele no motor do Léo, cenário a cenário:")
+    for nome in ("otimista", "central", "pessimista"):
+        r = resultados["Deni (corte PD 11%)"][nome]
+        print(f"    {nome:<11}: volume R$ {r.volume_originado/1e6:>5.1f} mi · "
+              f"aceite {r.taxa_aceite_media:>5.1%} · ROI {r.roi_anual:>6.2%}"
+              f"{'' if not r.violacoes else '  VIOLA'}")
+    print(f"\n  A aprovação de 77,9% vem das PDs dele, não da política: o mesmo")
+    print(f"  corte de PD 11% sobre as PDs do Léo aprova "
+          f"{resultados['Deni (corte PD 11%)']['central'].taxa_aprovacao:.1%}.")
 
     # ================================================================= saída
     destino = DIR_TABELAS / "s15_comparacao_colegas.csv"

@@ -22,12 +22,17 @@ Deni 18,4%.** Só uma parte dessa diferença é de política. O resto é de
 Rodando as três tabelas no mesmo motor — o do Léo, com os parâmetros de EAD e
 LGD do professor e as premissas de aceite dele:
 
-| Política | Aprovação | ROI | Volume (pior) | Inadimpl. (pior) | Viável |
-| -------- | --------- | --- | ------------- | ---------------- | ------ |
-| **Léo** (score ≥ 5) | 59,5% | **11,33%** | R$ 45,1 mi | 6,58% | ✅ **sim** |
-| Deni (corte PD 11%) | 50,2% | 13,78% | **R$ 22,3 mi** | 7,95% | ❌ volume |
-| Marcelo, sem as regras dele | 62,8% | 11,78% | R$ 43,4 mi | **9,55%** | ❌ inadimplência |
-| Marcelo, com as regras dele | 54,5% | 11,85% | **R$ 39,5 mi** | **8,82%** | ❌ ambos |
+| Política | Aprovação | ROI | Volume central | Volume pior | Inadimpl. pior | Viável |
+| -------- | --------- | --- | -------------- | ----------- | -------------- | ------ |
+| **Léo** (score ≥ 5) | 59,5% | **11,33%** | R$ 66,7 mi | R$ 45,1 mi | 6,58% | ✅ **sim** |
+| Deni (corte PD 11%) | 50,2% | 13,78% | **R$ 38,2 mi** | R$ 22,3 mi | 7,95% | ❌ volume |
+| Marcelo, sem as regras dele | 62,8% | 11,78% | R$ 66,7 mi | R$ 43,4 mi | **9,55%** | ❌ inadimplência |
+| Marcelo, com as regras dele | 54,5% | 11,85% | R$ 60,3 mi | **R$ 39,5 mi** | **8,82%** | ❌ ambos |
+
+> ⚠️ **Estes números não são os que cada um reporta.** São o resultado de rodar
+> a tabela de preços de cada um no mesmo motor, com as mesmas premissas de
+> aceite e os parâmetros de EAD e LGD do professor. O Deni reporta R$ 46,7 mi
+> de volume e 77,9% de aprovação; a seção 3 explica de onde vem cada diferença.
 
 **A do Léo é a única que sobrevive aos guard-rails nos três cenários.**
 
@@ -93,49 +98,84 @@ O documento dele declara, na seção 4:
 > *"A perda esperada unitária por contrato é calculada via PD × EAD
 > (R$ 15.000) × LGD (40%)."*
 
-Ele usa **EAD e LGD fixos**, em vez das tabelas do professor:
+São dois parâmetros fixos no lugar das tabelas do professor — e eles fazem
+coisas **diferentes**, que vale separar.
 
 | | Deni | Parâmetros do desafio |
 | - | ---- | --------------------- |
-| EAD por contrato | R$ 15.000 fixo | **R$ 37.418** (média real dos aprovados) |
-| LGD | 40% fixo | **67,9%** (média das tabelas, por faixa de LTV e idade) |
-| Perda por unidade de PD | R$ 6.000 | **R$ 25.389** |
+| EAD por contrato | R$ 15.000 fixo | **R$ 37.535** (média dos aprovados) |
+| LGD | 40% fixo | **67,8%** (tabela, por LTV e idade do veículo) |
 
-**A perda dele é 4,2 vezes menor que a dos parâmetros do desafio.**
+### O EAD fixo mexe no volume. A LGD mexe no ROI.
 
-O enunciado entrega duas tabelas — `fator_ead` por prazo × LTV e LGD por
-idade do veículo × LTV — e o EAD real é o valor financiado vezes um fator de
-0,98 a 1,04. Um EAD fixo de R$ 15.000 subestima quase três vezes o valor
-financiado mediano, e 40% de LGD é quase metade do que a tabela dá.
+O ROI é uma **razão** — (juros − perda) ÷ volume ÷ anos. Se o contrato inteiro
+encolhe de R$ 37 mil para R$ 15 mil, os juros, a perda e o volume encolhem
+**juntos**, e o retorno quase não se move. Testando um efeito de cada vez na
+carteira do Léo:
 
-### Quanto disso explica o ROI
+| | ROI | vs. base |
+| - | --- | -------- |
+| (a) parâmetros do professor | 12,32% | — |
+| (b) só a LGD em 40%, EAD real | 12,76% | **+0,44 pp** |
+| (c) contrato fixo de R$ 15.000, LGD real | 12,35% | +0,03 pp |
 
-Trocando **só** os parâmetros de perda na carteira do Léo, com as mesmas
-taxas:
+**Quem move o ROI é a LGD, e ela vale +0,44 ponto — não os 7 pontos de
+diferença.** O EAD fixo não infla retorno nenhum; ele distorce o volume.
 
-| | ROI | Perda total |
-| - | --- | ----------- |
-| parâmetros do professor | 12,32% | R$ 4,6 mi |
-| parâmetros do Deni | 13,12% | R$ 1,1 mi |
+### Os R$ 46,7 milhões
 
-Isso dá **+0,8 ponto**. Não explica sozinho a distância de 11,3% para 18,4%.
+Ele reporta 77,9% de aprovação — 3.895 contratos — e R$ 46,7 mi de volume.
+Isso dá um ticket médio de **R$ 11.990 por contrato**, quando o financiado
+médio pedido na Base C é de **R$ 33.411**.
 
-O resto vem de **preço sem consequência**: ele cobra 2,41% ao mês em média
-(contra 1,91% do Léo), chegando a 3,30% na pior faixa, e projeta volume de
-R$ 46,7 mi assumindo que isso não afasta ninguém. No motor do Léo, essa taxa
-derruba o aceite para 41,6% e o volume para R$ 38,2 mi — **abaixo do piso de
-R$ 40 mi**.
+A conta fecha exata de outro jeito:
 
-### 🔑 O Deni é um caso concreto do que o S12 mediu
+```
+3.895 contratos × R$ 15.000 × 0,80 (entrada de 20%) = R$ 46,7 milhões
+```
 
-A [varredura do S12](specs/S12_FRONTEIRA_ROI_VOLUME.md) encontrou **4.044
-políticas que batem 15% de ROI e nenhuma viável**, todas mortas pelo volume.
-A política do Deni é uma delas: 13,78% de ROI nesse motor, R$ 22,3 mi de
-volume no pior cenário.
+**O contrato foi fixado em R$ 15.000 — o mesmo número usado como EAD.** Com os
+valores reais da Base C e os mesmos 77,9% aprovados, sem modelar nenhuma
+recusa, o volume seria de **R$ 131 milhões**.
 
-Não é que ele errou a política. É que ele mediu o ROI sem medir o custo dela.
+Ou seja: **o volume dele não está inflado. Está cerca de 3× subestimado.** Se
+ele refizer a conta com os valores reais, o volume dele sobe muito — e o
+guard-rail de R$ 40 mi deixa de ser problema, desde que o aceite colabore.
 
----
+### O que a política dele faz no motor do Léo
+
+| Cenário | Volume | Aceite | ROI | |
+| ------- | ------ | ------ | --- | - |
+| otimista | R$ 57,1 mi | 62,6% | 14,58% | ✅ |
+| **central** | **R$ 38,2 mi** | 41,6% | 13,78% | ❌ volume |
+| pessimista | R$ 22,3 mi | 24,0% | 12,91% | ❌ volume |
+
+A taxa média de 2,41% ao mês — 51% acima do mercado de 1,59% — derruba o
+aceite para 41,6% no cenário central. **É o aceite que fura o volume, não o
+tamanho do contrato.**
+
+### E a aprovação de 77,9%?
+
+Essa diferença é de **modelo**, não de política. O corte dele é PD ≤ 11%:
+
+| | Aprovação com PD ≤ 11% |
+| - | ---------------------- |
+| com as PDs do Deni (logística) | **77,9%** |
+| com as PDs do Léo (XGBoost) | **50,2%** |
+
+A logística dele comprime a cauda: mediana 6,78% e máximo 47,87% na Base B,
+contra 9,36% e 81,19% do Léo na Base C. O mesmo corte pega populações
+diferentes.
+
+### O que isso quer dizer
+
+Não dá para reproduzir os 18,4% com os parâmetros do desafio. A LGD explica
+0,44 ponto; o resto vem de cobrar mais caro **sem modelar que preço afasta
+cliente** — o enunciado diz explicitamente que afasta.
+
+Mas o erro que mais custa a ele não é esse: é o volume 3× subestimado, que faz
+a política dele parecer mais apertada do que é. **Vale avisar, porque corrigir
+joga a favor dele.**
 
 ## 4. O que o Marcelo fez melhor
 
@@ -252,8 +292,13 @@ estar errada por um fator de cinco.
 
 ## 7. O que fazer com isto
 
-**Urgente — avisar o Deni hoje.** Os ids e o formato da política invalidam os
-dois entregáveis dele, e são 15 minutos de conserto.
+**Urgente — avisar o Deni.** Três coisas, em ordem de custo:
+
+1. **Os ids** (`CT-10001` contra `T000001`) e a política com 10 linhas em vez
+   de 5.000 — invalidam os dois entregáveis, e são 15 minutos de conserto.
+2. **A LGD de 40%** contra os 67,8% da tabela do professor.
+3. **O contrato fixado em R$ 15.000**, que subestima o volume dele em 3×.
+   Corrigir isso joga a favor dele.
 
 **Para a submissão do grupo**, a leitura que os números sustentam:
 
