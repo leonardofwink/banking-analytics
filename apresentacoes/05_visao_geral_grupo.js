@@ -643,7 +643,130 @@ const MONO = "Courier New";
 }
 
 /* ========================================================================== */
-/* 10 · O achado dos 15%                                                       */
+/* 10 · Quem aprovamos e quem negamos                                          */
+/* ========================================================================== */
+{
+  const s = pres.addSlide();
+  s.background = { color: OFFWHITE };
+
+  s.addText("QUEM APROVAMOS E QUEM NEGAMOS", {
+    x: M, y: 0.45, w: W - 2 * M, h: 0.3,
+    fontSize: 11.5, bold: true, color: TEAL, fontFace: SANS, charSpacing: 2, isTextBox: true, margin: 0,
+  });
+  s.addText("Aprovamos 59,5% das propostas: bureau 206 pontos mais alto, renda 70% maior e um terço das restrições", {
+    x: M, y: 0.8, w: W - 2 * M, h: 0.85,
+    fontSize: 25, bold: true, color: NAVY, fontFace: SERIF, lineSpacing: 30, isTextBox: true, margin: 0,
+  });
+
+  // --- a tabela, à esquerda ---
+  const TX = M;
+  const TW = 8.45;
+  const colX = [TX + 0.25, TX + 4.3, TX + 6.4];
+  const colW = [3.9, 2.0, 2.0];
+
+  const linhas = [
+    ["Indicador  (média do grupo)", "Aprovados  (score 5 a 10)", "Negados  (score 1 a 4)"],
+    ["Propostas", "2.976  (59,5%)", "2.024  (40,5%)"],
+    ["PD média", "5,9%", "28,0%"],
+    ["Score de bureau médio", "634", "428"],
+    ["Renda mediana", "R$ 5.076", "R$ 2.981"],
+    ["Com restrição ativa", "49%", "91%"],
+    ["Autônomos", "17,5%", "30,7%"],
+    ["Fora do domínio de treino", "12%", "72%"],
+  ];
+
+  const ALT = 0.485;
+  cartao(s, { x: TX, y: 1.85, w: TW, h: ALT * linhas.length + 0.1, fill: WHITE });
+
+  linhas.forEach((linha, r) => {
+    const y = 1.9 + r * ALT;
+    const cab = r === 0;
+    const destaque = linha[0] === "Fora do domínio de treino";
+
+    if (cab) {
+      s.addShape(pres.ShapeType.rect, {
+        x: TX + 0.05, y: y, w: TW - 0.1, h: ALT,
+        fill: { color: NAVY }, line: { color: NAVY, width: 0 },
+      });
+    } else if (destaque) {
+      s.addShape(pres.ShapeType.rect, {
+        x: TX + 0.05, y: y, w: TW - 0.1, h: ALT,
+        fill: { color: CORAL_SOFT }, line: { color: CORAL_SOFT, width: 0 },
+      });
+    } else if (r % 2 === 0) {
+      s.addShape(pres.ShapeType.rect, {
+        x: TX + 0.05, y: y, w: TW - 0.1, h: ALT,
+        fill: { color: "F7F9FA" }, line: { color: "F7F9FA", width: 0 },
+      });
+    }
+
+    linha.forEach((cel, c) => {
+      s.addText(cel, {
+        x: colX[c], y: y + 0.11, w: colW[c], h: 0.3,
+        fontSize: cab ? 11 : 12.5,
+        bold: cab || c === 0 || destaque,
+        color: cab ? WHITE : NAVY,
+        fontFace: SANS,
+        align: c === 0 ? "left" : "center",
+        isTextBox: true, margin: 0,
+      });
+    });
+  });
+
+  s.addText("Cada coluna resume um grupo inteiro de propostas: são médias, não um cliente só.", {
+    x: TX + 0.25, y: 1.85 + ALT * linhas.length + 0.18, w: TW - 0.5, h: 0.3,
+    fontSize: 11, italic: true, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
+  });
+
+  // --- a coluna de perguntas, à direita ---
+  const QX = M + 8.95;
+  const QW = 2.95;
+
+  s.addText("O QUE A BANCA VAI PERGUNTAR", {
+    x: QX, y: 1.9, w: QW, h: 0.3,
+    fontSize: 10.5, bold: true, color: TEAL, fontFace: SANS, charSpacing: 1.5, isTextBox: true, margin: 0,
+  });
+  s.addText(
+    "Explicar por que aprovou quem aprovou e por que cobrou o que cobrou vale 20 pontos.",
+    { x: QX, y: 2.22, w: QW, h: 0.65, fontSize: 11.5, color: NAVY, fontFace: SANS, lineSpacing: 15, isTextBox: true, margin: 0 }
+  );
+
+  s.addShape(pres.ShapeType.line, {
+    x: QX, y: 2.95, w: QW, h: 0,
+    line: { color: GREY_LIGHT, width: 1 },
+  });
+
+  const perguntas = [
+    {
+      q: "Por que negar o score 4, com PD de 15,3%?",
+      a: "A perda esperada da faixa é 11,18%. A nossa regra cobraria 2,62% ao mês para cobri-la — 65% acima do mercado de 1,59%, onde quase ninguém aceita.",
+    },
+    {
+      q: "Mas aprovar o score 4 não daria mais ROI?",
+      a: "Daria: 11,42% contra 11,33%. Recusamos 0,09 ponto para manter 12,7% de folga até o guard-rail, em vez de 7,6%.",
+    },
+    {
+      q: "Os negados são só o perfil fora do domínio?",
+      a: "Não. 72% deles estão fora, mas 28% são perfis que o modelo conhece bem — e mesmo assim têm PD alta.",
+    },
+  ];
+
+  let qy = 3.1;
+  perguntas.forEach((pq) => {
+    s.addText(pq.q, {
+      x: QX, y: qy, w: QW, h: 0.5,
+      fontSize: 11.5, bold: true, color: NAVY, fontFace: SANS, lineSpacing: 14, isTextBox: true, margin: 0,
+    });
+    s.addText(pq.a, {
+      x: QX, y: qy + 0.42, w: QW, h: 0.85,
+      fontSize: 10.5, color: GREY, fontFace: SANS, lineSpacing: 13, isTextBox: true, margin: 0,
+    });
+    qy += 1.24;
+  });
+}
+
+/* ========================================================================== */
+/* 11 · O achado dos 15%                                                       */
 /* ========================================================================== */
 {
   const s = pres.addSlide();
