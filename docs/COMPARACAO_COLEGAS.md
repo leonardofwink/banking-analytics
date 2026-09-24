@@ -38,6 +38,9 @@ LGD do professor e as premissas de aceite dele:
 > seção 3 mostra que a conclusão não muda com nenhuma das versões da tabela
 > dele.
 >
+> As afirmações dos dois documentos foram conferidas contra as bases: a do
+> Deni na seção 3b, a do Marcelo na 4.0.
+>
 > **O ROI cresce de cima para baixo, e a viabilidade cai junto.** É a mesma
 > troca que aparece em todo o resto: ROI se compra com volume.
 
@@ -285,6 +288,92 @@ que muda é o tamanho da violação.
 
 Três coisas, e todas são adotáveis.
 
+### 4.0 🔑 O material dele resiste à conferência
+
+O documento do Marcelo é o mais rico em números verificáveis dos três. Testei
+cada afirmação contra as bases do professor e contra o CSV que ele submeteu
+(`python/analises/22_conferir_marcelo.py`). **Dezesseis de dezoito batem.**
+
+**O que ele diz sobre a Base C — tudo confere:**
+
+| Afirmação dele | Medido |
+| -------------- | ------ |
+| "39% (1.973) têm bureau < 460, 3+ restrições ou LTV > 95%" | ✅ 39,5% / **1.973** |
+| "38% caem no score 1" | ✅ 37,9% |
+| "3.102 propostas nos scores 2 a 10" | ✅ 3.104 |
+| "2.461 aprovadas depois das regras" | ✅ **2.461** |
+| "aprovar do score 5 daria 35,2%" | ✅ 34,9% |
+| "do score 2, 62% antes das regras" | ✅ 62,1% |
+
+**O que ele diz sobre a Base A — tudo confere:**
+
+| Afirmação dele | Medido |
+| -------------- | ------ |
+| "default de 8,67% (2022)" | ✅ 8,67% |
+| "8,94% (2023)" | ✅ 8,94% |
+| "7,18% (2024)" | ✅ 7,18% |
+| "ausentes: renda 7,7%" | ✅ 7,7% |
+
+**A tabela contra o CSV — tudo confere:**
+
+| Item | No documento | No CSV |
+| ---- | ------------ | ------ |
+| Aprovação | 49,2% | ✅ 49,2% |
+| Taxa | 1,85% a 2,18%, ~1,95% | ✅ 1,85%–2,18%, média 1,96% |
+| Prazos | 60, e 48 nos scores 2 e 3 | ✅ 48 e 60 |
+| Entradas | 5% a 15% | ✅ 5%, 10%, 15% |
+| Score mínimo | "scores 2 a 10" | ✅ 2 |
+| Score de cada linha | pelos cortes publicados | ✅ bate em 98,2% |
+
+**As afirmações econômicas:**
+
+| Afirmação dele | Medido |
+| -------------- | ------ |
+| "perda de 2,0% do financiado no score 10" | ✅ 2,0% |
+| "8,2% no score 2" | ✅ 8,5% |
+| "precisa de ~45% de aceite para R$ 40 mi" | ✅ 45,2% |
+| "ROI ~12% (11,8% a 12,3%)" | ≈ 13,16% |
+| **"os juros somam cerca de 48% do volume"** | ❌ **67,1%** |
+
+### A única divergência de verdade: os 48% de juros
+
+Com taxa média de 1,96% e prazo médio de 57,3 meses, os juros somam **67,1%**
+do valor financiado. Para dar 48% seria preciso cobrar 1,45% ao mês.
+
+A explicação mais provável é troca de denominador:
+
+| Cálculo | Resultado |
+| ------- | --------- |
+| juros ÷ valor **financiado** | 67,1% |
+| **juros ÷ valor do bem** | **49,9%** ← perto dos 48% |
+| juros ÷ total pago | 40,2% |
+
+**É lapso de redação, não de cálculo.** Se ele tivesse usado 48% na conta do
+ROI, o resultado seria 9%, não os 12% que ele reporta — e os 12% conferem. O
+parágrafo está errado; o número que importa, não.
+
+### A validação dele contra o default real de 2024
+
+Refiz o teste que ele descreve — aplicar os preços da V3 aos contratos de 2024
+com os defaults observados:
+
+| | ROI |
+| - | --- |
+| ele reporta | 12,4% |
+| refazendo aqui | **13,46%** |
+
+A diferença de 1 ponto é esperada: a reprodução usa o modelo do Léo para
+atribuir o score, não o dele. **A ordem de grandeza confere, e é a única
+evidência do grupo que não depende do simulador de aceite.**
+
+### O que isso quer dizer
+
+O material do Marcelo é o mais auditável dos três. Números como "1.973
+propostas" e "2.461 aprovadas" batem **exatamente**, o que só acontece quando
+o documento é gerado a partir do mesmo código que produziu o CSV.
+
+É o único dos três em que o CSV e o documento contam a mesma história.
+
 ### 4.1 Restrições monotônicas no modelo
 
 Ele obriga o modelo a respeitar a direção conhecida de cada variável (mais
@@ -301,21 +390,6 @@ de 0,06 contra 0,147 do Léo**, com AuROC igual ou melhor.
 São **exatamente os limites da Base A** que apareceram quando o Léo foi
 investigar as hard rules do Deni: bureau mínimo 460, máximo 2 restrições. O
 Marcelo chegou lá por conta própria, e com o argumento de domínio.
-
-### 4.0 A submissão dele está completa e consistente
-
-Conferido item a item contra o documento:
-
-| | No CSV dele | No documento dele | |
-| - | ----------- | ----------------- | - |
-| Aprovação | 49,2% | 49,2% | ✅ |
-| Taxa | 1,85% a 2,18%, média 1,96% | 1,85% a 2,18%, ~1,95% | ✅ |
-| Prazos ofertados | 48 e 60 | 60 (48 nos scores 2 e 3) | ✅ |
-| Entradas | 5%, 10%, 15% | 5% a 15% | ✅ |
-| Score mínimo aprovado | 2 | "scores 2 a 10" | ✅ |
-
-**Nenhuma divergência.** É o único dos três materiais em que o CSV e o
-documento contam a mesma história.
 
 ### 4.3 Uma validação que ninguém mais fez
 
