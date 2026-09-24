@@ -220,8 +220,8 @@ Separando o que é fato do que é premissa:
 
 **Fatos** — não dependem de quem simula:
 
-| | |
-| - | - |
+| O que está errado | Quanto custa |
+| ----------------- | ------------ |
 | Os ids (`CT-10001` × `T000001`) não cruzam | ❌ custa os dois entregáveis |
 | A política tem 10 linhas, não 5.000 | ❌ custa o entregável 2 |
 | A LGD de 40% contra os 67,8% da tabela | vale 0,44 ponto de ROI |

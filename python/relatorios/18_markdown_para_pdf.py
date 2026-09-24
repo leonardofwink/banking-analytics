@@ -46,6 +46,7 @@ p { margin: 0 0 7pt; text-align: justify; }
 blockquote {
   margin: 10pt 0; padding: 9pt 13pt; background: #F2F4F6;
   border-left: 3pt solid #3D7A8C; font-size: 9.5pt; color: #405060;
+  page-break-inside: avoid;
 }
 blockquote p { margin: 0 0 4pt; text-align: left; }
 blockquote p:last-child { margin-bottom: 0; }
