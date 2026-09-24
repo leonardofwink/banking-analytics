@@ -44,12 +44,29 @@ LGD do professor e as premissas de aceite dele:
 **A do Léo é a única que sobrevive aos guard-rails nos três cenários** — e é
 a que entrega o menor ROI das três. Não é coincidência: é o preço da folga.
 
-Com a ressalva honesta: isso é no simulador do Léo, com as elasticidades dele.
-O Marcelo usa premissas de aceite diferentes e, com elas, a política dele
-passa no volume. Ninguém sabe qual está certa — é a premissa mais frágil dos
-três trabalhos, e os três a declaram. O que o motor comum mostra não é quem
-está certo, e sim **quanta folga cada política tem se o cliente for mais
-sensível a preço do que se supôs**.
+### ⚠️ Mas a tabela acima não diz que as outras estão erradas
+
+Ela roda as três políticas com **as elasticidades de aceite do Léo**, que são
+uma premissa calibrada por argumento — não uma medição. Ninguém do grupo sabe
+a intensidade real, e o professor não revelou.
+
+Trocando a premissa, a ordem muda. **Com aceite de 100% — a premissa do Deni —
+e os parâmetros de EAD e LGD do professor:**
+
+| | ROI | Volume | Inadimplência | Guard-rails |
+| - | --- | ------ | ------------- | ----------- |
+| **Deni** | **15,73%** | R$ 89,7 mi | 4,77% | ✅ **todos** |
+| Léo | 11,68% | R$ 108,0 mi | 6,12% | ✅ todos |
+
+**O Deni está certo: a política dele bate a meta de 15% e passa em todos os
+guard-rails, dentro das premissas dele.** E isso não depende da LGD de 40%
+dele — o número acima já usa a tabela do professor.
+
+A tabela do resumo mede outra coisa: **quanta folga cada política tem se o
+cliente for mais sensível a preço do que se supôs.** A do Léo aguenta mais
+porque cobra menos; a do Deni entrega mais porque cobra mais. São apostas
+diferentes sobre o mesmo desconhecido, e a seção 3 mostra exatamente onde
+cada uma quebra.
 
 ---
 
@@ -152,17 +169,37 @@ Ou seja: **o volume dele não está inflado. Está cerca de 3× subestimado.** S
 ele refizer a conta com os valores reais, o volume dele sobe muito — e o
 guard-rail de R$ 40 mi deixa de ser problema, desde que o aceite colabore.
 
-### O que a política dele faz no motor do Léo
+### A política dele, de premissa em premissa
 
-| Cenário | Volume | Aceite | ROI | |
-| ------- | ------ | ------ | --- | - |
-| otimista | R$ 57,1 mi | 62,6% | 14,58% | ✅ |
-| **central** | **R$ 38,2 mi** | 41,6% | 13,78% | ❌ volume |
-| pessimista | R$ 22,3 mi | 24,0% | 12,91% | ❌ volume |
+Este é o ponto que decide a comparação — e que o Deni levantou na reunião de
+24/09, com razão. O que muda entre 15,7% e 13,8% **não é a conta da perda**: é
+quanto cliente desiste quando o preço sobe.
 
-A taxa média de 2,41% ao mês — 51% acima do mercado de 1,59% — derruba o
-aceite para 41,6% no cenário central. **É o aceite que fura o volume, não o
-tamanho do contrato.**
+| Premissa de aceite | Aceite | Volume | ROI | Guard-rails |
+| ------------------ | ------ | ------ | --- | ----------- |
+| **nenhuma fuga (a do Deni)** | 100% | **R$ 89,7 mi** | **15,73%** | ✅ **todos** |
+| 20% da elasticidade do Léo | 72,0% | R$ 65,0 mi | 14,94% | ✅ todos |
+| 50% da elasticidade do Léo | 57,5% | R$ 52,3 mi | 14,53% | ✅ todos |
+| 80% da elasticidade do Léo | 47,0% | R$ 43,1 mi | 14,17% | ✅ todos |
+| **100% — a premissa do Léo** | 41,6% | **R$ 38,2 mi** | 13,95% | ❌ volume, por R$ 1,8 mi |
+| 150% | 31,6% | R$ 29,3 mi | 13,51% | ❌ volume |
+
+**A política dele aguenta até 80% da elasticidade do Léo antes de furar.** E
+quando fura, fura por R$ 1,8 milhão num piso de R$ 40 — não é um colapso.
+
+Ou seja: **a divergência entre os dois trabalhos é uma única premissa**, e
+nenhum dos dois a mediu. O Deni assume que o cliente não foge; o Léo assume
+que foge bastante, calibrado pelo argumento de que um teto de 3,5% só é
+guard-rail se as políticas quiserem chegar perto dele.
+
+O que o enunciado diz, e que pesa contra o aceite de 100%:
+
+> *"Taxa alta afasta o cliente. Ele tem concorrente. Preço acima do mercado
+> derruba a taxa de aceite, e proposta não aceita não gera receita nenhuma."*
+
+A taxa média dele é de 2,41% ao mês, 51% acima do mercado de 1,59%. Alguma
+fuga é certa; **quanta, ninguém sabe** — e é exatamente aí que os dois
+trabalhos se separam.
 
 ### E a aprovação de 77,9%?
 
@@ -179,13 +216,28 @@ diferentes.
 
 ### O que isso quer dizer
 
-Não dá para reproduzir os 18,4% com os parâmetros do desafio. A LGD explica
-0,44 ponto; o resto vem de cobrar mais caro **sem modelar que preço afasta
-cliente** — o enunciado diz explicitamente que afasta.
+Separando o que é fato do que é premissa:
 
-Mas o erro que mais custa a ele não é esse: é o volume 3× subestimado, que faz
-a política dele parecer mais apertada do que é. **Vale avisar, porque corrigir
-joga a favor dele.**
+**Fatos** — não dependem de quem simula:
+
+| | |
+| - | - |
+| Os ids (`CT-10001` × `T000001`) não cruzam | ❌ custa os dois entregáveis |
+| A política tem 10 linhas, não 5.000 | ❌ custa o entregável 2 |
+| A LGD de 40% contra os 67,8% da tabela | vale 0,44 ponto de ROI |
+| O contrato fixado em R$ 15.000 | subestima o volume dele em 3× |
+| O CSV e o documento trazem tabelas diferentes | ver 3b |
+
+**Premissa** — e aqui ele não está errado:
+
+O ROI acima de 15% **se sustenta** com os parâmetros do professor, desde que o
+aceite seja alto. Não é artefato da LGD. É uma aposta sobre o comportamento do
+cliente — e ele pode ganhar essa aposta.
+
+**Se o simulador do professor for pouco elástico, a política do Deni é melhor
+que a do Léo.** Se for elástico como o Léo supôs, ela fura o volume por R$ 1,8
+milhão e perde metade da nota de política. É esse o trade-off que o grupo
+precisa decidir, e não dá para decidir por argumento.
 
 ## 3b. ⚠️ O material do Deni é internamente inconsistente
 
@@ -360,20 +412,25 @@ estar errada por um fator de cinco.
 
 ## 7. O que fazer com isto
 
-**Urgente — avisar o Deni.** Três coisas, em ordem de custo:
+**Urgente — avisar o Deni.** Quatro coisas, em ordem de custo:
 
 1. **Os ids** (`CT-10001` contra `T000001`) e a política com 10 linhas em vez
    de 5.000 — invalidam os dois entregáveis, e são 15 minutos de conserto.
-2. **A LGD de 40%** contra os 67,8% da tabela do professor.
-3. **O contrato fixado em R$ 15.000**, que subestima o volume dele em 3×.
-   Corrigir isso joga a favor dele.
+   **Isto é o que importa; o resto é refinamento.**
+2. **As duas versões da tabela** (seção 3b) — decidir qual vale.
+3. **A LGD de 40%** contra os 67,8% da tabela do professor.
+4. **O contrato fixado em R$ 15.000**, que subestima o volume dele em 3×.
+   Corrigir joga a favor dele.
+
+Nada disso invalida o ROI acima de 15% dele, que se sustenta com os
+parâmetros corretos desde que o aceite seja alto.
 
 **Para a submissão do grupo**, a leitura que os números sustentam:
 
 | Peça | De quem | Por quê |
 | ---- | ------- | ------- |
 | Modelo de PD | **Marcelo** | AuROC 0,72–0,75 com folga de 0,06; monotonicidade resolve o sobreajuste |
-| Política e preço | **Léo** | única viável nos três cenários, com folga medida |
+| Política e preço | **a decidir** | Léo se o aceite for elástico; Deni se não for — ver seção 3 |
 | Regras de exclusão | **Marcelo** | mesmos limites que o Léo achou, com o argumento de domínio |
 | Validação contra default real | **Marcelo** | âncora que não depende do simulador |
 | Documento e defesa | **Léo** | cadeia completa, com a lacuna dos 15% medida e declarada |
