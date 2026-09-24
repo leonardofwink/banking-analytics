@@ -1,14 +1,14 @@
 """S15 · Comparação com o material dos colegas.
 
 Três submissões do mesmo grupo, três resultados muito diferentes de ROI:
-nós 11,3%, Marcelo ~12%, Deni 18,4%. Só uma dessas diferenças pode ser
+Léo 11,3%, Marcelo ~12%, Deni 18,4%. Só uma dessas diferenças pode ser
 real — o resto é diferença de premissa.
 
 Este script compara o que é comparável:
 
 1. **Formato** — o que o professor cruza. Erro aqui custa o bloco inteiro.
 2. **Modelos** — as PDs na Base B, lado a lado.
-3. **Políticas** — cada uma rodada no MESMO motor de ROI, o nosso. É a
+3. **Políticas** — cada uma rodada no MESMO motor de ROI, o do Léo. É a
    única forma de saber se 18,4% é política melhor ou conta diferente.
 
 Rodar::
@@ -121,8 +121,8 @@ def main() -> int:
     print("2. MODELOS — as PDs na Base B, lado a lado")
     print("=" * 78)
 
-    nosso_pd = pd.Series(escorar(base_b), index=base_b["id_contrato"], name="nos")
-    series = {"nós": nosso_pd}
+    pd_leo = pd.Series(escorar(base_b), index=base_b["id_contrato"], name="leo")
+    series = {"Léo": pd_leo}
 
     for quem, col_id, col_pd, sep in (
         ("deni", "id_contrato", "probabilidade_default_pd", ";"),
@@ -153,9 +153,9 @@ def main() -> int:
 
     # ================================================================= 3
     print("\n" + "=" * 78)
-    print("3. POLÍTICAS — as três no MESMO motor (o nosso)")
+    print("3. POLÍTICAS — as três no MESMO motor (o do Léo)")
     print("=" * 78)
-    print("\nAplicando cada tabela de preços sobre as NOSSAS PDs da base C.")
+    print("\nAplicando cada tabela de preços sobre as PDs do Léo na base C.")
     print("Assim a diferença que sobra é de política, não de modelo.\n")
 
     p = preparar_base_c(base_c)
@@ -236,7 +236,7 @@ def main() -> int:
     # a nossa
     nossa = gerar_politica(**POLITICA_ESCOLHIDA, perda_por_faixa=perda_faixa)
     of = aplicar_politica(p, nossa, escorar=escorar)
-    resultados["nós (score >= 5)"] = {n: simular(of, n) for n in CENARIOS}
+    resultados["Léo (score >= 5)"] = {n: simular(of, n) for n in CENARIOS}
 
     # as deles
     # O Marcelo declara regras de exclusao aplicadas ANTES da tabela. Compara-lo
@@ -297,7 +297,7 @@ def main() -> int:
 
     # ================================================================= 5
     print("\n" + "=" * 78)
-    print("5. E SE NÓS USÁSSEMOS OS PARÂMETROS DELE?")
+    print("5. E SE O LÉO USASSE OS PARÂMETROS DELE?")
     print("=" * 78)
     print("\nMesma política nossa, só trocando EAD e LGD pelos números do Deni.\n")
 

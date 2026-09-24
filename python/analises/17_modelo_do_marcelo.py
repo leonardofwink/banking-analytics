@@ -1,4 +1,4 @@
-"""A NOSSA politica, rodada sobre o modelo do Marcelo.
+"""A politica do LEO, rodada sobre o modelo do Marcelo.
 
 Ele submeteu a PD das 5.000 propostas da base C. Se a ordenacao dele for
 melhor, a mesma tabela de precos rende mais — e essa e a unica alavanca que
@@ -25,7 +25,7 @@ p["pd_marcelo"] = p["id_proposta"].map(m).to_numpy()
 print(f"PDs do Marcelo casadas: {p['pd_marcelo'].notna().sum():,} de {len(p):,}")
 print(f"\ncorrelacao de Spearman entre os dois modelos: "
       f"{p[['pd_nossa','pd_marcelo']].corr(method='spearman').iloc[0,1]:.3f}")
-print(f"PD media  — nossa {p['pd_nossa'].mean():.2%} · Marcelo {p['pd_marcelo'].mean():.2%}")
+print(f"PD media  — Leo {p['pd_nossa'].mean():.2%} · Marcelo {p['pd_marcelo'].mean():.2%}")
 
 for qual in ("pd_nossa", "pd_marcelo"):
     p["pd"] = p[qual]
@@ -41,8 +41,8 @@ for qual in ("pd_nossa", "pd_marcelo"):
     res = {n: simular(of, n) for n in CENARIOS}
     c = res["central"]
     viola = [v for r in res.values() for v in r.violacoes]
-    rot = "NOSSO modelo" if qual == "pd_nossa" else "modelo do MARCELO"
-    print(f"\n--- nossa politica sobre o {rot} ---")
+    rot = "modelo do LEO" if qual == "pd_nossa" else "modelo do MARCELO"
+    print(f"\n--- politica do Leo sobre o {rot} ---")
     print(f"  aprovacao {c.taxa_aprovacao:.1%} · ROI {c.roi_anual:.2%} · "
           f"volume central R$ {c.volume_originado/1e6:.1f} mi")
     print(f"  volume pior R$ {min(r.volume_originado for r in res.values())/1e6:.1f} mi · "
