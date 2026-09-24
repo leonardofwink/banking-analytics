@@ -64,6 +64,11 @@ code {
   font-family: Consolas, "Courier New", monospace; font-size: 8.5pt;
   background: #F2F4F6; padding: 1pt 3pt; border-radius: 2pt; color: #16293A;
 }
+pre {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #16293A; color: #F2F4F6; padding: 9pt 12pt; border-radius: 3pt;
+  margin: 9pt 0 12pt; white-space: pre-wrap; word-break: break-word;
+}
 strong { color: #16293A; }
 hr { border: none; border-top: 0.75pt solid #DDE3E8; margin: 16pt 0; }
 ul, ol { margin: 0 0 8pt; padding-left: 16pt; }
@@ -115,13 +120,35 @@ def para_html(markdown: str, titulo: str) -> str:
             saida.append("</tbody></table>")
             continue
 
-        if cru.startswith("> "):
+        if cru.startswith(">"):
             bloco = []
             while i < len(linhas) and linhas[i].strip().startswith(">"):
                 bloco.append(linhas[i].strip().lstrip(">").strip())
                 i += 1
-            texto = "<br>".join(_inline(b) if b else "" for b in bloco)
-            saida.append(f"<blockquote><p>{texto}</p></blockquote>")
+            # Junta os parágrafos ANTES de formatar: ênfase que atravessa a
+            # quebra de linha não fecha se cada linha for tratada sozinha.
+            paragrafos, atual = [], []
+            for linha_bloco in bloco:
+                if linha_bloco:
+                    atual.append(linha_bloco)
+                elif atual:
+                    paragrafos.append(" ".join(atual))
+                    atual = []
+            if atual:
+                paragrafos.append(" ".join(atual))
+            corpo = "".join(f"<p>{_inline(x)}</p>" for x in paragrafos)
+            saida.append(f"<blockquote>{corpo}</blockquote>")
+            continue
+
+        if cru.startswith("```"):
+            i += 1
+            bloco = []
+            while i < len(linhas) and not linhas[i].strip().startswith("```"):
+                bloco.append(linhas[i])
+                i += 1
+            i += 1  # fecha a cerca
+            texto = _html.escape("\n".join(bloco), quote=False)
+            saida.append(f"<pre>{texto}</pre>")
             continue
 
         if cru.startswith("### "):
@@ -158,7 +185,7 @@ def para_html(markdown: str, titulo: str) -> str:
             # parágrafo: junta as linhas até a próxima em branco
             bloco = []
             while i < len(linhas) and linhas[i].strip() and not linhas[i].strip().startswith(
-                    ("#", ">", "|", "---", "- ", "* ")):
+                    ("#", ">", "|", "---", "- ", "* ", "```")):
                 bloco.append(linhas[i].strip())
                 i += 1
             saida.append(f"<p>{_inline(' '.join(bloco))}</p>")
