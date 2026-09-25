@@ -782,11 +782,136 @@ const slide = () => { n += 1; return pres.addSlide(); };
   });
 }
 
-/* ========================================================== 13 · Perfil */
+/* ================================================= 13 · A base de dados */
 {
   const s = slide();
   const c = moldura(pres, s, {
     kicker: "Apêndice A1",
+    titulo: "Catorze variáveis entram no modelo — e seis ficam de fora\npor decisão, não por descuido",
+    casoPede: "Nem toda coluna existia no momento da concessão. Um modelo que usa informação do futuro não vale nada em produção.",
+    perguntas: [
+      { q: "Por que agrupar em faixas?",
+        a: "Política de crédito é tabela de regras, não modelo. O score de 1 a 10 transforma uma PD contínua em dez linhas que a operação executa e o regulador audita." },
+    ],
+    rodape: "Entregável 1 · sem vazamento, split correto, Pipeline",
+    numero: n,
+  });
+
+  // Duas colunas dentro do corpo. O rodapé começa em 6,48: tudo tem de fechar
+  // antes de 6,35, e o cartão de fecho ocupa os últimos 0,50.
+  const COL = 3.78;
+  const X2 = c.x + COL + 0.34;
+
+  // ------------------------------------------------- coluna 1 · o que entra
+  s.addText("O QUE ENTRA — 14 PREDITORAS", {
+    x: c.x, y: c.y, w: COL, h: 0.24,
+    fontSize: 9.5, bold: true, color: TEAL, fontFace: SANS, charSpacing: 1.2,
+    isTextBox: true, margin: 0,
+  });
+  const grupos = [
+    ["Contrato", "valor financiado · LTV · prazo · idade do veículo"],
+    ["Cliente", "idade · renda · tempo de emprego · ocupação · residência"],
+    ["Bureau", "score · restrições ativas · consultas em 3 meses"],
+    ["Originação", "canal · avalista"],
+  ];
+  cartao(s, { x: c.x, y: c.y + 0.28, w: COL, h: 1.60, fill: WHITE });
+  grupos.forEach((g, i) => {
+    const y = c.y + 0.38 + i * 0.36;
+    s.addText(g[0], {
+      x: c.x + 0.14, y, w: 0.92, h: 0.18,
+      fontSize: 10, bold: true, color: NAVY, fontFace: SANS, isTextBox: true, margin: 0,
+    });
+    s.addText(g[1], {
+      x: c.x + 1.06, y: y - 0.01, w: COL - 1.2, h: 0.34,
+      fontSize: 9, color: GREY, fontFace: SANS, lineSpacing: 11,
+      isTextBox: true, margin: 0,
+    });
+  });
+
+  // -------------------------------------------- coluna 1 · o que fica fora
+  s.addText("O QUE FICA DE FORA — E POR QUÊ", {
+    x: c.x, y: c.y + 2.04, w: COL, h: 0.24,
+    fontSize: 9.5, bold: true, color: CORAL, fontFace: SANS, charSpacing: 1.2,
+    isTextBox: true, margin: 0,
+  });
+  const fora = [
+    ["qtd_parcelas_em_atraso_12m", "está nas três bases — mas é zero em B e C", true],
+    ["mes_default · ead e lgd realizados · perda", "só existem para quem já deu calote", false],
+    ["comprometimento_renda", "depende da parcela que nós mesmos decidimos", false],
+  ];
+  cartao(s, { x: c.x, y: c.y + 2.32, w: COL, h: 1.36, fill: WHITE });
+  fora.forEach((f, i) => {
+    const y = c.y + 2.42 + i * 0.40;
+    if (f[2]) {
+      s.addShape(pres.ShapeType.rect, {
+        x: c.x + 0.05, y: y - 0.04, w: COL - 0.1, h: 0.38,
+        fill: { color: CORAL_SOFT }, line: { color: CORAL_SOFT, width: 0 },
+      });
+    }
+    s.addText(f[0], {
+      x: c.x + 0.14, y, w: COL - 0.28, h: 0.17,
+      fontSize: 9, bold: true, color: f[2] ? CORAL : NAVY, fontFace: SANS,
+      isTextBox: true, margin: 0,
+    });
+    s.addText(f[1], {
+      x: c.x + 0.14, y: y + 0.16, w: COL - 0.28, h: 0.17,
+      fontSize: 8.5, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
+    });
+  });
+
+  // ------------------------------------------------ coluna 2 · as faixas
+  s.addText("AS FAIXAS QUE USAMOS", {
+    x: X2, y: c.y, w: COL, h: 0.24,
+    fontSize: 9.5, bold: true, color: TEAL, fontFace: SANS, charSpacing: 1.2,
+    isTextBox: true, margin: 0,
+  });
+  const faixas = [
+    ["SCORE", "1 a 10, por cortes de PD — escolha nossa",
+     "2,5% · 3,5% · 5% · 7% · 9,5%\n13% · 18% · 25% · 35%", 0.95, true],
+    ["LTV", "5 faixas — da tabela do enunciado",
+     "até 60% · 60–70% · 70–80% · 80–90% · > 90%", 0.78, false],
+    ["IDADE DO VEÍCULO", "4 faixas — da tabela de LGD",
+     "até 2 · 3–5 · 6–8 · 9 ou mais", 0.78, false],
+    ["PRAZO", "4 valores — da tabela de EAD",
+     "24 · 36 · 48 · 60 meses", 0.78, false],
+  ];
+  let yf = c.y + 0.28;
+  faixas.forEach((f) => {
+    cartao(s, { x: X2, y: yf, w: COL, h: f[3], fill: f[4] ? OFFWHITE : WHITE });
+    s.addText(f[0], {
+      x: X2 + 0.14, y: yf + 0.08, w: COL - 0.28, h: 0.19,
+      fontSize: 10, bold: true, color: f[4] ? NAVY : NAVY_MID, fontFace: SANS,
+      charSpacing: 0.4, isTextBox: true, margin: 0,
+    });
+    s.addText(f[1], {
+      x: X2 + 0.14, y: yf + 0.27, w: COL - 0.28, h: 0.17,
+      fontSize: 8.5, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
+    });
+    s.addText(f[2], {
+      x: X2 + 0.14, y: yf + 0.45, w: COL - 0.28, h: f[3] - 0.5,
+      fontSize: 9, color: NAVY, fontFace: SANS, lineSpacing: 11.5,
+      isTextBox: true, margin: 0,
+    });
+    yf += f[3] + 0.08;
+  });
+
+  // ---------------------------------------------------------------- o fecho
+  cartao(s, { x: c.x, y: 5.78, w: CORPO_L, h: 0.5, fill: NAVY, linha: NAVY });
+  s.addText(
+    [
+      { text: "Três das quatro faixas não são nossas: ", options: { color: WHITE, bold: true } },
+      { text: "LTV, idade e prazo vêm das tabelas de EAD e LGD do enunciado. A de score é a única que escolhemos — e é ela que vira a tabela de dez linhas da política.", options: { color: GREY_ESCURO } },
+    ],
+    { x: c.x + 0.28, y: 5.88, w: CORPO_L - 0.56, h: 0.32, fontSize: 10.5, fontFace: SANS,
+      lineSpacing: 13, isTextBox: true, margin: 0 }
+  );
+}
+
+/* ========================================================== 14 · Perfil */
+{
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Apêndice A2",
     titulo: "Aprovamos 59,5% das propostas: bureau 206 pontos mais alto,\nrenda 70% maior e um terço das restrições",
     casoPede: "Explicar por que aprovou quem aprovou e por que cobrou o que cobrou.",
     perguntas: [
@@ -850,7 +975,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
 {
   const s = slide();
   const c = moldura(pres, s, {
-    kicker: "Apêndice A2",
+    kicker: "Apêndice A3",
     titulo: "A Base C é outra população — por isso os cortes de score\nsão absolutos, e não quantis",
     casoPede: "A Base C é de mar aberto: inclui perfis que a AutoCred recusava. É a inferência de rejeitados.",
     perguntas: [
@@ -898,7 +1023,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
 {
   const s = slide();
   const c = moldura(pres, s, {
-    kicker: "Apêndice A3",
+    kicker: "Apêndice A4",
     titulo: "O capital não fica parado quatro anos — ele volta em parcelas,\ne isso muda a leitura do retorno",
     casoPede: "ROI anual = (juros − perda) ÷ volume financiado ÷ prazo médio em anos. É a régua oficial, e é por ela que submetemos.",
     perguntas: [
