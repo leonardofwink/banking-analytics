@@ -288,8 +288,8 @@ const slide = () => { n += 1; return pres.addSlide(); };
     titulo: "O XGBoost ordena risco fora do tempo — depois de removermos a coluna\nque daria AuROC imbatível no treino e destruiria a aplicação",
     casoPede: "Modelo de PD 90/12 que ordene bem o risco, sem vazamento. Métrica oficial: AuROC na Base B.",
     perguntas: [
-      { q: "Como sabem que não há vazamento?",
-        a: "A coluna foi medida e removida na ingestão, e um teste automatizado falha se ela reaparecer. Outras três saíram pelo mesmo motivo." },
+      { q: "O que é vazamento?",
+        a: "É treinar o modelo com informação que só existe DEPOIS da decisão. Ele acerta o passado e fracassa no futuro, porque na hora de decidir aquele dado ainda não nasceu." },
       { q: "Por que não o Random Forest, que empata?",
         a: "Com reponderação ele projetava PD média de 42,3% contra 7,2% observados. Ordena bem, mas o nível não serve para precificar." },
     ],
@@ -307,18 +307,30 @@ const slide = () => { n += 1; return pres.addSlide(); };
     fontSize: 11.5, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0,
   });
 
+  s.addText(
+    [
+      { text: "Quantas parcelas o cliente atrasou ", options: { color: NAVY } },
+      { text: "depois", options: { color: CORAL, bold: true } },
+      { text: " de receber o crédito. Na hora de decidir, esse número ainda não existe — e é isso que se chama ", options: { color: NAVY } },
+      { text: "vazamento", options: { color: NAVY, bold: true } },
+      { text: ": o modelo aprende com o futuro e não sabe decidir no presente.", options: { color: NAVY } },
+    ],
+    { x: c.x, y: 3.1, w: CORPO_L, h: 0.5, fontSize: 12, fontFace: SANS,
+      lineSpacing: 16, isTextBox: true, margin: 0 }
+  );
+
   const linhas = [
     ["Modelo", "Val. cruzada", "Validação 2024", "Decisão"],
     ["Regressão logística", "0,6391", "0,6489", "referência"],
     ["Random Forest", "—", "0,7159", "descartado por calibração"],
     ["XGBoost", "0,6948", "0,7234", "escolhido"],
   ];
-  const cx = [c.x + 0.25, c.x + 2.7, c.x + 4.3, c.x + 6.1];
-  const cw = [2.4, 1.5, 1.7, 1.8];
+  const cx = [c.x + 0.25, c.x + 2.6, c.x + 4.1, c.x + 5.8];
+  const cw = [2.3, 1.4, 1.6, 1.9];
 
-  cartao(s, { x: c.x, y: 3.25, w: CORPO_L, h: 1.7, fill: WHITE });
+  cartao(s, { x: c.x, y: 3.7, w: CORPO_L, h: 1.7, fill: WHITE });
   linhas.forEach((linha, r) => {
-    const y = 3.4 + r * 0.37;
+    const y = 3.85 + r * 0.37;
     const cab = r === 0;
     const esc = linha[0] === "XGBoost";
     if (esc) {
@@ -338,18 +350,18 @@ const slide = () => { n += 1; return pres.addSlide(); };
   });
 
   s.addText("Treino 2022–2023 · validação 2024, medida uma vez só · hiperparâmetros por validação cruzada temporal", {
-    x: c.x, y: 5.05, w: CORPO_L, h: 0.3,
+    x: c.x, y: 5.5, w: CORPO_L, h: 0.3,
     fontSize: 10.5, italic: true, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
   });
 
-  cartao(s, { x: c.x, y: 5.45, w: CORPO_L, h: 0.8, fill: CORAL_SOFT, linha: CORAL });
+  cartao(s, { x: c.x, y: 5.85, w: CORPO_L, h: 0.42, fill: CORAL_SOFT, linha: CORAL });
   s.addText(
     [
       { text: "Ganhar nas duas medidas afasta a sorte. ", options: { bold: true, color: NAVY } },
       { text: "E a escolha final foi por calibração, não por AuROC: a perda é PD × EAD × LGD, e a taxa sai dela.", options: { color: NAVY } },
     ],
-    { x: c.x + 0.3, y: 5.65, w: CORPO_L - 0.6, h: 0.5, fontSize: 11.5, fontFace: SANS,
-      lineSpacing: 15, isTextBox: true, margin: 0 }
+    { x: c.x + 0.3, y: 5.94, w: CORPO_L - 0.6, h: 0.28, fontSize: 10.5, fontFace: SANS,
+      isTextBox: true, margin: 0 }
   );
 }
 
@@ -875,6 +887,92 @@ const slide = () => { n += 1; return pres.addSlide(); };
     { x: c.x, y: 5.05, w: CORPO_L, h: 0.7, fontSize: 12, italic: true, color: GREY,
       fontFace: SANS, lineSpacing: 16, isTextBox: true, margin: 0 }
   );
+}
+
+/* ================================================== 15 · O capital que gira */
+{
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Apêndice A3",
+    titulo: "O capital não fica parado quatro anos — ele volta em parcelas,\ne isso muda a leitura do retorno",
+    casoPede: "ROI anual = (juros − perda) ÷ volume financiado ÷ prazo médio em anos. É a régua oficial, e é por ela que submetemos.",
+    perguntas: [
+      { q: "Então o ROI de 11,3% está subestimado?",
+        a: "Pela régua do conselho, não: ela é a mesma para todos os grupos. Mas ela divide pelo originado, como se o dinheiro ficasse imobilizado — e ele não fica." },
+      { q: "E aplicar o que volta no CDI?",
+        a: "Renderia, mas traz junto o custo de captação: o saldo devedor médio é maior que o caixa ocioso médio, então o líquido é negativo." },
+    ],
+    rodape: "5 · ROI anual = [(juros − perda realizada) ÷ volume financiado] ÷ prazo médio em anos",
+    numero: n,
+  });
+
+  [
+    { v: "R$ 66,7 mi", r: "volume originado:\no denominador da régua" },
+    { v: "R$ 38,3 mi", r: "saldo devedor médio:\no capital de fato empregado" },
+    { v: "57%", r: "do originado é o que\nfica realmente na rua", cor: CORAL },
+  ].forEach((d, i) => {
+    destaque(s, { x: c.x + i * 2.7, y: c.y, w: 2.55, valor: d.v, rotulo: d.r,
+                  cor: d.cor || NAVY, tamanho: 25 });
+  });
+
+  cartao(s, { x: c.x, y: 3.45, w: 3.85, h: 1.3, fill: WHITE });
+  s.addText("Pela régua do conselho", {
+    x: c.x + 0.28, y: 3.62, w: 3.3, h: 0.28,
+    fontSize: 12, bold: true, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
+  });
+  s.addText("11,33%", {
+    x: c.x + 0.28, y: 3.9, w: 3.3, h: 0.45,
+    fontSize: 27, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
+  s.addText("(juros − perda) ÷ volume originado ÷ 4 anos", {
+    x: c.x + 0.28, y: 4.36, w: 3.3, h: 0.28,
+    fontSize: 10, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
+  });
+
+  cartao(s, { x: c.x + 4.05, y: 3.45, w: 3.85, h: 1.3, fill: NAVY, linha: NAVY });
+  s.addText("Sobre o capital empregado", {
+    x: c.x + 4.33, y: 3.62, w: 3.3, h: 0.28,
+    fontSize: 12, bold: true, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0,
+  });
+  s.addText("19,72%", {
+    x: c.x + 4.33, y: 3.9, w: 3.3, h: 0.45,
+    fontSize: 27, bold: true, color: CORAL, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
+  s.addText("a mesma receita, sobre o saldo médio", {
+    x: c.x + 4.33, y: 4.36, w: 3.3, h: 0.28,
+    fontSize: 10, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0,
+  });
+
+  s.addText("E se o que volta fosse aplicado no CDI? O balanço tem dois lados.", {
+    x: c.x, y: 4.92, w: CORPO_L, h: 0.3,
+    fontSize: 12.5, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
+  s.addText(
+    "O saldo devedor médio (R$ 38,3 mi) é maior que o caixa ocioso médio (R$ 28,4 mi): quem capta paga mais do que quem aplica recebe.",
+    { x: c.x, y: 5.22, w: CORPO_L, h: 0.28, fontSize: 10.5, italic: true,
+      color: GREY, fontFace: SANS, isTextBox: true, margin: 0 }
+  );
+
+  const linhas = [
+    ["CDI", "ganho no caixa ocioso", "custo de captação", "líquido"],
+    ["9,0%", "+3,60 pp", "−4,86 pp", "−1,26 pp"],
+    ["12,0%", "+4,74 pp", "−6,40 pp", "−1,66 pp"],
+  ];
+  const cx = [c.x + 0.2, c.x + 1.6, c.x + 3.9, c.x + 6.1];
+  const cw = [1.3, 2.2, 2.1, 1.5];
+  linhas.forEach((linha, r) => {
+    const y = 5.58 + r * 0.28;
+    const cab = r === 0;
+    linha.forEach((cel, k) => {
+      s.addText(cel, {
+        x: cx[k], y, w: cw[k], h: 0.28,
+        fontSize: cab ? 10 : 11.5, bold: cab || k === 0, italic: cab,
+        color: cab ? GREY : (k === 3 ? CORAL : NAVY), fontFace: SANS,
+        align: k === 0 ? "left" : "center", isTextBox: true, margin: 0,
+      });
+    });
+  });
+
 }
 
 /* ========================================================================== */
