@@ -1,4 +1,4 @@
-<title>Simulador de Política AutoCred</title>
+<title>Simulador da Política de Crédito</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
 <style>
@@ -67,6 +67,9 @@
        font-size: clamp(26px, 4.2vw, 38px); line-height: 1.12; margin: 0 0 8px;
        text-wrap: balance; letter-spacing: -.01em; }
   .sub { color: var(--texto-2); max-width: 66ch; margin: 0; font-size: 14.5px; }
+  .nota-grade { color: var(--texto-3); max-width: 74ch; margin: 12px 0 0; font-size: 12.5px;
+    border-left: 2px solid var(--linha-forte); padding-left: 11px; }
+  .nota-grade b { color: var(--texto-2); font-weight: 600; }
 
   /* --- layout principal --------------------------------------------------- */
   .grade { display: grid; grid-template-columns: 286px minmax(0, 1fr); gap: 22px; align-items: start; }
@@ -208,10 +211,10 @@
 <div class="wrap">
   <header class="topo">
     <p class="eyebrow">AutoCred · Base C · 5.000 propostas · Grupo 3</p>
-    <h1>Toda política é uma troca entre retorno e volume</h1>
+    <h1>Simulador da Política de Crédito</h1>
     <p class="sub">
       Cada combinação de corte, preço, prazo e entrada foi simulada no mesmo motor que
-      produziu o documento — 4.480 políticas, nos três cenários de aceite. Mexa nos
+      produziu o documento — as mesmas 5.600 políticas, nos três cenários de aceite. Mexa nos
       controles e veja para onde a carteira anda. O losango marca a política que
       defendemos; o alvo, a melhor das que sobrevivem aos quatro limites.
     </p>
@@ -219,24 +222,24 @@
 
   <div class="grade">
     <aside class="painel">
-      <h2>As cinco alavancas</h2>
-      <p class="dica">As quatro do enunciado, mais o cenário de aceite.</p>
+      <h2>As seis alavancas</h2>
+      <p class="dica">As quatro do enunciado, o escalonamento da entrada e o cenário de aceite.</p>
 
       <div class="ctrl">
         <div class="ctrl-topo"><label for="c-corte">Corte de score</label><span class="v" id="v-corte"></span></div>
-        <input type="range" id="c-corte" min="0" max="4" step="1">
+        <input type="range" id="c-corte" min="0" max="9" step="1">
         <p class="nota" id="n-corte"></p>
       </div>
 
       <div class="ctrl">
         <div class="ctrl-topo"><label for="c-taxa">Taxa base</label><span class="v" id="v-taxa"></span></div>
-        <input type="range" id="c-taxa" min="0" max="3" step="1">
+        <input type="range" id="c-taxa" min="0" max="10" step="1">
         <p class="nota">o preço da melhor faixa, antes do risco</p>
       </div>
 
       <div class="ctrl">
         <div class="ctrl-topo"><label for="c-k">Prêmio de risco</label><span class="v" id="v-k"></span></div>
-        <input type="range" id="c-k" min="0" max="7" step="1">
+        <input type="range" id="c-k" min="0" max="4" step="1">
         <p class="nota" id="n-k"></p>
       </div>
 
@@ -248,8 +251,14 @@
 
       <div class="ctrl">
         <div class="ctrl-topo"><label for="c-entrada">Entrada mínima</label><span class="v" id="v-entrada"></span></div>
-        <input type="range" id="c-entrada" min="0" max="6" step="1">
+        <input type="range" id="c-entrada" min="0" max="5" step="1">
         <p class="nota" id="n-entrada"></p>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-topo"><label for="c-passo">Escalonamento</label><span class="v" id="v-passo"></span></div>
+        <input type="range" id="c-passo" min="0" max="1" step="1">
+        <p class="nota" id="n-passo"></p>
       </div>
 
       <div class="ctrl">
@@ -294,7 +303,7 @@
       <section class="bloco" aria-labelledby="h-cv">
         <h2 id="h-cv">A curva da alavanca, e onde ela vira</h2>
         <p class="desc">
-          Com as outras quatro alavancas travadas onde você as deixou, o que acontece
+          Com as outras cinco alavancas travadas onde você as deixou, o que acontece
           ao mexer em uma. A linha tracejada é o nosso modelo; a sólida, o seu cenário.
         </p>
         <div class="busca-linha">
@@ -305,6 +314,7 @@
             <option value="entrada_base">entrada mínima</option>
             <option value="prazo_max">prazo ofertado</option>
             <option value="taxa_base">taxa base</option>
+            <option value="entrada_passo">escalonamento da entrada</option>
           </select>
         </div>
         <div class="duplo">
@@ -390,30 +400,37 @@
       '<div class="bloco"><p class="vazio">Os dados não carregaram.</p></div>'; return; }
 
   var EIXOS = D.eixos, GR = D.guard_rails, PAR = D.parametros, G = D.grade;
+  var ENTRADA_MAXIMA = 0.60;  // a mesma trava do banking.politica
   var nC = EIXOS.corte.length, nP = EIXOS.prazo_max.length, nE = EIXOS.entrada_base.length,
-      nT = EIXOS.taxa_base.length, nK = EIXOS.k_risco.length;
+      nS = EIXOS.entrada_passo.length, nT = EIXOS.taxa_base.length, nK = EIXOS.k_risco.length;
 
-  // A ordem dos laços no exportador: corte > prazo > entrada > taxa > k.
-  function idx(c, p, e, t, k) { return (((c * nP + p) * nE + e) * nT + t) * nK + k; }
+  // A ordem dos laços no exportador: corte > prazo > entrada > passo > taxa > k.
+  // Mudou lá, muda aqui — senão o painel lê a política errada em silêncio.
+  function idx(c, p, e, s_, t, k) {
+    return ((((c * nP + p) * nE + e) * nS + s_) * nT + t) * nK + k;
+  }
   function desmontar(i) {  // o caminho de volta, para nomear uma política
     var k = i % nK; i = (i - k) / nK;
     var t = i % nT; i = (i - t) / nT;
+    var s_ = i % nS; i = (i - s_) / nS;
     var e = i % nE; i = (i - e) / nE;
     var p = i % nP; i = (i - p) / nP;
     return { corte: EIXOS.corte[i], prazo: EIXOS.prazo_max[p], entrada: EIXOS.entrada_base[e],
-             taxa: EIXOS.taxa_base[t], k: EIXOS.k_risco[k] };
+             passo: EIXOS.entrada_passo[s_], taxa: EIXOS.taxa_base[t], k: EIXOS.k_risco[k] };
   }
 
   var PADRAO = {
     corte: EIXOS.corte.indexOf(D.padrao.corte),
     prazo: EIXOS.prazo_max.indexOf(D.padrao.prazo_max),
     entrada: EIXOS.entrada_base.indexOf(D.padrao.entrada_base),
+    passo: EIXOS.entrada_passo.indexOf(D.padrao.entrada_passo),
     taxa: EIXOS.taxa_base.indexOf(D.padrao.taxa_base),
     k: EIXOS.k_risco.indexOf(D.padrao.k_risco),
     cenario: 1
   };
   var S = Object.assign({}, PADRAO);
-  var I_BASE = idx(PADRAO.corte, PADRAO.prazo, PADRAO.entrada, PADRAO.taxa, PADRAO.k);
+  var I_BASE = idx(PADRAO.corte, PADRAO.prazo, PADRAO.entrada, PADRAO.passo,
+                   PADRAO.taxa, PADRAO.k);
 
   /* ---------- formatação ------------------------------------------------- */
   function pct(v, d) { return (v * 100).toFixed(d == null ? 2 : d).replace(".", ",") + "%"; }
@@ -481,10 +498,13 @@
   /* ---------- a oferta feita a uma proposta ------------------------------- */
   var P = D.propostas, N = P.id.length;
   function oferta(j) {
-    var prazo = EIXOS.prazo_max[S.prazo], entradaMin = EIXOS.entrada_base[S.entrada];
-    var pdOfertada = D.pd_grade[prazo + "|" + entradaMin.toFixed(2)][j] / 10000;
+    var prazo = EIXOS.prazo_max[S.prazo], base = EIXOS.entrada_base[S.entrada];
+    var passo = EIXOS.entrada_passo[S.passo];
+    var pdOfertada = D.pd_grade[prazo + "|" + base.toFixed(2) + "|" + passo.toFixed(2)][j] / 10000;
     var scorePedido = scoreDePd(D.pd_pedido[j] / 10000);
     var aprovada = scorePedido >= EIXOS.corte[S.corte];
+    // com escalonamento a exigência sobe a cada faixa pior, como no gerar_politica
+    var entradaMin = Math.min(base + passo * (10 - scorePedido), ENTRADA_MAXIMA);
     var entrada = Math.max(P.entrada_desejada[j], entradaMin);
     var financiado = P.valor_bem[j] * (1 - entrada);
     var ltv = 1 - entrada;
@@ -526,7 +546,9 @@
     { c: "c-prazo", v: "v-prazo", s: "prazo", eixo: "prazo_max",
       fmt: function (x) { return x + " meses"; } },
     { c: "c-entrada", v: "v-entrada", s: "entrada", eixo: "entrada_base",
-      fmt: function (x) { return pct(x, 0); } }
+      fmt: function (x) { return pct(x, 0); } },
+    { c: "c-passo", v: "v-passo", s: "passo", eixo: "entrada_passo",
+      fmt: function (x) { return x > 0 ? "+" + pct(x, 0) + " por faixa" : "sem escalonar"; } }
   ];
   campos.forEach(function (f) {
     var r = el(f.c);
@@ -612,6 +634,11 @@
     el("n-corte").textContent = "aprova " + pct(m.aprov, 1) + " das 5.000 propostas";
     el("n-k").textContent = "quanto a taxa sobe por unidade de perda esperada da faixa";
     el("n-entrada").textContent = "é um piso: quem já queria dar mais, dá";
+    el("n-passo").textContent = EIXOS.entrada_passo[S.passo] > 0
+      ? "score 5 dá " + pct(Math.min(EIXOS.entrada_base[S.entrada]
+          + EIXOS.entrada_passo[S.passo] * 5, 0.60), 0) + " contra "
+          + pct(EIXOS.entrada_base[S.entrada], 0) + " do score 10"
+      : "a mesma exigência para toda faixa aprovada";
     var ce = D.elasticidades[D.cenarios[S.cenario]];
     el("n-cenario").textContent = "aceite de referência " + pct(ce.a0, 0) +
       ", elasticidade a preço " + String(ce.beta_taxa).replace(".", ",");
@@ -785,26 +812,29 @@
 
   function desenharCurvas() {
     var eixo = el("eixo").value;
-    var mapa = { corte: "corte", taxa_base: "taxa", k_risco: "k", prazo_max: "prazo", entrada_base: "entrada" };
+    var mapa = { corte: "corte", taxa_base: "taxa", k_risco: "k", prazo_max: "prazo",
+                 entrada_base: "entrada", entrada_passo: "passo" };
     var chave = mapa[eixo], vals = EIXOS[eixo];
     var rotulo = {
       corte: function (v) { return "≥" + v; },
       taxa_base: function (v) { return (v * 100).toFixed(1).replace(".", ","); },
       k_risco: function (v) { return v.toFixed(2).replace(".", ","); },
       prazo_max: function (v) { return v + "m"; },
-      entrada_base: function (v) { return (v * 100).toFixed(0) + "%"; }
+      entrada_base: function (v) { return (v * 100).toFixed(0) + "%"; },
+      entrada_passo: function (v) { return v > 0 ? "+" + (v * 100).toFixed(0) + "pp" : "sem"; }
     }[eixo];
 
     var sim = [], vol = [], bas = [];
     for (var i = 0; i < vals.length; i++) {
       var e = Object.assign({}, S); e[chave] = i;
-      var ii = idx(e.corte, e.prazo, e.entrada, e.taxa, e.k);
+      var ii = idx(e.corte, e.prazo, e.entrada, e.passo, e.taxa, e.k);
       var m = metricas(ii, S.cenario);
       sim.push({ y: m.roi, rot: rotulo(vals[i]), atual: i === S[chave], viavel: m.viavel });
       vol.push({ y: G.volume_pessimista[ii] / 1000, rot: rotulo(vals[i]),
                  atual: i === S[chave], viavel: m.viavel });
       var b = Object.assign({}, PADRAO); b[chave] = i;
-      bas.push({ y: metricas(idx(b.corte, b.prazo, b.entrada, b.taxa, b.k), S.cenario).roi });
+      bas.push({ y: metricas(idx(b.corte, b.prazo, b.entrada, b.passo, b.taxa, b.k),
+                             S.cenario).roi });
     }
     curva(el("tela-roi"), sim, bas, "ROI anual", function (v) {
       return (v * 100).toFixed(1).replace(".", ",") + "%"; }, null);
@@ -946,7 +976,7 @@
 
   /* ---------- orquestração ---------------------------------------------------- */
   function desenhar() {
-    var i = idx(S.corte, S.prazo, S.entrada, S.taxa, S.k);
+    var i = idx(S.corte, S.prazo, S.entrada, S.passo, S.taxa, S.k);
     desenharMetricas(i);
     desenharFronteira(i);
     desenharCurvas();
@@ -959,7 +989,7 @@
   window.addEventListener("resize", function () {
     clearTimeout(t);
     t = setTimeout(function () {
-      desenharFronteira(idx(S.corte, S.prazo, S.entrada, S.taxa, S.k));
+      desenharFronteira(idx(S.corte, S.prazo, S.entrada, S.passo, S.taxa, S.k));
       desenharCurvas();
     }, 140);
   });

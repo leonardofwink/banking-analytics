@@ -1,6 +1,6 @@
 # O painel interativo
 
-Um simulador de política de crédito sobre a Base C: mexe nas cinco alavancas,
+Um simulador de política de crédito sobre a Base C: mexe nas seis alavancas,
 vê o ROI e os quatro guard-rails responderem, e destrincha qualquer uma das
 5.000 propostas.
 
@@ -12,7 +12,7 @@ que é exatamente como se produzem dois números diferentes para a mesma
 pergunta.
 
 A saída foi outra: **pré-computar tudo no motor de verdade**. O
-`25_dados_do_painel.py` varre 4.480 políticas com a mesma `banking.roi.simular`
+`25_dados_do_painel.py` varre 5.600 políticas com a mesma `banking.roi.simular`
 que gerou os números do documento, nos três cenários, e grava a tabela. O
 painel não calcula ROI — ele **consulta**. Quem abrir e não mexer em nada vê
 11,33%, R$ 45,1 mi no pior caso e 6,33% de inadimplência, porque são os mesmos
@@ -25,17 +25,25 @@ os parâmetros exportados do mesmo Excel do professor.
 
 ## A grade
 
+É a **mesma do S12** (`12_fronteira_roi_volume.py`), e isso é deliberado: o
+documento e o deck dizem "5.600 políticas varridas", e um painel com grade
+própria obrigaria a explicar dois números para a mesma afirmação.
+
 | Alavanca | Valores | O padrão |
 | -------- | ------- | -------- |
-| Corte de score | 4, 5, 6, 7, 8 | **5** |
-| Taxa base | 1,3% · 1,5% · 1,7% · 1,9% a.m. | **1,5%** |
-| Prêmio de risco (`k`) | 0 a 0,40, sete passos | **0,10** |
+| Corte de score | 4, 5, 6, 7 | **5** |
+| Taxa base | 1,50% a 3,00% a.m., de 0,25 em 0,25 | **1,50%** |
+| Prêmio de risco (`k`) | 0 · 0,10 · 0,20 · 0,30 · 0,50 | **0,10** |
 | Prazo ofertado | 24, 36, 48, 60 meses | **48** |
-| Entrada mínima | 0% a 30%, passos de 5 | **10%** |
+| Entrada mínima | 0% · 10% · 20% · 30% · 40% | **10%** |
+| Escalonamento da entrada | 0 ou +4 pp por faixa pior | **0** |
 
-5 × 4 × 8 × 4 × 7 = **4.480 políticas**, cada uma simulada nos três cenários de
-aceite. A grade foi escolhida para **conter** a política escolhida em todos os
-eixos — o botão *Restaurar o nosso modelo* volta exatamente a ela.
+4 × 7 × 5 × 4 × 5 × 2 = **5.600 políticas**, cada uma simulada nos três
+cenários de aceite. A grade **contém** a política escolhida nos seis eixos — o
+botão *Restaurar o nosso modelo* volta exatamente a ela.
+
+> Mexeu na grade aqui, mexa no S12 também: os dois números têm de continuar
+> sendo o mesmo número.
 
 ## O que cada parte mostra
 
@@ -56,7 +64,7 @@ milhões proíbe. Três marcas se destacam:
 A distância entre o losango e o alvo é o preço que pagamos por folga no limite
 de volume, e o painel a declara em pontos percentuais.
 
-**As curvas** travam quatro alavancas e variam a quinta. A linha tracejada
+**As curvas** travam cinco alavancas e variam a sexta. A linha tracejada
 coral é o nosso modelo; a sólida teal, o seu cenário. Enquanto nada for
 alterado as duas coincidem — é assim que se vê que o simulador partiu do lugar
 certo.
@@ -88,7 +96,7 @@ versionado ao lado, e o painel funciona offline a partir de um clone.
 ## Como regenerar
 
 ```powershell
-.\scripts\py.cmd python\relatorios\25_dados_do_painel.py   # ~14 min: a varredura
+.\scripts\py.cmd python\relatorios\25_dados_do_painel.py   # ~17 min: a varredura
 .\scripts\py.cmd python\relatorios\26_tabelas_do_painel.py # anexa EAD/LGD, grava o .js
 ```
 
@@ -97,7 +105,7 @@ O segundo passo grava `painel/dados.js`, que define `window.DADOS`. É um
 bloqueia requisições, e um `<script src>` de mesma origem passa.
 
 A varredura guarda um cache em `outputs/painel/_grade.json`. Se ele existir e
-tiver o tamanho da grade atual, os 14 minutos são pulados — apague o arquivo
+tiver o tamanho da grade atual, os 17 minutos são pulados — apague o arquivo
 para forçar a recontagem.
 
 Ao fim, o `25` confere sozinho que o índice do padrão devolve 11,33% de ROI,

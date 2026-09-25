@@ -11,18 +11,26 @@
 
 ## ▶ Comece pelo painel
 
-**[Abrir o simulador interativo](https://claude.ai/artifact/U2YMLRhKrgaNG8pfHAs3rd)**
+### [⤓ Baixar o simulador](painel/AutoCred%20-%20Painel%20da%20Politica%20-%20Grupo%203.html)
+
+Um arquivo só, com tudo dentro. **Dois cliques:**
+
+1. Abra o link acima e clique em **`Download raw file`** (o ícone ⤓ no canto
+   superior direito da página do GitHub).
+2. Abra o arquivo baixado no navegador.
+
+Pronto — nada a instalar, sem internet, sem clonar o repositório. Os dados vão
+embutidos no próprio arquivo.
 
 Mexa nas seis alavancas — corte, taxa base, prêmio de risco, prazo, entrada e
-escalonamento da entrada por faixa — e
-veja o ROI e os quatro limites responderem na hora. A fronteira mostra **as
-5.600 políticas que testamos**, com a nossa marcada e o ótimo viável
-destacado; a base C aparece proposta a proposta, com a PD re-escorada pelo LTV
-e prazo que a política oferta.
+escalonamento da entrada por faixa — e veja o ROI e os quatro limites
+responderem na hora. A fronteira mostra **todas as políticas que testamos**,
+com a nossa marcada e o ótimo viável destacado; a base C aparece proposta a
+proposta, com a PD re-escorada pelo LTV e prazo que a política oferta.
 
-*Sem internet, ou preferindo o repositório:* clone e abra
-[`painel/index.html`](painel/index.html) no navegador. Ele já vem com os dados,
-funciona offline e não precisa de ambiente nem das bases.
+> ⚠️ Não baixe o `painel/index.html` sozinho — ele lê o `dados.js` da pasta ao
+> lado e abriria em branco. Esse par existe para quem **clona** o repositório;
+> para baixar um arquivo só, use o link acima.
 
 ## Os documentos que respondem à banca
 

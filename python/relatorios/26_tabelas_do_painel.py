@@ -30,6 +30,10 @@ from banking.projeto import DIR_OUTPUTS, PROJ_ROOT
 from banking.roi import TAXA_MERCADO
 from banking.score import CORTES_PD
 
+# O nome que o professor vê na pasta de downloads. Vale ser autoexplicativo:
+# "index.html" no Downloads não diz de quem é nem do que trata.
+NOME_AUTOCONTIDO = "AutoCred - Painel da Politica - Grupo 3.html"
+
 
 def main() -> None:
     destino = DIR_OUTPUTS / "painel" / "dados.json"
@@ -66,8 +70,25 @@ def main() -> None:
     # um clone abra o arquivo e funcione, sem rodar nada. É a exceção à regra de
     # não versionar dado, registrada no .gitignore e no AGENTS.md.
     shutil.copyfile(js, PROJ_ROOT / "painel" / "dados.js")
-    shutil.copyfile(PROJ_ROOT / "painel" / "index.html",
-                    DIR_OUTPUTS / "painel" / "index.html")
+    fonte = PROJ_ROOT / "painel" / "index.html"
+    shutil.copyfile(fonte, DIR_OUTPUTS / "painel" / "index.html")
+
+    # --- A versão de um arquivo só -------------------------------------------
+    # Dois arquivos lado a lado funcionam para quem clona o repositório. Para
+    # quem só recebe um link, o par é um problema: baixar um e esquecer o outro
+    # produz uma página em branco, sem erro visível. Aqui o `dados.js` entra
+    # inline e o resultado é um HTML que abre sozinho, de qualquer pasta.
+    html = fonte.read_text(encoding="utf-8")
+    marca = '<script src="dados.js"></script>'
+    if marca not in html:
+        raise SystemExit(f"não achei {marca!r} em {fonte} — o inline não foi feito")
+    dados_js = js.read_text(encoding="utf-8")
+    # `</script>` dentro do JSON fecharia a tag antes da hora; a barra escapada
+    # é inofensiva no JSON e resolve.
+    dados_js = dados_js.replace("</", "<\\/")
+    sozinho = html.replace(marca, "<script>" + dados_js + "</script>")
+    unico = PROJ_ROOT / "painel" / NOME_AUTOCONTIDO
+    unico.write_text(sozinho, encoding="utf-8")
 
     print(f"  fator_ead: {len(dados['parametros']['fator_ead'])} prazos "
           f"× {len(next(iter(dados['parametros']['fator_ead'].values())))} faixas de LTV")
@@ -75,10 +96,11 @@ def main() -> None:
           f"× {len(dados['parametros']['lgd'][0])} faixas de LTV")
     print(f"  amplitude da LGD: {min(min(l) for l in dados['parametros']['lgd']):.3f} "
           f"a {max(max(l) for l in dados['parametros']['lgd']):.3f}")
-    print(f"\n  {js.stat().st_size / 1e6:.2f} MB de dados, gravados em dois lugares:")
-    print(f"    {PROJ_ROOT / 'painel' / 'dados.js'}  (versionado)")
-    print(f"    {js}  (montagem)")
-    print(f"\n  abra: {PROJ_ROOT / 'painel' / 'index.html'}")
+    print(f"\n  {js.stat().st_size / 1e6:.2f} MB de dados. O painel saiu em duas formas:")
+    print(f"    {PROJ_ROOT / 'painel' / 'index.html'}")
+    print(f"      + dados.js ao lado — para quem clona o repositório")
+    print(f"    {unico.name}  ({unico.stat().st_size / 1e6:.2f} MB)")
+    print(f"      um arquivo só, abre de qualquer pasta — para quem recebe por link")
 
 
 if __name__ == "__main__":
