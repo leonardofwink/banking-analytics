@@ -13,9 +13,10 @@
 
 **[Abrir o simulador interativo](https://claude.ai/artifact/U2YMLRhKrgaNG8pfHAs3rd)**
 
-Mexa nas cinco alavancas — corte, taxa, prêmio de risco, prazo e entrada — e
+Mexa nas seis alavancas — corte, taxa base, prêmio de risco, prazo, entrada e
+escalonamento da entrada por faixa — e
 veja o ROI e os quatro limites responderem na hora. A fronteira mostra **as
-4.480 políticas que testamos**, com a nossa marcada e o ótimo viável
+5.600 políticas que testamos**, com a nossa marcada e o ótimo viável
 destacado; a base C aparece proposta a proposta, com a PD re-escorada pelo LTV
 e prazo que a política oferta.
 
@@ -23,13 +24,13 @@ e prazo que a política oferta.
 [`painel/index.html`](painel/index.html) no navegador. Ele já vem com os dados,
 funciona offline e não precisa de ambiente nem das bases.
 
-## Os três documentos que respondem à banca
+## Os documentos que respondem à banca
 
 | | |
 | - | - |
-| 🎤 **[QA da defesa](docs/QA_DEFESA.md)** | 40+ perguntas que a banca pode fazer, cada uma com a resposta e o número medido que a sustenta. Inclui as que nos derrubariam |
 | 💰 **[Entregável 2 — a política](docs/ENTREGAVEL_2_POLITICA.md)** | Por que aprovamos quem aprovamos, por que cobramos o que cobramos, e por que isso dá o retorno que dá |
 | 🧮 **[Entregável 1 — o modelo](docs/ENTREGAVEL_1_MODELO.md)** | PD 90/12: variáveis, validação out-of-time, calibração e o que ficou de fora por vazamento |
+| 📊 **[O painel](docs/PAINEL.md)** | Como o simulador funciona, e por que ele é fiel ao motor que produziu os números |
 
 ---
 
@@ -76,13 +77,13 @@ estende a varredura para 5.600 políticas e produz a medição de que **a meta d
 
 ### Refazer a varredura do painel
 
-O painel **não recalcula** o ROI no navegador: consulta a varredura das 4.480
-políticas, feita no mesmo motor que produziu os números acima. É o que o torna
+O painel **não recalcula** o ROI no navegador: consulta a varredura das 5.600
+políticas — a mesma do S12 — feita no mesmo motor que produziu os números acima. É o que o torna
 fiel — e é por isso que abrir `painel/index.html` basta, sem ambiente nem bases.
 Para refazê-la:
 
 ```powershell
-.\scripts\py.cmd python\relatorios\25_dados_do_painel.py     # ~14 min: 4.480 políticas
+.\scripts\py.cmd python\relatorios\25_dados_do_painel.py     # ~17 min: 5.600 políticas
 .\scripts\py.cmd python\relatorios\26_tabelas_do_painel.py   # tabelas de EAD/LGD + dados.js
 ```
 
@@ -106,7 +107,6 @@ que batam. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
 | 🎓 [`docs/MENTORIA.md`](docs/MENTORIA.md) | Diário de bordo das aulas: conceito → implicação → pendência |
 | ⚠️ [`docs/MATRIZ_RISCOS.md`](docs/MATRIZ_RISCOS.md) | Riscos do negócio, do modelo e do projeto: inerente → controles → residual |
 | 🗂️ [`docs/DICIONARIO_DADOS.md`](docs/DICIONARIO_DADOS.md) | O que cada campo da base significa, e as armadilhas encontradas nela |
-| 🎤 [`docs/QA_DEFESA.md`](docs/QA_DEFESA.md) | **O QA da arguição** — 40+ perguntas que a banca pode fazer, com a resposta e o número que a sustenta |
 | 📊 [`docs/PAINEL.md`](docs/PAINEL.md) | O simulador interativo: o que ele mostra e por que é fiel ao motor |
 | 🔍 [`docs/COMPARACAO_COLEGAS.md`](docs/COMPARACAO_COLEGAS.md) | Os quatro trabalhos do grupo rodados **no mesmo motor** — e o que cada um tem que os outros não |
 | 🤖 [`AGENTS.md`](AGENTS.md) | Convenções do repositório: código, git, regras críticas. **Vale para humanos e IA** |
@@ -213,7 +213,7 @@ convergem num teto de ~11,5% para as políticas viáveis. O argumento que fecha 
 questão é aritmético: a perda é 8,8% dos juros, então **mesmo com inadimplência
 zero o ROI seria 12,42%** — nenhuma alavanca de risco alcança a meta. Só preço
 alcança, e preço derruba o volume abaixo do piso de R$ 40 mi. A medição está em
-[`docs/QA_DEFESA.md`](docs/QA_DEFESA.md) §1.1 e no painel.
+[`docs/ENTREGAVEL_2_POLITICA.md`](docs/ENTREGAVEL_2_POLITICA.md) e no painel.
 
 **Grupo 3** — Deni Alan (modelagem) · Leonardo Wink (política e precificação) ·
 Marcelo Félix e Renato (negócio e defesa).
