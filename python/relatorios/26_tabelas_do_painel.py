@@ -20,6 +20,7 @@ Roda depois do ``25_dados_do_painel.py``::
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import sys
 
@@ -86,7 +87,43 @@ def main() -> None:
     # `</script>` dentro do JSON fecharia a tag antes da hora; a barra escapada
     # é inofensiva no JSON e resolve.
     dados_js = dados_js.replace("</", "<\\/")
-    sozinho = html.replace(marca, "<script>" + dados_js + "</script>")
+    corpo = html.replace(marca, "<script>" + dados_js + "</script>")
+
+    # O `index.html` é escrito para o artifact, que o embrulha num documento
+    # completo com `<meta charset>`. O arquivo baixado não passa por isso: sem
+    # a declaração, o navegador ADIVINHA o encoding. O Chrome costuma acertar
+    # UTF-8; o Safari tende a Latin-1, e "Política" vira "PolÃ­tica". Por isso
+    # o autocontido leva o documento inteiro, com o charset nos primeiros bytes.
+    # `<title>` e `<link rel=stylesheet>` pertencem ao head. Deixá-los no body
+    # funciona na prática, mas o título é o que aparece na aba e na lista de
+    # arquivos baixados — não vale depender de o parser corrigir por nós.
+    cabeca, resto = [], corpo
+    for padrao in (r"<title>.*?</title>", r'<link rel="preconnect"[^>]*>',
+                   r'<link rel="stylesheet"[^>]*>'):
+        achado = re.search(padrao, resto, re.S)
+        if achado:
+            cabeca.append(achado.group(0))
+            resto = resto.replace(achado.group(0), "", 1)
+
+    sozinho = (
+        "<!doctype html>\n"
+        '<html lang="pt-BR">\n'
+        "<head>\n"
+        '<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1, '
+        'viewport-fit=cover">\n'
+        + "\n".join(cabeca) + "\n"
+        "<style>\n"
+        "  :root { color-scheme: light dark; }\n"
+        "  html, body { margin: 0; padding: 0; }\n"
+        "  img { max-width: 100%; }\n"
+        "  [hidden] { display: none !important; }\n"
+        "</style>\n"
+        "</head>\n<body>\n"
+        + resto.lstrip()
+        + "\n</body>\n</html>\n"
+    )
+
     unico = PROJ_ROOT / "painel" / NOME_AUTOCONTIDO
     unico.write_text(sozinho, encoding="utf-8")
 
