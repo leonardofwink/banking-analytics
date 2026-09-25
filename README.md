@@ -1,12 +1,45 @@
-# Banking Analytics
+# Banking Analytics — Desafio AutoCred
 
-Projeto de **modelagem de crédito e banking analytics**, desenvolvido no âmbito da mentoria **ANALITICA**.
+**Grupo 3** · Mentoria ANALITICA · Deni Alan, Leonardo Wink, Marcelo Félix e Renato
 
-Repositório **poliglota (R + Python)**, organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts.
+> ## Recomendamos aprovar 59,5% das propostas, com preço de 1,63% a 2,29% ao mês conforme o risco.
+>
+> Isso rende **ROI de 11,33% ao ano** e cumpre os **quatro guard-rails nos três
+> cenários** de aceite. Não alcança a meta de 15% — e a parte mais útil deste
+> repositório é a medição de **por que ninguém alcança** sem furar o piso de
+> volume.
+
+## ▶ Comece pelo painel
+
+**[Abrir o simulador interativo](https://claude.ai/artifact/U2YMLRhKrgaNG8pfHAs3rd)**
+
+Mexa nas cinco alavancas — corte, taxa, prêmio de risco, prazo e entrada — e
+veja o ROI e os quatro limites responderem na hora. A fronteira mostra **as
+4.480 políticas que testamos**, com a nossa marcada e o ótimo viável
+destacado; a base C aparece proposta a proposta, com a PD re-escorada pelo LTV
+e prazo que a política oferta.
+
+*Sem internet, ou preferindo o repositório:* clone e abra
+[`painel/index.html`](painel/index.html) no navegador. Ele já vem com os dados,
+funciona offline e não precisa de ambiente nem das bases.
+
+## Os três documentos que respondem à banca
+
+| | |
+| - | - |
+| 🎤 **[QA da defesa](docs/QA_DEFESA.md)** | 40+ perguntas que a banca pode fazer, cada uma com a resposta e o número medido que a sustenta. Inclui as que nos derrubariam |
+| 💰 **[Entregável 2 — a política](docs/ENTREGAVEL_2_POLITICA.md)** | Por que aprovamos quem aprovamos, por que cobramos o que cobramos, e por que isso dá o retorno que dá |
+| 🧮 **[Entregável 1 — o modelo](docs/ENTREGAVEL_1_MODELO.md)** | PD 90/12: variáveis, validação out-of-time, calibração e o que ficou de fora por vazamento |
+
+---
+
+## Sobre o repositório
+
+Repositório **poliglota (R + Python)**, organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts. (A única exceção é `painel/dados.js`, para o painel abrir de um clone; o porquê está no [`.gitignore`](.gitignore) e no [`AGENTS.md`](AGENTS.md).)
 
 **Python modela · R explora e comunica.** Python entra pelo ferramental de crédito que não tem equivalente maduro em R (`optbinning` para binning/WOE/scorecard, `lightgbm`, `shap`); R continua melhor para investigar e apresentar (`dplyr`, `ggplot2`, Quarto). As duas linguagens **não se importam** — conversam por arquivo Parquet em `dados/`. A regra completa está em [`AGENTS.md`](AGENTS.md#a-fronteira-entre-as-duas-linguagens).
 
-> 📖 **Começando agora? Leia o [glossário](docs/GLOSSARIO.md) primeiro.** Ele é a peça central do projeto: risco inerente, risco residual, mitigação, PD/EAD/LGD, ROE e o vocabulário de crédito que aparece em todo o resto.
+> 📖 **Vocabulário:** o [glossário](docs/GLOSSARIO.md) cobre risco inerente, risco residual, mitigação, PD/EAD/LGD, ROE e os termos que aparecem em todo o resto.
 
 ---
 
@@ -41,18 +74,22 @@ mostra por que a escolhida foi a escolhida. O
 estende a varredura para 5.600 políticas e produz a medição de que **a meta de
 15% de ROI e o piso de volume não coexistem** sob as nossas premissas de aceite.
 
-### O painel interativo
+### Refazer a varredura do painel
+
+O painel **não recalcula** o ROI no navegador: consulta a varredura das 4.480
+políticas, feita no mesmo motor que produziu os números acima. É o que o torna
+fiel — e é por isso que abrir `painel/index.html` basta, sem ambiente nem bases.
+Para refazê-la:
 
 ```powershell
-.\scripts\py.cmd python\relatorios\25_dados_do_painel.py     # ~11 min: 4.480 políticas
-.\scripts\py.cmd python\relatorios\26_tabelas_do_painel.py   # monta a pasta rodável
-# abre outputs\painel\index.html
+.\scripts\py.cmd python\relatorios\25_dados_do_painel.py     # ~14 min: 4.480 políticas
+.\scripts\py.cmd python\relatorios\26_tabelas_do_painel.py   # tabelas de EAD/LGD + dados.js
 ```
 
-Simulador das cinco alavancas sobre a Base C, com a fronteira inteira, o ponto
-ótimo destacado e o detalhe de qualquer uma das 5.000 propostas. Ele **não
-recalcula** o ROI no navegador: consulta a varredura feita no mesmo motor que
-gerou os números acima. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
+Ao terminar, o primeiro passo confere sozinho que o padrão da grade devolve os
+11,33% de ROI e os R$ 45,1 mi de volume pessimista deste README. Se divergir, a
+grade e a política saíram de sincronia — e o painel não deve ser publicado até
+que batam. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
 
 ---
 
