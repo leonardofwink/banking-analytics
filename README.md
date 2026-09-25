@@ -10,6 +10,52 @@ Repositório **poliglota (R + Python)**, organizado para reprodutibilidade: o gi
 
 ---
 
+## Reproduzir os nossos números
+
+O que defendemos: **ROI de 11,33%** ao ano no cenário central, **R$ 66,7 mi** de
+volume originado, **6,33%** de inadimplência e **59,5%** de aprovação — com os
+quatro guard-rails cumpridos **nos três cenários** de aceite.
+
+O repositório não carrega dado nenhum. Para chegar nesses números do zero:
+
+```powershell
+# 1. as bases do desafio em dados/brutos/professor/bases/
+#    base_A_...csv · base_B_...csv · base_C_...csv
+#    AutoCred_parametros_ead_lgd.xlsx · AutoCred_Dicionario_de_Dados.xlsx
+
+.\scripts\setup_python.cmd                                   # 2. o ambiente (uma vez)
+
+.\scripts\py.cmd python\etl\01_ingestao.py                   # 3. ingestão e ABT
+.\scripts\py.cmd python\etl\02_parametros_ead_lgd.py         #    tabelas de EAD e LGD
+.\scripts\py.cmd python\modelagem\05_desafiantes.py          # 4. o modelo de PD
+.\scripts\py.cmd python\modelagem\06_submissao_modelo.py     #    escoragem da base B
+.\scripts\py.cmd python\modelagem\09_buscar_politica.py      # 5. a política
+.\scripts\py.cmd python\modelagem\10_submissao_politica.py   #    decisões da base C
+
+.\scripts\py.cmd -m pytest                                   # 6. 167 testes
+```
+
+O passo 5 é o que importa para a defesa: ele varre o espaço de políticas e
+mostra por que a escolhida foi a escolhida. O
+[`12_fronteira_roi_volume.py`](python/modelagem/12_fronteira_roi_volume.py)
+estende a varredura para 5.600 políticas e produz a medição de que **a meta de
+15% de ROI e o piso de volume não coexistem** sob as nossas premissas de aceite.
+
+### O painel interativo
+
+```powershell
+.\scripts\py.cmd python\relatorios\25_dados_do_painel.py     # ~11 min: 4.480 políticas
+.\scripts\py.cmd python\relatorios\26_tabelas_do_painel.py   # monta a pasta rodável
+# abre outputs\painel\index.html
+```
+
+Simulador das cinco alavancas sobre a Base C, com a fronteira inteira, o ponto
+ótimo destacado e o detalhe de qualquer uma das 5.000 propostas. Ele **não
+recalcula** o ROI no navegador: consulta a varredura feita no mesmo motor que
+gerou os números acima. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
+
+---
+
 ## Mapa da documentação
 
 | Documento | Para quê |
@@ -23,6 +69,9 @@ Repositório **poliglota (R + Python)**, organizado para reprodutibilidade: o gi
 | 🎓 [`docs/MENTORIA.md`](docs/MENTORIA.md) | Diário de bordo das aulas: conceito → implicação → pendência |
 | ⚠️ [`docs/MATRIZ_RISCOS.md`](docs/MATRIZ_RISCOS.md) | Riscos do negócio, do modelo e do projeto: inerente → controles → residual |
 | 🗂️ [`docs/DICIONARIO_DADOS.md`](docs/DICIONARIO_DADOS.md) | O que cada campo da base significa, e as armadilhas encontradas nela |
+| 🎤 [`docs/QA_DEFESA.md`](docs/QA_DEFESA.md) | **O QA da arguição** — 40+ perguntas que a banca pode fazer, com a resposta e o número que a sustenta |
+| 📊 [`docs/PAINEL.md`](docs/PAINEL.md) | O simulador interativo: o que ele mostra e por que é fiel ao motor |
+| 🔍 [`docs/COMPARACAO_COLEGAS.md`](docs/COMPARACAO_COLEGAS.md) | Os quatro trabalhos do grupo rodados **no mesmo motor** — e o que cada um tem que os outros não |
 | 🤖 [`AGENTS.md`](AGENTS.md) | Convenções do repositório: código, git, regras críticas. **Vale para humanos e IA** |
 
 ## Estrutura
@@ -49,7 +98,9 @@ Repositório **poliglota (R + Python)**, organizado para reprodutibilidade: o gi
 │   ├── brutos/             Como chegou — somente leitura
 │   ├── intermediarios/     Limpo e padronizado
 │   └── processados/        ABT — base analítica pronta (fronteira Python ↔ R)
-├── outputs/                ⛔ NÃO versionado (figuras, tabelas, relatórios)
+├── apresentacoes/          🎞️ Geradores dos decks (pptxgenjs)
+├── painel/                 📊 O simulador interativo (HTML; os dados são gerados)
+├── outputs/                ⛔ NÃO versionado (figuras, tabelas, relatórios, painel montado)
 ├── docs/                   Documentação
 └── tests/                  testthat/ (R) · python/ (pytest)
 ```
@@ -111,4 +162,21 @@ Copy-Item .Renviron.example .Renviron   # depois preencha os valores
 
 ## Estado atual
 
-**Desafio AutoCred, fase 0.** Material do professor recebido e analisado; specs abertas; nenhum código de modelagem escrito ainda. Próximo passo: **S01 — ingestão** ([`docs/ROADMAP.md`](docs/ROADMAP.md)). Prazo: **25/09**.
+**Desafio AutoCred, entregue.** Os dois entregáveis fechados, 167 testes passando.
+
+| | |
+| - | - |
+| **Modelo de PD** | XGBoost, AuROC de **0,7234** na validação out-of-time. Erro de calibração de 0,03 pp |
+| **Política** | corte no score 5 · taxa de **1,63% a 2,29%** a.m. por faixa · 48 meses · entrada mínima de 10% |
+| **Resultado** | ROI **11,33%** · volume **R$ 66,7 mi** · inadimplência **6,33%** · aprovação **59,5%** |
+| **Guard-rails** | os quatro cumpridos, nos três cenários de aceite |
+
+**Não batemos a meta de 15%, e medimos por quê.** Três caminhos independentes
+convergem num teto de ~11,5% para as políticas viáveis. O argumento que fecha a
+questão é aritmético: a perda é 8,8% dos juros, então **mesmo com inadimplência
+zero o ROI seria 12,42%** — nenhuma alavanca de risco alcança a meta. Só preço
+alcança, e preço derruba o volume abaixo do piso de R$ 40 mi. A medição está em
+[`docs/QA_DEFESA.md`](docs/QA_DEFESA.md) §1.1 e no painel.
+
+**Grupo 3** — Deni Alan (modelagem) · Leonardo Wink (política e precificação) ·
+Marcelo Félix e Renato (negócio e defesa).
