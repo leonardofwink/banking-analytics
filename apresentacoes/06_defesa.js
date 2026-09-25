@@ -814,9 +814,9 @@ const slide = () => { n += 1; return pres.addSlide(); };
     ["Bureau", "score · restrições ativas · consultas em 3 meses"],
     ["Originação", "canal · avalista"],
   ];
-  cartao(s, { x: c.x, y: c.y + 0.28, w: COL, h: 1.60, fill: WHITE });
+  cartao(s, { x: c.x, y: c.y + 0.30, w: COL, h: 1.70, fill: WHITE });
   grupos.forEach((g, i) => {
-    const y = c.y + 0.38 + i * 0.36;
+    const y = c.y + 0.43 + i * 0.38;
     s.addText(g[0], {
       x: c.x + 0.14, y, w: 0.92, h: 0.18,
       fontSize: 10, bold: true, color: NAVY, fontFace: SANS, isTextBox: true, margin: 0,
@@ -830,7 +830,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
 
   // -------------------------------------------- coluna 1 · o que fica fora
   s.addText("O QUE FICA DE FORA — E POR QUÊ", {
-    x: c.x, y: c.y + 2.04, w: COL, h: 0.24,
+    x: c.x, y: c.y + 2.16, w: COL, h: 0.24,
     fontSize: 9.5, bold: true, color: CORAL, fontFace: SANS, charSpacing: 1.2,
     isTextBox: true, margin: 0,
   });
@@ -839,9 +839,9 @@ const slide = () => { n += 1; return pres.addSlide(); };
     ["mes_default · ead e lgd realizados · perda", "só existem para quem já deu calote", false],
     ["comprometimento_renda", "depende da parcela que nós mesmos decidimos", false],
   ];
-  cartao(s, { x: c.x, y: c.y + 2.32, w: COL, h: 1.36, fill: WHITE });
+  cartao(s, { x: c.x, y: c.y + 2.46, w: COL, h: 1.28, fill: WHITE });
   fora.forEach((f, i) => {
-    const y = c.y + 2.42 + i * 0.40;
+    const y = c.y + 2.56 + i * 0.38;
     if (f[2]) {
       s.addShape(pres.ShapeType.rect, {
         x: c.x + 0.05, y: y - 0.04, w: COL - 0.1, h: 0.38,
@@ -867,15 +867,15 @@ const slide = () => { n += 1; return pres.addSlide(); };
   });
   const faixas = [
     ["SCORE", "1 a 10, por cortes de PD — escolha nossa",
-     "2,5% · 3,5% · 5% · 7% · 9,5%\n13% · 18% · 25% · 35%", 0.95, true],
+     "2,5% · 3,5% · 5% · 7% · 9,5%\n13% · 18% · 25% · 35%", 0.96, true],
     ["LTV", "5 faixas — da tabela do enunciado",
-     "até 60% · 60–70% · 70–80% · 80–90% · > 90%", 0.78, false],
+     "até 60% · 60–70% · 70–80% · 80–90% · > 90%", 0.72, false],
     ["IDADE DO VEÍCULO", "4 faixas — da tabela de LGD",
-     "até 2 · 3–5 · 6–8 · 9 ou mais", 0.78, false],
+     "até 2 · 3–5 · 6–8 · 9 ou mais", 0.72, false],
     ["PRAZO", "4 valores — da tabela de EAD",
-     "24 · 36 · 48 · 60 meses", 0.78, false],
+     "24 · 36 · 48 · 60 meses", 0.72, false],
   ];
-  let yf = c.y + 0.28;
+  let yf = c.y + 0.30;
   faixas.forEach((f) => {
     cartao(s, { x: X2, y: yf, w: COL, h: f[3], fill: f[4] ? OFFWHITE : WHITE });
     s.addText(f[0], {
@@ -892,17 +892,17 @@ const slide = () => { n += 1; return pres.addSlide(); };
       fontSize: 9, color: NAVY, fontFace: SANS, lineSpacing: 11.5,
       isTextBox: true, margin: 0,
     });
-    yf += f[3] + 0.08;
+    yf += f[3] + 0.11;
   });
 
   // ---------------------------------------------------------------- o fecho
-  cartao(s, { x: c.x, y: 5.78, w: CORPO_L, h: 0.5, fill: NAVY, linha: NAVY });
+  cartao(s, { x: c.x, y: 5.86, w: CORPO_L, h: 0.48, fill: NAVY, linha: NAVY });
   s.addText(
     [
       { text: "Três das quatro faixas não são nossas: ", options: { color: WHITE, bold: true } },
       { text: "LTV, idade e prazo vêm das tabelas de EAD e LGD do enunciado. A de score é a única que escolhemos — e é ela que vira a tabela de dez linhas da política.", options: { color: GREY_ESCURO } },
     ],
-    { x: c.x + 0.28, y: 5.88, w: CORPO_L - 0.56, h: 0.32, fontSize: 10.5, fontFace: SANS,
+    { x: c.x + 0.28, y: 5.95, w: CORPO_L - 0.56, h: 0.32, fontSize: 10.5, fontFace: SANS,
       lineSpacing: 13, isTextBox: true, margin: 0 }
   );
 }
