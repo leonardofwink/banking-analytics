@@ -69,16 +69,36 @@ sua política oferta, não a do pedido.
 para a proposta selecionada, e diz o que a política fez com ela: se alongou o
 prazo, se a entrada exigida mordeu, ou se a oferta bateu com o pedido.
 
-## Como regenerar
+## Como abrir
 
-```bash
-.\scripts\py.cmd python\relatorios\25_dados_do_painel.py   # ~8 min: a varredura
-.\scripts\py.cmd python\relatorios\26_tabelas_do_painel.py # anexa EAD/LGD, gera o .js
+```
+painel/index.html
 ```
 
-O segundo passo grava `outputs/painel/dados.js`, que define `window.DADOS`. É
-um **script**, não um `fetch`: a página publicada roda sob um CSP que bloqueia
-requisições, e um `<script src>` de mesma origem passa.
+Abra no navegador. Nada a instalar, nada a rodar: o `painel/dados.js` vem
+versionado ao lado, e o painel funciona offline a partir de um clone.
+
+> **Por que os dados estão no git.** Eles derivam da Base C — 5.000 propostas
+> com renda, bureau e ocupação — e portanto cairiam na regra de não versionar
+> dado. A exceção foi decidida em 25/09/2026 e está registrada no `.gitignore`
+> e no `AGENTS.md`: a base é fictícia, é material do próprio desafio, o
+> destinatário do repositório é o professor que a escreveu, e sem ela o painel
+> não abre de um clone — que é o motivo de ele existir.
+
+## Como regenerar
+
+```powershell
+.\scripts\py.cmd python\relatorios\25_dados_do_painel.py   # ~14 min: a varredura
+.\scripts\py.cmd python\relatorios\26_tabelas_do_painel.py # anexa EAD/LGD, grava o .js
+```
+
+O segundo passo grava `painel/dados.js`, que define `window.DADOS`. É um
+**script**, não um `fetch`: a versão publicada na web roda sob um CSP que
+bloqueia requisições, e um `<script src>` de mesma origem passa.
+
+A varredura guarda um cache em `outputs/painel/_grade.json`. Se ele existir e
+tiver o tamanho da grade atual, os 14 minutos são pulados — apague o arquivo
+para forçar a recontagem.
 
 Ao fim, o `25` confere sozinho que o índice do padrão devolve 11,33% de ROI,
 R$ 45,1 mi de volume pessimista e 6,33% de inadimplência. Se a conferência não

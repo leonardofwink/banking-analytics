@@ -62,14 +62,12 @@ def main() -> None:
                                                ensure_ascii=False) + ";",
                   encoding="utf-8")
 
-    # O HTML é código versionado (painel/index.html); a pasta rodável é montada
-    # aqui, ao lado dos dados, que só existem depois da varredura e nunca entram
-    # no git — trazem renda e bureau proposta a proposta.
-    fonte = PROJ_ROOT / "painel" / "index.html"
-    if fonte.exists():
-        shutil.copyfile(fonte, DIR_OUTPUTS / "painel" / "index.html")
-    else:
-        print(f"  ⚠️  não achei {fonte} — a pasta rodável ficou sem o HTML")
+    # O painel vive em painel/, versionado: HTML e dados lado a lado, para que
+    # um clone abra o arquivo e funcione, sem rodar nada. É a exceção à regra de
+    # não versionar dado, registrada no .gitignore e no AGENTS.md.
+    shutil.copyfile(js, PROJ_ROOT / "painel" / "dados.js")
+    shutil.copyfile(PROJ_ROOT / "painel" / "index.html",
+                    DIR_OUTPUTS / "painel" / "index.html")
 
     print(f"  fator_ead: {len(dados['parametros']['fator_ead'])} prazos "
           f"× {len(next(iter(dados['parametros']['fator_ead'].values())))} faixas de LTV")
@@ -77,8 +75,10 @@ def main() -> None:
           f"× {len(dados['parametros']['lgd'][0])} faixas de LTV")
     print(f"  amplitude da LGD: {min(min(l) for l in dados['parametros']['lgd']):.3f} "
           f"a {max(max(l) for l in dados['parametros']['lgd']):.3f}")
-    print(f"\n  {js} ({js.stat().st_size / 1e6:.2f} MB)")
-    print(f"  abra: {DIR_OUTPUTS / 'painel' / 'index.html'}")
+    print(f"\n  {js.stat().st_size / 1e6:.2f} MB de dados, gravados em dois lugares:")
+    print(f"    {PROJ_ROOT / 'painel' / 'dados.js'}  (versionado)")
+    print(f"    {js}  (montagem)")
+    print(f"\n  abra: {PROJ_ROOT / 'painel' / 'index.html'}")
 
 
 if __name__ == "__main__":
