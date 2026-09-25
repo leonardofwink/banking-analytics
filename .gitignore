@@ -38,6 +38,9 @@ outputs/
 *.pdf
 *.html
 !docs/**/*.png
+# O painel é código-fonte, não saída: o HTML entra, os dados que ele consome
+# (derivados da base C, com renda e bureau proposta a proposta) nunca.
+!painel/index.html
 
 # --- Modelos serializados (podem carregar dado de treino embutido) ---
 *.model
