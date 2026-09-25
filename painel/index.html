@@ -395,6 +395,14 @@
 
   // A ordem dos laços no exportador: corte > prazo > entrada > taxa > k.
   function idx(c, p, e, t, k) { return (((c * nP + p) * nE + e) * nT + t) * nK + k; }
+  function desmontar(i) {  // o caminho de volta, para nomear uma política
+    var k = i % nK; i = (i - k) / nK;
+    var t = i % nT; i = (i - t) / nT;
+    var e = i % nE; i = (i - e) / nE;
+    var p = i % nP; i = (i - p) / nP;
+    return { corte: EIXOS.corte[i], prazo: EIXOS.prazo_max[p], entrada: EIXOS.entrada_base[e],
+             taxa: EIXOS.taxa_base[t], k: EIXOS.k_risco[k] };
+  }
 
   var PADRAO = {
     corte: EIXOS.corte.indexOf(D.padrao.corte),
@@ -682,13 +690,6 @@
       ctx.beginPath(); ctx.arc(xo, yo, 3.4, 0, 6.2832); ctx.fillStyle = cVerde; ctx.fill();
     }
 
-    // o nosso modelo — losango
-    var xb = fx(vols[I_BASE]), yb = fy(rois[I_BASE]);
-    ctx.save(); ctx.translate(xb, yb); ctx.rotate(Math.PI / 4);
-    ctx.fillStyle = cCoral; ctx.fillRect(-5, -5, 10, 10);
-    ctx.strokeStyle = cor("--surface"); ctx.lineWidth = 1.5; ctx.strokeRect(-5, -5, 10, 10);
-    ctx.restore();
-
     // o simulado — ponto cheio com halo
     var xs = fx(vols[iAtual]), ys = fy(rois[iAtual]);
     ctx.beginPath(); ctx.arc(xs, ys, 9, 0, 6.2832);
@@ -697,21 +698,38 @@
     ctx.fillStyle = cTeal; ctx.fill();
     ctx.strokeStyle = cor("--surface"); ctx.lineWidth = 1.8; ctx.stroke();
 
-    var mo = I_OTIMO >= 0 ? metricas(I_OTIMO, 1) : null;
+    // o nosso modelo — losango, desenhado POR CIMA. Enquanto nada for alterado
+    // as duas marcas coincidem, e é o losango que precisa aparecer: some ele, e
+    // a legenda promete uma marca que o gráfico não mostra.
+    var xb = fx(vols[I_BASE]), yb = fy(rois[I_BASE]);
+    ctx.save(); ctx.translate(xb, yb); ctx.rotate(Math.PI / 4);
+    ctx.fillStyle = cCoral; ctx.fillRect(-5, -5, 10, 10);
+    ctx.strokeStyle = cor("--surface"); ctx.lineWidth = 1.5; ctx.strokeRect(-5, -5, 10, 10);
+    ctx.restore();
+
     var nf = el("nota-fronteira");
+    var nViaveis = G.viavel.reduce(function (a, b) { return a + b; }, 0);
     if (iAtual === I_OTIMO) {
       nf.className = "veredito";
-      nf.innerHTML = "<b>Você está no ótimo.</b> Entre as " +
-        nInt(G.viavel.reduce(function (a, b) { return a + b; }, 0)) +
-        " políticas viáveis da grade, nenhuma rende mais.";
-    } else if (mo) {
+      nf.innerHTML = "<b>Você está no ótimo por ROI.</b> Entre as " + nInt(nViaveis) +
+        " políticas viáveis da grade, nenhuma rende mais — mas repare no que ela " +
+        "custa em folga, abaixo.";
+    } else if (I_OTIMO >= 0) {
+      // O eixo do gráfico é o volume PESSIMISTA; citar o central aqui faria a
+      // nota contradizer a marca que ela explica.
+      var oc = metricas(I_OTIMO, 1), op = metricas(I_OTIMO, 2);
+      var bc = metricas(I_BASE, 1), bp = metricas(I_BASE, 2);
+      var po = desmontar(I_OTIMO);
       nf.className = "veredito";
-      nf.innerHTML = "<b>O ótimo viável</b> rende " + pct(mo.roi) + " com volume de " +
-        mi(mo.volume) + " no pior caso — corte " + EIXOS.corte[Math.floor(I_OTIMO / (nP * nE * nT * nK))] +
-        ", prêmio de risco " + EIXOS.k_risco[I_OTIMO % nK].toFixed(2).replace(".", ",") +
-        ". A política que defendemos rende " + pct(metricas(I_BASE, 1).roi) +
-        ": ficamos " + ((mo.roi - metricas(I_BASE, 1).roi) * 100).toFixed(2).replace(".", ",") +
-        " pp abaixo dele para manter folga no limite de volume.";
+      nf.innerHTML = "<b>O alvo é a política de maior ROI entre as " + nInt(nViaveis) +
+        " viáveis</b> — e é instrutivo qual: taxa de " + pct(po.taxa) +
+        " para todo mundo, com prêmio de risco <b>zero</b>. Preço plano, que é o " +
+        "que a AutoCred já fazia. Ela rende " + pct(oc.roi) + " contra os " + pct(bc.roi) +
+        " da nossa, mas fecha o pior cenário com " + mi(op.volume) + " contra " +
+        mi(bp.volume) + ", e a inadimplência sobe de " + pct(bc.inad) + " para " +
+        pct(oc.inad) + ". Abrimos mão de " +
+        ((oc.roi - bc.roi) * 100).toFixed(2).replace(".", ",") +
+        " pp de retorno para ganhar folga nos dois limites que apertam.";
     }
   }
 

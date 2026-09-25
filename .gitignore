@@ -38,9 +38,21 @@ outputs/
 *.pdf
 *.html
 !docs/**/*.png
-# O painel é código-fonte, não saída: o HTML entra, os dados que ele consome
-# (derivados da base C, com renda e bureau proposta a proposta) nunca.
+# --- O painel: a ÚNICA exceção à regra de não versionar dado ----------------
+# O HTML é código e entra sem discussão. O `painel/dados.js` é derivado da
+# Base C — traz as 5.000 propostas com renda, bureau, idade e ocupação — e
+# portanto cairia na regra acima. Ele entra assim mesmo, por decisão explícita
+# (25/09/2026), porque:
+#
+#   1. a Base C é fictícia, material didático do próprio desafio;
+#   2. o destinatário do repositório é o professor, que é o AUTOR dela;
+#   3. o repositório é privado;
+#   4. sem ele o painel não abre a partir de um clone, que é o motivo de existir.
+#
+# A exceção vale para ESTE arquivo e nada mais. Base real de cliente continua
+# proibida em qualquer circunstância. Ver AGENTS.md § Regras críticas.
 !painel/index.html
+!painel/dados.js
 
 # --- Modelos serializados (podem carregar dado de treino embutido) ---
 *.model

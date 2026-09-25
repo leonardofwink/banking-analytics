@@ -137,6 +137,16 @@ Do lado R chega como `Date`, com o dia correto. Timestamp com hora só quando a 
 ## ⚠️ Regras críticas (não quebrar)
 
 1. **NENHUM dado entra no git.** Base de crédito contém dado pessoal e sigilo bancário. Não versione `.csv`, `.xlsx`, `.rds`, `.parquet` — **nem amostra, nem "só umas linhas para exemplo", nem print de tabela com dado real**. O `.gitignore` bloqueia esses formatos por padrão; **nunca** use `git add -f` para furar o bloqueio. Se um script salvar em `dados/` ou `outputs/`, não dê `git add` nele.
+   > **A única exceção aberta, em 25/09/2026:** `painel/dados.js` traz as 5.000
+   > propostas da Base C (valor, entrada, prazo, idade, renda, bureau, ocupação)
+   > porque sem ele o painel interativo não abre a partir de um clone — que é o
+   > motivo de ele existir. Vale porque a Base C é **fictícia**, é material do
+   > próprio desafio, o destinatário do repositório é o **professor que a
+   > escreveu**, e o repositório é **privado**. A exceção é desse arquivo e de
+   > mais nenhum: base real de cliente segue proibida em qualquer hipótese, e
+   > `git add -f` segue proibido. Está registrada também no `.gitignore`, ao
+   > lado da regra que ela excepciona.
+
 2. **LGPD e anonimização.** CPF, nome, endereço, telefone e e-mail não devem sair da camada bruta. Se a modelagem precisar de identificador, use chave substituta (hash ou ID sequencial) gerada na ingestão. Dado pessoal nunca vai para `outputs/`, para documentação ou para o chat.
 3. **Segredos fora do versionamento.** `.Renviron`, tokens e credenciais **jamais** vão para o git. Use `.Renviron` local (modelo em `.Renviron.example`) e `Sys.getenv()`.
 4. **Termo novo da mentoria vai para o glossário.** Todo conceito apresentado nas aulas entra em [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md), na seção certa. O Leonardo **não vem de banking** — não presuma vocabulário conhecido: ao usar um termo técnico pela primeira vez numa resposta ou num comentário de código, explique-o em uma linha e registre-o no glossário.
