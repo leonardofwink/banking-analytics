@@ -192,8 +192,10 @@ const slide = () => { n += 1; return pres.addSlide(); };
     // quanto sobra se a premissa falhar. Cada um entrega um numero — "robustez"
     // sozinho nao dizia nada.
     { n: "1 · MODELO", t: "XGBoost", d: "AuROC de 0,7234 fora do tempo, sem vazamento" },
-    { n: "2 · PREÇO", t: "Corte no score 5", d: "Taxa de 1,63% a 2,29% ao mês, por faixa de risco" },
-    { n: "3 · MARGEM", t: "12,7% de folga", d: "até o limite mais apertado, no pior dos três cenários" },
+    { n: "2 · POLÍTICA", t: "Corte no score 5", d: "Taxa de 1,63% a 2,29% ao mês, por faixa de risco" },
+    // "12,7% de folga" nao dizia folga DE QUE. O numero so significa alguma
+    // coisa ao lado do limite que ele respeita.
+    { n: "3 · MARGEM", t: "R$ 45,1 mi no pior caso", d: "contra o piso de R$ 40 mi: sobram 12,7% no limite que mais aperta" },
   ].forEach((d, i) => {
     const x = c.x + i * 2.7;
     s.addText(d.n, {
@@ -606,9 +608,9 @@ const slide = () => { n += 1; return pres.addSlide(); };
                   cor: d.cor || NAVY, tamanho: 33 });
   });
 
-  cartao(s, { x: c.x, y: 3.5, w: CORPO_L, h: 1.75, fill: WHITE });
+  cartao(s, { x: c.x, y: 3.42, w: CORPO_L, h: 1.93, fill: WHITE });
   s.addText("Um único limite bloqueia a meta", {
-    x: c.x + 0.28, y: 3.68, w: 4, h: 0.3,
+    x: c.x + 0.28, y: 3.6, w: 4, h: 0.3,
     fontSize: 14, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   [
@@ -616,7 +618,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
     ["Taxa de aprovação", "máximo de 68,7%", "mín. 35%", true],
     ["Volume originado", "máximo de R$ 20,5 mi", "mín. R$ 40 mi", false],
   ].forEach((l, i) => {
-    const y = 4.08 + i * 0.36;
+    const y = 3.98 + i * 0.34;
     s.addText(l[3] ? "✓" : "✕", {
       x: c.x + 0.3, y, w: 0.25, h: 0.28,
       fontSize: 12, bold: true, color: l[3] ? TEAL : CORAL, fontFace: SANS,
@@ -638,17 +640,17 @@ const slide = () => { n += 1; return pres.addSlide(); };
     });
   });
   s.addText("Risco e seletividade passam. Só o volume mata.", {
-    x: c.x + 0.28, y: 4.9, w: 4.5, h: 0.28,
+    x: c.x + 0.28, y: 5.0, w: 4.5, h: 0.28,
     fontSize: 11, italic: true, color: CORAL, fontFace: SANS, isTextBox: true, margin: 0,
   });
 
-  cartao(s, { x: c.x, y: 5.4, w: CORPO_L, h: 0.85, fill: NAVY, linha: NAVY });
+  cartao(s, { x: c.x, y: 5.45, w: CORPO_L, h: 0.82, fill: NAVY, linha: NAVY });
   s.addText(
     [
       { text: "Por construção: ", options: { color: WHITE, bold: true } },
       { text: "o ROI é retorno por real emprestado, e o jeito de aumentá-lo é cobrar mais caro — o que derruba o aceite. Na varredura, a correlação entre ROI e volume é de −0,914.", options: { color: GREY_ESCURO } },
     ],
-    { x: c.x + 0.3, y: 5.58, w: CORPO_L - 0.6, h: 0.55, fontSize: 11.5, fontFace: SANS,
+    { x: c.x + 0.3, y: 5.62, w: CORPO_L - 0.6, h: 0.55, fontSize: 11.5, fontFace: SANS,
       lineSpacing: 15, isTextBox: true, margin: 0 }
   );
 }
