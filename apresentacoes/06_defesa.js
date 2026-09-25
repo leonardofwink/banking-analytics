@@ -648,7 +648,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
   s.addText(
     [
       { text: "Por construção: ", options: { color: WHITE, bold: true } },
-      { text: "o ROI é retorno por real emprestado, e o jeito de aumentá-lo é cobrar mais caro — o que derruba o aceite. Na varredura, a correlação entre ROI e volume é de −0,914.", options: { color: GREY_ESCURO } },
+      { text: "o ROI é retorno por real emprestado, e o jeito de aumentá-lo é cobrar mais caro — o que derruba o aceite. Na varredura, a correlação entre ROI e volume é de −0,77.", options: { color: GREY_ESCURO } },
     ],
     { x: c.x + 0.3, y: 5.62, w: CORPO_L - 0.6, h: 0.55, fontSize: 11.5, fontFace: SANS,
       lineSpacing: 15, isTextBox: true, margin: 0 }

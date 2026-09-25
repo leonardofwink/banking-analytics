@@ -81,7 +81,8 @@ saída.
 
 ## Por que toda alavanca troca ROI por volume
 
-A correlação entre ROI e volume na varredura é **−0,914**. Não é acaso da
+A correlação de Pearson entre ROI e volume na varredura é **−0,767**
+(Spearman: −0,840). Não é acaso da
 grade; é a estrutura do problema:
 
 | Alavanca | Efeito no ROI | Efeito no volume |
