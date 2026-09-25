@@ -1,20 +1,21 @@
 /**
- * Apresentação 6 — A defesa, ao professor.
+ * A defesa, ao professor e à banca. Vale os 20 pontos do bloco.
  *
- * Público: o professor e a banca. Vale os 20 pontos do bloco de defesa.
+ * Duas heranças, e elas se completam:
  *
- * Estruturada pelo princípio da pirâmide (Barbara Minto): a resposta vem
- * primeiro, e tudo abaixo existe para sustentá-la. Ninguém precisa refazer
- * a jornada da análise para saber aonde ela chegou.
+ *   **Barbara Minto** dá o esqueleto. A resposta vem primeiro, no slide 2, e
+ *   o título de cada slide é a AFIRMAÇÃO que ele sustenta — quem ler só os
+ *   títulos, em ordem, recebe o argumento inteiro. Cada bloco tem exatamente
+ *   três razões, MECE.
  *
- * As regras que a estrutura segue:
- *   1. Toda afirmação resume as que estão abaixo dela.
- *   2. Ideias do mesmo grupo são da mesma natureza.
- *   3. Cada bloco tem exatamente TRÊS sustentações — MECE, sem sobreposição.
+ *   **A apresentação do Renato** dá a moldura de negócio. Cada slide carrega
+ *   a exigência do enunciado que atende e a pergunta que a banca faria ali,
+ *   já respondida. E a narrativa parte de uma dor de mercado real — uma
+ *   financeira que cresceu sem revisar a régua — em vez de partir do dado.
  *
- * A divisão em quatro blocos não é estética: cada um é um integrante, e cada
- * bloco abre com a afirmação que aquela pessoa precisa defender. Quem
- * apresenta decora a afirmação do topo, não os números.
+ * A divisão em quatro blocos é operacional: cada bloco abre com a afirmação
+ * que aquele integrante defende. Quem apresenta decora a afirmação, não os
+ * números.
  *
  * Gerar:  node apresentacoes/06_defesa.js
  */
@@ -23,45 +24,45 @@ const pptxgen = require("pptxgenjs");
 const fs = require("fs");
 const path = require("path");
 const C = require("./_comum");
+const L = require("./_defesa_layout");
 
 const {
-  NAVY, NAVY_MID, CORAL, CORAL_SOFT, OFFWHITE, WHITE, TEAL, GREY, GREY_LIGHT, GREY_ESCURO,
-  SERIF, SANS, W, M, titulo, numerao, fecho,
+  NAVY, NAVY_MID, CORAL, CORAL_SOFT, OFFWHITE, WHITE, TEAL, GREY, GREY_LIGHT,
+  GREY_ESCURO, SERIF, SANS, W, M, numerao,
 } = C;
+const { moldura, destaque, CORPO_L } = L;
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";
 pres.author = "Grupo 3";
-pres.title = "AutoCred — Política de crédito, a defesa";
+pres.title = "AutoCred — Política de crédito 2026";
 
 const cartao = (slide, opts) => C.cartao(pres, slide, opts);
 const MONO = "Courier New";
+let n = 0;
+const slide = () => { n += 1; return pres.addSlide(); };
 
-/** Abre um bloco: quem fala, a afirmação que ele sustenta, e as três razões. */
-function abrirBloco(s, { numero, quem, papel, afirmacao, razoes, minutos }) {
+/** Abertura de bloco: quem fala e a afirmação que sustenta. */
+function bloco(s, { numero, quem, papel, afirmacao, razoes, minutos }) {
   s.background = { color: NAVY };
-
   s.addText(`BLOCO ${numero}  ·  ${quem.toUpperCase()}  ·  ${papel}`, {
-    x: M, y: 0.95, w: W - 2 * M, h: 0.35,
+    x: M, y: 1.0, w: W - 2 * M - 2, h: 0.35,
     fontSize: 12, bold: true, color: CORAL, fontFace: SANS, charSpacing: 2,
     isTextBox: true, margin: 0,
   });
   s.addText(`~${minutos} min`, {
-    x: W - M - 1.6, y: 0.95, w: 1.6, h: 0.35,
+    x: W - M - 1.6, y: 1.0, w: 1.6, h: 0.35,
     fontSize: 12, color: GREY, fontFace: SANS, align: "right", isTextBox: true, margin: 0,
   });
-
   s.addText(afirmacao, {
-    x: M, y: 1.45, w: W - 2 * M, h: 1.5,
-    fontSize: 32, bold: true, color: WHITE, fontFace: SERIF, lineSpacing: 40,
+    x: M, y: 1.5, w: W - 2 * M, h: 1.45,
+    fontSize: 31, bold: true, color: WHITE, fontFace: SERIF, lineSpacing: 39,
     isTextBox: true, margin: 0,
   });
-
   s.addText("Sustenta-se em três coisas:", {
     x: M, y: 3.3, w: 6, h: 0.35,
     fontSize: 14, italic: true, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0,
   });
-
   razoes.forEach((r, i) => {
     const y = 3.85 + i * 1.0;
     s.addShape(pres.ShapeType.ellipse, {
@@ -74,184 +75,183 @@ function abrirBloco(s, { numero, quem, papel, afirmacao, razoes, minutos }) {
       isTextBox: true, margin: 0,
     });
     s.addText(r, {
-      x: M + 0.72, y: y, w: 11.1, h: 0.8,
+      x: M + 0.72, y, w: 11.1, h: 0.8,
       fontSize: 17, color: WHITE, fontFace: SANS, lineSpacing: 23,
       isTextBox: true, margin: 0,
     });
   });
+  s.addText(String(n), {
+    x: W - M - 0.5, y: 6.82, w: 0.5, h: 0.28,
+    fontSize: 10, color: GREY, fontFace: SANS, align: "right", isTextBox: true, margin: 0,
+  });
 }
 
-/* ========================================================================== */
-/* 1 · Capa                                                                    */
-/* ========================================================================== */
+/* ========================================================== 1 · Capa */
 {
-  const s = pres.addSlide();
+  const s = slide();
   s.background = { color: NAVY };
-
-  s.addText("DESAFIO AUTOCRED  ·  GRUPO 3  ·  SETEMBRO DE 2026", {
+  s.addText("MENTORIA · DESAFIO DE RISCO DE CRÉDITO", {
     x: M, y: 1.7, w: W - 2 * M, h: 0.4,
     fontSize: 13, color: CORAL, fontFace: SANS, charSpacing: 2, bold: true,
     isTextBox: true, margin: 0,
   });
-  s.addText("Política de crédito", {
-    x: M, y: 2.15, w: W - 2 * M, h: 1.1,
-    fontSize: 54, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+  s.addText("AutoCred", {
+    x: M, y: 2.15, w: W - 2 * M, h: 0.95,
+    fontSize: 50, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
   });
-  s.addText(
-    "Por que aprovamos quem aprovamos, por que cobramos o que cobramos,\ne onde este retorno quebra",
-    { x: M, y: 3.3, w: 10.5, h: 1.0, fontSize: 17, color: GREY_ESCURO, fontFace: SANS,
-      lineSpacing: 26, isTextBox: true, margin: 0 }
-  );
-
-  [
-    { v: "59,5%", r: "das propostas\naprovadas" },
-    { v: "11,3%", r: "ROI anualizado\nno cenário central" },
-    { v: "6,3%", r: "inadimplência\nprojetada" },
-    { v: "4 de 4", r: "guard-rails\nrespeitados" },
-  ].forEach((d, i) => {
-    numerao(s, { x: M + i * 2.95, y: 4.85, w: 2.7, valor: d.v, rotulo: d.r,
-                 cor: WHITE, tamanho: 34, corRotulo: GREY_ESCURO });
-  });
-
-  s.addText("Deni Alan  ·  Leonardo Wink  ·  Marcelo Félix  ·  Renato", {
-    x: M, y: 6.55, w: W - 2 * M, h: 0.35,
-    fontSize: 13, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
-  });
-}
-
-/* ========================================================================== */
-/* 2 · A TESE — a pirâmide inteira num slide                                   */
-/* ========================================================================== */
-{
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-
-  s.addText("A RESPOSTA, ANTES DO CAMINHO", {
-    x: M, y: 0.45, w: W - 2 * M, h: 0.3,
-    fontSize: 11.5, bold: true, color: TEAL, fontFace: SANS, charSpacing: 2,
+  s.addText("Nova política de concessão 2026:\nmodelo de PD e política de crédito", {
+    x: M, y: 3.15, w: 10.5, h: 1.0,
+    fontSize: 20, color: GREY_ESCURO, fontFace: SANS, lineSpacing: 28,
     isTextBox: true, margin: 0,
   });
+  [
+    { v: "59,5%", r: "das propostas\naprovadas" },
+    { v: "11,3%", r: "de ROI\nanualizado" },
+    { v: "6,3%", r: "de inadimplência\nprojetada" },
+    { v: "4 de 4", r: "limites do conselho\ncumpridos" },
+  ].forEach((d, i) => {
+    numerao(s, { x: M + i * 2.95, y: 4.75, w: 2.7, valor: d.v, rotulo: d.r,
+                 cor: WHITE, tamanho: 32, corRotulo: GREY_ESCURO });
+  });
+  s.addText("Deni Alan  ·  Leonardo Wink  ·  Marcelo Félix  ·  Renato", {
+    x: M, y: 6.45, w: W - 2 * M, h: 0.3,
+    fontSize: 13, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
+  });
+  s.addText("Defesa da solução  ·  15 minutos", {
+    x: M, y: 6.78, w: W - 2 * M, h: 0.3,
+    fontSize: 12, italic: true, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
+  });
+}
 
-  // o topo da pirâmide
-  cartao(s, { x: M + 1.4, y: 0.9, w: 9.1, h: 1.35, fill: NAVY, linha: NAVY });
-  s.addText(
-    "Aprovar score 5 ou melhor, com preço proporcional à perda\nde cada faixa, rende 11,3% ao ano dentro dos quatro limites",
-    { x: M + 1.7, y: 1.18, w: 8.5, h: 0.9, fontSize: 19, bold: true, color: WHITE,
-      fontFace: SERIF, align: "center", lineSpacing: 28, isTextBox: true, margin: 0 }
-  );
+/* ========================================================== 2 · Sumário */
+{
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Sumário executivo",
+    titulo: "Recomendamos aprovar 59,5% das propostas com preço proporcional ao risco,\ncom ROI de 11,3% ao ano e os quatro limites cumpridos nos três cenários",
+    casoPede: "ROI anualizado acima de 15% dentro dos guard-rails. Cumprimos os quatro limites; o ROI fica em 11,3%.",
+    perguntas: [{
+      q: "Por que o ROI não chega a 15%?",
+      a: "Das 5.600 políticas que testamos, 4.044 batem a meta e nenhuma respeita o piso de volume. O bloco 3 traz a medição.",
+    }],
+    rodape: "ROI anualizado na Base C acima de 15%, respeitados os guard-rails de aprovação, taxa, inadimplência e volume",
+    numero: n,
+  });
 
-  // as três pernas
-  const pernas = [
-    {
-      t: "O modelo ordena risco\nfora da amostra",
-      d: "AuROC de 0,7234 em 2024, com a variável que envenenaria o modelo removida e travada em teste",
-      quem: "Deni",
-    },
-    {
-      t: "O preço cobre a perda\nde cada faixa",
-      d: "Uma conta auditável em uma linha, monotônica no risco, que corrige o preço único da política de 2022",
-      quem: "Léo",
-    },
-    {
-      t: "O retorno sobrevive\naos três cenários",
-      d: "Escolhido com 12,7% de folga até o limite mais apertado, em vez do ROI máximo disponível",
-      quem: "Renato",
-    },
-  ];
+  [
+    { v: "59,5%", r: "das propostas aprovadas:\n2.976 de 5.000, score 5 a 10" },
+    { v: "11,3%", r: "de ROI anualizado, de 11,1%\na 11,5% conforme o aceite" },
+    { v: "4 de 4", r: "limites cumpridos, inclusive\nno cenário pessimista" },
+  ].forEach((d, i) => {
+    destaque(s, { x: c.x + i * 2.7, y: c.y, w: 2.55, valor: d.v, rotulo: d.r, cor: NAVY, tamanho: 33 });
+  });
 
-  pernas.forEach((p, i) => {
-    const x = M + i * 4.03;
-    // conector
-    s.addShape(pres.ShapeType.line, {
-      x: x + 1.91, y: 2.25, w: 0, h: 0.4,
-      line: { color: GREY_LIGHT, width: 1.5 },
-    });
-    cartao(s, { x, y: 2.65, w: 3.83, h: 2.25, fill: WHITE });
-    s.addText(p.t, {
-      x: x + 0.28, y: 2.9, w: 3.3, h: 0.75,
-      fontSize: 16, bold: true, color: NAVY, fontFace: SERIF, lineSpacing: 21,
+  s.addShape(pres.ShapeType.line, {
+    x: c.x, y: 3.5, w: CORPO_L, h: 0, line: { color: GREY_LIGHT, width: 1 },
+  });
+
+  [
+    { n: "1 · MODELO", t: "XGBoost", d: "AuROC 0,7234 fora do tempo", quem: "Deni" },
+    { n: "2 · POLÍTICA", t: "Corte no score 5", d: "Taxa de 1,63% a 2,29% ao mês", quem: "Léo" },
+    { n: "3 · ROBUSTEZ", t: "Três cenários de aceite", d: "12,7% de folga até o limite", quem: "Renato" },
+  ].forEach((d, i) => {
+    const x = c.x + i * 2.7;
+    s.addText(d.n, {
+      x, y: 3.7, w: 2.55, h: 0.28,
+      fontSize: 10.5, bold: true, color: CORAL, fontFace: SANS, charSpacing: 1,
       isTextBox: true, margin: 0,
     });
-    s.addText(p.d, {
-      x: x + 0.28, y: 3.68, w: 3.3, h: 0.95,
-      fontSize: 12, color: GREY, fontFace: SANS, lineSpacing: 16,
-      isTextBox: true, margin: 0,
+    s.addText(d.t, {
+      x, y: 4.0, w: 2.55, h: 0.35,
+      fontSize: 15.5, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
     });
-    s.addText(`defende: ${p.quem}`, {
-      x: x + 0.28, y: 4.52, w: 3.3, h: 0.28,
-      fontSize: 10.5, bold: true, color: CORAL, fontFace: SANS, isTextBox: true, margin: 0,
+    s.addText(d.d, {
+      x, y: 4.38, w: 2.55, h: 0.5,
+      fontSize: 11, color: GREY, fontFace: SANS, lineSpacing: 14, isTextBox: true, margin: 0,
+    });
+    s.addText(`defende: ${d.quem}`, {
+      x, y: 4.92, w: 2.55, h: 0.25,
+      fontSize: 10, bold: true, color: TEAL, fontFace: SANS, isTextBox: true, margin: 0,
     });
   });
 
-  cartao(s, { x: M, y: 5.15, w: 11.9, h: 1.5, fill: CORAL_SOFT, linha: CORAL });
-  s.addText("E a pergunta que não vamos esperar que façam", {
-    x: M + 0.4, y: 5.35, w: 11.1, h: 0.35,
-    fontSize: 15.5, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
-  });
+  cartao(s, { x: c.x, y: 5.4, w: CORPO_L, h: 0.85, fill: CORAL_SOFT, linha: CORAL });
   s.addText(
     [
-      { text: "«Por que 11,3% e não os 15% pedidos?»  ", options: { bold: true, color: NAVY } },
-      { text: "Porque 15% é incompatível com o piso de volume: das 5.600 políticas que varremos, 4.044 batem a meta e ", options: { color: NAVY } },
-      { text: "nenhuma", options: { bold: true, color: CORAL } },
-      { text: " respeita os R$ 40 milhões. O bloco 3 mostra a medição.", options: { color: NAVY } },
+      { text: "A mudança central:  ", options: { bold: true, color: NAVY } },
+      { text: "hoje a AutoCred cobra 1,57% de quem tem 0,2% de inadimplência e 1,64% de quem tem 69,6%. Passamos a cobrar o risco de cada faixa.", options: { color: NAVY } },
     ],
-    { x: M + 0.4, y: 5.75, w: 11.1, h: 0.75, fontSize: 13, fontFace: SANS,
-      lineSpacing: 18, isTextBox: true, margin: 0 }
+    { x: c.x + 0.3, y: 5.58, w: CORPO_L - 0.6, h: 0.5, fontSize: 11.5, fontFace: SANS,
+      lineSpacing: 15, isTextBox: true, margin: 0 }
   );
 }
 
-/* ========================================================================== */
-/* 3 · SCQA — o problema                                                       */
-/* ========================================================================== */
+/* ========================================================== 3 · Contexto */
 {
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-  titulo(s, "O problema que a AutoCred trouxe", "O conselho quer crescer sem perder a mão no risco — e a política de 2022 não distingue risco");
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Contexto",
+    titulo: "Uma financeira que cresceu rápido e nunca revisou a régua:\ninadimplência de 8,3% e preço que não distingue risco",
+    casoPede: "Nova política de concessão 2026 com ROI acima de 15%, sem sufocar a originação nem estourar o apetite de risco.",
+    perguntas: [
+      { q: "Por que quatro limites e não só o ROI?",
+        a: "Sem eles a política ideal aprovaria pouco e cobraria o teto. O piso de volume força a AutoCred a continuar crescendo." },
+      { q: "Isso é problema de dado ou de negócio?",
+        a: "De negócio. O dado só mostra o tamanho: quem paga em dia está financiando quem não paga, e vai embora para o concorrente." },
+    ],
+    rodape: "1. O caso · o que o conselho pediu: ROI anualizado acima de 15% sem sufocar a originação e sem estourar o apetite de risco",
+    numero: n,
+  });
 
-  const blocos = [
-    { r: "SITUAÇÃO", t: "A AutoCred financia veículos e quer crescer",
-      d: "10.000 contratos originados entre 2022 e 2024, e uma carteira nova de 5.000 propostas esperando decisão." },
-    { r: "COMPLICAÇÃO", t: "A política atual cobra o mesmo preço de todo risco",
-      d: "1,57% ao mês de quem tem 0,2% de inadimplência e 1,64% de quem tem 69,6%. Correlação entre taxa e risco: +0,125." },
-    { r: "PERGUNTA", t: "A quem conceder, a que preço, em que prazo",
-      d: "E com quanta entrada — respeitando quatro limites inegociáveis do conselho." },
-  ];
+  s.addText(
+    "A AutoCred financia veículos leves desde 2022 e cresceu rápido. A política de concessão nunca foi revisada, e a inadimplência chegou a 8,3%.",
+    { x: c.x, y: c.y, w: CORPO_L, h: 0.55, fontSize: 13.5, color: NAVY, fontFace: SANS,
+      lineSpacing: 19, isTextBox: true, margin: 0 }
+  );
 
-  blocos.forEach((b, i) => {
-    const y = 1.95 + i * 1.35;
-    cartao(s, { x: M, y, w: 11.9, h: 1.15, fill: WHITE });
-    s.addText(b.r, {
-      x: M + 0.35, y: y + 0.2, w: 1.9, h: 0.3,
-      fontSize: 11, bold: true, color: CORAL, fontFace: SANS, charSpacing: 1.5,
+  cartao(s, { x: c.x, y: 2.65, w: CORPO_L, h: 1.85, fill: NAVY, linha: NAVY });
+  s.addText("O preço não distingue risco — e isso tem um nome", {
+    x: c.x + 0.35, y: 2.85, w: CORPO_L - 0.7, h: 0.35,
+    fontSize: 16, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
+
+  [
+    { v: "1,57%", r: "cobrado de quem tem\n0,2% de inadimplência" },
+    { v: "1,64%", r: "cobrado de quem tem\n69,6% de inadimplência" },
+    { v: "+0,125", r: "a correlação entre\ntaxa e risco", cor: CORAL },
+  ].forEach((d, i) => {
+    s.addText(d.v, {
+      x: c.x + 0.35 + i * 2.5, y: 3.3, w: 2.3, h: 0.45,
+      fontSize: 24, bold: true, color: d.cor || WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+    });
+    s.addText(d.r, {
+      x: c.x + 0.35 + i * 2.5, y: 3.78, w: 2.3, h: 0.55,
+      fontSize: 10.5, color: GREY_ESCURO, fontFace: SANS, lineSpacing: 14,
       isTextBox: true, margin: 0,
-    });
-    s.addText(b.t, {
-      x: M + 2.4, y: y + 0.16, w: 9.1, h: 0.35,
-      fontSize: 16, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
-    });
-    s.addText(b.d, {
-      x: M + 2.4, y: y + 0.56, w: 9.1, h: 0.45,
-      fontSize: 12.5, color: GREY, fontFace: SANS, lineSpacing: 17, isTextBox: true, margin: 0,
     });
   });
 
-  cartao(s, { x: M, y: 6.0, w: 11.9, h: 0.9, fill: NAVY, linha: NAVY });
   s.addText(
     [
-      { text: "RESPOSTA   ", options: { bold: true, color: CORAL } },
-      { text: "Aprovar score 5 ou melhor, com preço proporcional à perda esperada de cada faixa. ", options: { color: WHITE } },
-      { text: "O resto desta apresentação sustenta essa frase.", options: { color: GREY_ESCURO, italic: true } },
+      { text: "É seleção adversa. ", options: { bold: true, color: NAVY } },
+      { text: "Com preço único, o bom cliente paga pelo ruim e vai para o concorrente; sobra quem não tem alternativa. A inadimplência sobe sozinha, e subir o preço acelera o ciclo.", options: { color: GREY } },
     ],
-    { x: M + 0.4, y: 6.25, w: 11.1, h: 0.45, fontSize: 14, fontFace: SANS, isTextBox: true, margin: 0 }
+    { x: c.x, y: 4.7, w: CORPO_L, h: 0.7, fontSize: 12.5, fontFace: SANS,
+      lineSpacing: 17, isTextBox: true, margin: 0 }
+  );
+
+  cartao(s, { x: c.x, y: 5.5, w: CORPO_L, h: 0.8, fill: CORAL_SOFT, linha: CORAL });
+  s.addText(
+    "A pergunta: qual política maximiza o ROI sem travar a originação nem estourar o apetite de risco?",
+    { x: c.x + 0.3, y: 5.72, w: CORPO_L - 0.6, h: 0.4, fontSize: 13, bold: true,
+      color: NAVY, fontFace: SANS, isTextBox: true, margin: 0 }
   );
 }
 
-/* ========================================================================== */
-/* 4 · BLOCO 1 — Deni                                                          */
-/* ========================================================================== */
+/* ========================================================== 4 · Bloco 1 */
 {
-  const s = pres.addSlide();
-  abrirBloco(s, {
+  const s = slide();
+  bloco(s, {
     numero: 1, quem: "Deni", papel: "MODELAGEM", minutos: 4,
     afirmacao: "O modelo ordena risco fora da amostra,\ne sabemos por que confiar nele",
     razoes: [
@@ -262,261 +262,228 @@ function abrirBloco(s, { numero, quem, papel, afirmacao, razoes, minutos }) {
   });
 }
 
-/* ========================================================================== */
-/* 5 · Deni 1 — a armadilha                                                    */
-/* ========================================================================== */
+/* ========================================================== 5 · Armadilha */
 {
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-  titulo(s, "1 · A variável que envenenaria o modelo",
-         "A mais correlacionada com o alvo, e a que destruiria a aplicação — sem levantar um único erro");
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Bloco 1 · sem vazamento",
+    titulo: "Uma coluna daria AuROC de treino imbatível e destruiria o modelo\nna Base B — sem levantar um único erro",
+    casoPede: "Só usar colunas disponíveis na concessão, validar no tempo e ajustar o pré-processamento só no treino.",
+    perguntas: [
+      { q: "Como sabem que não há vazamento?",
+        a: "A coluna suspeita foi medida e removida na ingestão. Um teste automatizado falha se ela reaparecer." },
+      { q: "E os valores ausentes?",
+        a: "Bureau 3%, renda 8% e emprego 12%: mediana com indicador de ausência, dentro do Pipeline e ajustada só no treino." },
+    ],
+    rodape: "11. Antes de começar · colunas disponíveis na concessão, ordem temporal e pré-processamento ajustado só no treino",
+    numero: n,
+  });
 
-  cartao(s, { x: M, y: 1.95, w: 11.9, h: 1.2, fill: NAVY, linha: NAVY });
+  cartao(s, { x: c.x, y: c.y, w: CORPO_L, h: 1.1, fill: NAVY, linha: NAVY });
   s.addText("qtd_parcelas_em_atraso_12m", {
-    x: M + 0.4, y: 2.15, w: 6.2, h: 0.42,
-    fontSize: 20, bold: true, color: WHITE, fontFace: MONO, isTextBox: true, margin: 0,
+    x: c.x + 0.3, y: c.y + 0.18, w: 4.6, h: 0.38,
+    fontSize: 17, bold: true, color: WHITE, fontFace: MONO, isTextBox: true, margin: 0,
   });
-  s.addText("correlação de 0,74 com o alvo na base de desenvolvimento", {
-    x: M + 0.4, y: 2.6, w: 6.5, h: 0.35,
-    fontSize: 13, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0,
+  s.addText("correlação de 0,74 com o alvo no desenvolvimento", {
+    x: c.x + 0.3, y: c.y + 0.58, w: 4.6, h: 0.3,
+    fontSize: 11.5, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0,
   });
-  s.addText("vale ZERO em toda linha das bases B e C", {
-    x: M + 7.2, y: 2.35, w: 4.3, h: 0.45,
-    fontSize: 16, bold: true, color: CORAL, fontFace: SANS, align: "right",
-    isTextBox: true, margin: 0,
+  s.addText("vale ZERO em toda\nlinha das bases B e C", {
+    x: c.x + 5.1, y: c.y + 0.25, w: 2.5, h: 0.6,
+    fontSize: 13, bold: true, color: CORAL, fontFace: SANS, align: "right",
+    lineSpacing: 17, isTextBox: true, margin: 0,
   });
 
   const cols = [
-    { t: "Por que ela engana", d: "É a variável mais correlacionada com o alvo. Qualquer seleção automática a escolhe primeiro." },
-    { t: "Por que ela destrói", d: "É pós-concessão: só existe depois que o contrato começou. Na hora de decidir, ela não existe." },
-    { t: "O que aconteceria", d: "O AuROC despencaria para ~0,50 na Base B. Sem erro, sem aviso, sem exceção." },
+    { t: "Por que engana", d: "É a variável mais correlacionada com o alvo. Qualquer seleção automática a escolhe primeiro." },
+    { t: "Por que destrói", d: "É pós-concessão: só existe depois que o contrato começou. Na hora de decidir, ela não existe." },
+    { t: "O que aconteceria", d: "O AuROC cairia para ~0,50 na Base B. Sem erro, sem aviso, sem exceção." },
   ];
-  cols.forEach((c, i) => {
-    const x = M + i * 4.03;
-    cartao(s, { x, y: 3.4, w: 3.83, h: 1.85, fill: WHITE });
-    s.addText(c.t, {
-      x: x + 0.28, y: 3.62, w: 3.3, h: 0.35,
-      fontSize: 15, bold: true, color: i === 2 ? CORAL : NAVY, fontFace: SERIF,
+  cols.forEach((col, i) => {
+    const x = c.x + i * 2.7;
+    cartao(s, { x, y: 3.25, w: 2.55, h: 1.75, fill: WHITE });
+    s.addText(col.t, {
+      x: x + 0.22, y: 3.45, w: 2.1, h: 0.3,
+      fontSize: 13.5, bold: true, color: i === 2 ? CORAL : NAVY, fontFace: SERIF,
       isTextBox: true, margin: 0,
     });
-    s.addText(c.d, {
-      x: x + 0.28, y: 4.02, w: 3.3, h: 1.1,
-      fontSize: 12.5, color: GREY, fontFace: SANS, lineSpacing: 17, isTextBox: true, margin: 0,
+    s.addText(col.d, {
+      x: x + 0.22, y: 3.8, w: 2.1, h: 1.1,
+      fontSize: 11, color: GREY, fontFace: SANS, lineSpacing: 15, isTextBox: true, margin: 0,
     });
   });
 
-  cartao(s, { x: M, y: 5.45, w: 11.9, h: 1.05, fill: CORAL_SOFT, linha: CORAL });
+  cartao(s, { x: c.x, y: 5.2, w: CORPO_L, h: 1.0, fill: CORAL_SOFT, linha: CORAL });
   s.addText(
     [
-      { text: "Como nos protegemos:  ", options: { bold: true, color: NAVY } },
-      { text: "a coluna sai na ingestão, e há um teste que falha se ela reaparecer. Outras três saíram pelo mesmo raciocínio — ", options: { color: NAVY } },
+      { text: "Outras três saíram pelo mesmo raciocínio: ", options: { color: NAVY } },
       { text: "taxa_juros_am", options: { color: NAVY, fontFace: MONO } },
-      { text: ", ", options: { color: NAVY } },
-      { text: "parcela_mensal", options: { color: NAVY, fontFace: MONO } },
       { text: " e ", options: { color: NAVY } },
+      { text: "parcela_mensal", options: { color: NAVY, fontFace: MONO } },
+      { text: " não existem na Base C, e ", options: { color: NAVY } },
       { text: "comprometimento_renda", options: { color: NAVY, fontFace: MONO } },
-      { text: ", esta última por criar circularidade com o preço que nós mesmos ofertamos.", options: { color: NAVY } },
+      { text: " depende da taxa que nós mesmos ofertamos — usá-la criaria circularidade entre preço e risco.", options: { color: NAVY } },
     ],
-    { x: M + 0.4, y: 5.68, w: 11.1, h: 0.65, fontSize: 12.5, fontFace: SANS,
-      lineSpacing: 17, isTextBox: true, margin: 0 }
+    { x: c.x + 0.3, y: 5.4, w: CORPO_L - 0.6, h: 0.65, fontSize: 11.5, fontFace: SANS,
+      lineSpacing: 15, isTextBox: true, margin: 0 }
   );
 }
 
-/* ========================================================================== */
-/* 6 · Deni 2 — validação                                                      */
-/* ========================================================================== */
+/* ========================================================== 6 · Validação */
 {
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-  titulo(s, "2 · Medimos como vamos aplicar",
-         "A aplicação é out-of-time, então a validação também é — e o critério estava escrito antes do resultado");
-
-  cartao(s, { x: M, y: 1.95, w: 5.75, h: 2.1, fill: WHITE });
-  s.addText("Split temporal, não 70/30 aleatório", {
-    x: M + 0.35, y: 2.15, w: 5.05, h: 0.38,
-    fontSize: 16, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Bloco 1 · escolha do modelo",
+    titulo: "O XGBoost venceu nas duas medidas, e o segundo colocado caiu\npor calibração — não por poder de ordenação",
+    casoPede: "Modelo de PD 90/12 que ordene bem o risco. Métrica oficial: AuROC na Base B, fora do tempo.",
+    perguntas: [
+      { q: "Por que não o Random Forest, que empata?",
+        a: "Com reponderação de classes ele projetava PD média de 42,3% contra 7,2% observados. Ordena bem, mas o nível não serve para precificar." },
+      { q: "Por que split temporal e não 70/30?",
+        a: "A aplicação é out-of-time: vamos escorar contratos futuros. Split aleatório mediria a coisa errada e daria um número melhor." },
+    ],
+    rodape: "2 e 3 · modelo de PD 90/12 avaliado por AuROC na Base B (fora do tempo); KS reportado como métrica secundária",
+    numero: n,
   });
-  s.addText(
-    "Treino 2022–2023 (6.670 contratos), validação 2024 (3.330). Vamos escorar contratos futuros: um split aleatório mediria a coisa errada e daria um número mais bonito.",
-    { x: M + 0.35, y: 2.6, w: 5.05, h: 1.3, fontSize: 12.5, color: GREY, fontFace: SANS,
-      lineSpacing: 18, isTextBox: true, margin: 0 }
-  );
-
-  cartao(s, { x: M + 6.15, y: 1.95, w: 5.75, h: 2.1, fill: WHITE });
-  s.addText("A validação foi medida uma vez só", {
-    x: M + 6.5, y: 2.15, w: 5.05, h: 0.38,
-    fontSize: 16, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
-  });
-  s.addText(
-    "Os hiperparâmetros saíram de validação cruzada temporal em três dobras dentro do treino, sem tocar em 2024. O modelo final foi retreinado na base completa antes de escorar a Base B.",
-    { x: M + 6.5, y: 2.6, w: 5.05, h: 1.3, fontSize: 12.5, color: GREY, fontFace: SANS,
-      lineSpacing: 18, isTextBox: true, margin: 0 }
-  );
 
   const linhas = [
-    ["", "Val. cruzada", "Validação 2024", "Decisão"],
+    ["Modelo", "Val. cruzada", "Validação 2024", "Decisão"],
     ["Regressão logística", "0,6391", "0,6489", "referência"],
     ["Random Forest", "—", "0,7159", "descartado por calibração"],
     ["XGBoost", "0,6948", "0,7234", "escolhido"],
   ];
-  const cx = [M + 0.35, M + 4.6, M + 6.6, M + 8.9];
-  const cw = [4.1, 1.8, 2.1, 3.0];
+  const cx = [c.x + 0.25, c.x + 2.7, c.x + 4.3, c.x + 6.1];
+  const cw = [2.4, 1.5, 1.7, 1.8];
 
-  cartao(s, { x: M, y: 4.3, w: 11.9, h: 1.85, fill: WHITE });
+  cartao(s, { x: c.x, y: c.y, w: CORPO_L, h: 1.75, fill: WHITE });
   linhas.forEach((linha, r) => {
-    const y = 4.5 + r * 0.38;
+    const y = c.y + 0.18 + r * 0.37;
     const cab = r === 0;
-    const escolhido = linha[0] === "XGBoost";
-    if (escolhido) {
+    const esc = linha[0] === "XGBoost";
+    if (esc) {
       s.addShape(pres.ShapeType.rect, {
-        x: M + 0.2, y: y - 0.03, w: 11.5, h: 0.36,
+        x: c.x + 0.1, y: y - 0.04, w: CORPO_L - 0.2, h: 0.35,
         fill: { color: CORAL_SOFT }, line: { color: CORAL_SOFT, width: 0 },
       });
     }
-    linha.forEach((cel, c) => {
+    linha.forEach((cel, k) => {
       s.addText(cel, {
-        x: cx[c], y, w: cw[c], h: 0.32,
-        fontSize: cab ? 11 : 12.5, bold: cab || escolhido,
-        italic: cab, color: cab ? GREY : NAVY, fontFace: SANS,
-        align: c === 0 || c === 3 ? "left" : "center", isTextBox: true, margin: 0,
+        x: cx[k], y, w: cw[k], h: 0.3,
+        fontSize: cab ? 10.5 : 12, bold: cab || esc, italic: cab,
+        color: cab ? GREY : NAVY, fontFace: SANS,
+        align: k === 0 || k === 3 ? "left" : "center", isTextBox: true, margin: 0,
       });
     });
   });
 
-  fecho(s, "Ganhar nas duas medidas, e não em uma só, é o que afasta a hipótese de sorte em um conjunto específico.");
-}
-
-/* ========================================================================== */
-/* 7 · Deni 3 — calibração                                                     */
-/* ========================================================================== */
-{
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-  titulo(s, "3 · Por que o segundo colocado foi descartado",
-         "Para ordenar risco, empate técnico. Para precificar, inviável — e nós precisamos precificar");
-
-  cartao(s, { x: M, y: 2.0, w: 11.9, h: 1.8, fill: WHITE });
-  [
-    { v: "0,7159", r: "AuROC do Random Forest\nempate técnico com o XGBoost", cor: NAVY },
-    { v: "42,3%", r: "PD média que ele projetava\ncom reponderação de classes", cor: CORAL },
-    { v: "7,2%", r: "inadimplência real\nobservada na base", cor: NAVY },
-    { v: "6×", r: "o erro de nível\nque isso significa", cor: CORAL },
-  ].forEach((d, i) => {
-    numerao(s, { x: M + 0.3 + i * 2.87, y: 2.25, w: 2.7, valor: d.v, rotulo: d.r,
-                 cor: d.cor, tamanho: 28, corRotulo: GREY });
+  s.addText("Treino 2022–2023 (6.670 contratos) · validação 2024 (3.330) · a validação foi medida uma vez só", {
+    x: c.x, y: 3.85, w: CORPO_L, h: 0.3,
+    fontSize: 10.5, italic: true, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
   });
 
-  cartao(s, { x: M, y: 4.1, w: 11.9, h: 2.2, fill: NAVY, linha: NAVY });
-  s.addText("Ordenar não é o bastante quando o número vira preço", {
-    x: M + 0.4, y: 4.35, w: 11.1, h: 0.4,
-    fontSize: 19, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+  cartao(s, { x: c.x, y: 4.3, w: 3.85, h: 1.9, fill: NAVY, linha: NAVY });
+  s.addText("Ganhar nas duas afasta a sorte", {
+    x: c.x + 0.28, y: 4.5, w: 3.3, h: 0.32,
+    fontSize: 14, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   s.addText(
-    [
-      { text: "A perda esperada é ", options: { color: GREY_ESCURO } },
-      { text: "PD × EAD × LGD", options: { color: WHITE, bold: true } },
-      { text: ", e a taxa de cada faixa sai dela. Uma PD seis vezes maior que a realidade produz preço absurdo — o cliente vai embora e o modelo parecia ótimo no AuROC.", options: { color: GREY_ESCURO } },
-    ],
-    { x: M + 0.4, y: 4.85, w: 11.1, h: 0.8, fontSize: 14, fontFace: SANS,
-      lineSpacing: 20, isTextBox: true, margin: 0 }
+    "O XGBoost venceu na validação cruzada temporal interna ao treino E na validação de 2024. Ganhar em uma só poderia ser sorte de conjunto.",
+    { x: c.x + 0.28, y: 4.88, w: 3.3, h: 1.1, fontSize: 11, color: GREY_ESCURO,
+      fontFace: SANS, lineSpacing: 15, isTextBox: true, margin: 0 }
   );
+
+  cartao(s, { x: c.x + 4.05, y: 4.3, w: 3.85, h: 1.9, fill: WHITE });
+  s.addText("Calibração, não só ordenação", {
+    x: c.x + 4.33, y: 4.5, w: 3.3, h: 0.32,
+    fontSize: 14, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
   s.addText(
-    "É por isso que o critério de escolha, escrito antes de rodar, tinha duas linhas: ordenação E calibração.",
-    { x: M + 0.4, y: 5.7, w: 11.1, h: 0.4, fontSize: 13.5, italic: true, color: CORAL,
-      fontFace: SANS, isTextBox: true, margin: 0 }
+    "A perda é PD × EAD × LGD, e a taxa sai dela. Uma PD seis vezes maior que a realidade produz preço absurdo — e o AuROC não acusa nada.",
+    { x: c.x + 4.33, y: 4.88, w: 3.3, h: 1.1, fontSize: 11, color: GREY, fontFace: SANS,
+      lineSpacing: 15, isTextBox: true, margin: 0 }
   );
 }
 
-/* ========================================================================== */
-/* 8 · BLOCO 2 — Léo                                                           */
-/* ========================================================================== */
+/* ========================================================== 7 · Bloco 2 */
 {
-  const s = pres.addSlide();
-  abrirBloco(s, {
+  const s = slide();
+  bloco(s, {
     numero: 2, quem: "Léo", papel: "POLÍTICA E PRECIFICAÇÃO", minutos: 4,
     afirmacao: "O preço de cada faixa cobre a perda dela,\npor uma regra que cabe em uma linha",
     razoes: [
-      "As faixas têm cortes absolutos de PD, então significam a mesma coisa em qualquer base",
-      "A taxa é 1,50% ao mês mais 10% da perda esperada da faixa — auditável e monotônica no risco",
-      "Prazo e entrada são alavancas de risco, não de preço, e estão fixas por decisão declarada",
+      "As faixas têm cortes absolutos de PD, então significam a mesma coisa em qualquer base e em qualquer ano",
+      "A taxa é 1,50% ao mês mais 10% da perda esperada da faixa — auditável, e monotônica no risco",
+      "Prazo e entrada são alavancas de risco, não de preço, e ficaram fixas por decisão declarada",
     ],
   });
 }
 
-/* ========================================================================== */
-/* 9 · Léo 1 — cortes absolutos                                                */
-/* ========================================================================== */
+/* ========================================================== 8 · Base C */
 {
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-  titulo(s, "1 · Cortes absolutos, não quantis",
-         "Porque a Base C é outra população — e uma faixa precisa significar a mesma coisa nas duas");
-
-  cartao(s, { x: M, y: 1.95, w: 5.75, h: 2.35, fill: WHITE });
-  s.addText("O que o quantil faria", {
-    x: M + 0.35, y: 2.15, w: 5.05, h: 0.35,
-    fontSize: 16, bold: true, color: GREY, fontFace: SERIF, isTextBox: true, margin: 0,
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Bloco 2 · construção do score",
+    titulo: "A Base C é outra população — por isso os cortes são absolutos,\ne não quantis",
+    casoPede: "A Base C é de mar aberto: inclui perfis que a AutoCred recusava. É a inferência de rejeitados.",
+    perguntas: [
+      { q: "Vocês corrigiram esse viés?",
+        a: "Não. Medimos o tamanho e deixamos margem na política. Tratamos a PD como ordenação confiável e nível suspeito." },
+      { q: "Por que não quantis, que é mais simples?",
+        a: "O décimo pior de uma população boa e o décimo pior de uma ruim não são o mesmo risco, e não podem custar o mesmo preço." },
+    ],
+    rodape: "3 · construção do score de 1 a 10 · um detalhe para não ignorar: a Base C inclui perfis que a política anterior recusava",
+    numero: n,
   });
-  s.addText(
-    "Dividir cada base em dez partes iguais. Simples — mas o décimo pior de uma população boa e o décimo pior de uma população ruim não são o mesmo risco, e não podem custar o mesmo preço.",
-    { x: M + 0.35, y: 2.58, w: 5.05, h: 1.5, fontSize: 12.5, color: GREY, fontFace: SANS,
-      lineSpacing: 18, isTextBox: true, margin: 0 }
-  );
 
-  cartao(s, { x: M + 6.15, y: 1.95, w: 5.75, h: 2.35, fill: NAVY, linha: NAVY });
+  [
+    { v: "5,93", r: "PSI em restrições ativas\nentre a Base A e a C" },
+    { v: "549 vs 645", r: "score de bureau mediano\nna Base C contra a A" },
+    { v: "12%", r: "dos aprovados estão fora\ndo domínio do treino" },
+  ].forEach((d, i) => {
+    destaque(s, { x: c.x + i * 2.7, y: c.y, w: 2.55, valor: d.v, rotulo: d.r,
+                  cor: i === 2 ? CORAL : NAVY, tamanho: 26 });
+  });
+
+  cartao(s, { x: c.x, y: 3.5, w: CORPO_L, h: 1.35, fill: NAVY, linha: NAVY });
   s.addText("O que o corte absoluto garante", {
-    x: M + 6.5, y: 2.15, w: 5.05, h: 0.35,
-    fontSize: 16, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+    x: c.x + 0.3, y: 3.68, w: CORPO_L - 0.6, h: 0.32,
+    fontSize: 15, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   s.addText(
     [
       { text: "A faixa 5 significa ", options: { color: GREY_ESCURO } },
       { text: "«PD entre 9,5% e 13%»", options: { color: WHITE, bold: true } },
-      { text: " em qualquer base, em qualquer ano. O preço dela cobre aquele risco — e aquele risco é o mesmo em toda parte.", options: { color: GREY_ESCURO } },
+      { text: " em qualquer base, em qualquer ano. O preço dela cobre aquele risco — e aquele risco é o mesmo em toda parte. Com quantil, a mesma faixa mudaria de significado a cada safra.", options: { color: GREY_ESCURO } },
     ],
-    { x: M + 6.5, y: 2.58, w: 5.05, h: 1.5, fontSize: 12.5, fontFace: SANS,
-      lineSpacing: 18, isTextBox: true, margin: 0 }
+    { x: c.x + 0.3, y: 4.05, w: CORPO_L - 0.6, h: 0.7, fontSize: 12, fontFace: SANS,
+      lineSpacing: 16, isTextBox: true, margin: 0 }
   );
 
-  cartao(s, { x: M, y: 4.55, w: 11.9, h: 1.8, fill: CORAL_SOFT, linha: CORAL });
-  s.addText("A Base C é mesmo outra população — medimos", {
-    x: M + 0.4, y: 4.78, w: 11.1, h: 0.35,
-    fontSize: 16, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
-  });
-
-  [
-    { v: "5,93", r: "PSI em qtd_restricoes_ativas" },
-    { v: "0,50", r: "PSI em score_bureau" },
-    { v: "549 vs 645", r: "score de bureau mediano" },
-    { v: "1,70 vs 0,63", r: "restrições ativas, em média" },
-  ].forEach((d, i) => {
-    s.addText(d.v, {
-      x: M + 0.4 + i * 2.87, y: 5.25, w: 2.7, h: 0.4,
-      fontSize: 19, bold: true, color: CORAL, fontFace: SERIF, align: "center",
-      isTextBox: true, margin: 0,
-    });
-    s.addText(d.r, {
-      x: M + 0.4 + i * 2.87, y: 5.68, w: 2.7, h: 0.3,
-      fontSize: 11, color: GREY, fontFace: SANS, align: "center", isTextBox: true, margin: 0,
-    });
-  });
-  s.addText("As duas variáveis mais preditivas do modelo são exatamente as que mais mudaram.", {
-    x: M + 0.4, y: 6.0, w: 11.1, h: 0.3,
-    fontSize: 12, italic: true, color: NAVY, fontFace: SANS, align: "center",
-    isTextBox: true, margin: 0,
-  });
+  s.addText(
+    "As duas variáveis mais preditivas do modelo são exatamente as que mais mudaram entre as bases. É por isso que o nível da PD merece desconfiança, e a ordenação não.",
+    { x: c.x, y: 5.05, w: CORPO_L, h: 0.7, fontSize: 12, italic: true, color: GREY,
+      fontFace: SANS, lineSpacing: 16, isTextBox: true, margin: 0 }
+  );
 }
 
-/* ========================================================================== */
-/* 10 · Léo 2 — a regra de preço                                               */
-/* ========================================================================== */
+/* ========================================================== 9 · A tabela */
 {
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-  titulo(s, "2 · A regra de preço, e a tabela que sai dela",
-         "Quem traz mais risco paga mais — e o quanto mais é proporcional ao risco que traz");
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Bloco 2 · a política",
+    titulo: "Aprovamos o score 5 ou melhor, com taxa de 1,63% a 2,29% ao mês\nconforme a perda esperada de cada faixa",
+    casoPede: "Para cada faixa: aprovar ou negar, taxa, prazo máximo e entrada mínima. A tabela é aplicada à Base C.",
+    perguntas: [
+      { q: "Por que a taxa varia só 0,66 ponto?",
+        a: "Porque a perda é pequena diante dos juros. Taxa alta afasta o cliente e atrai o pior — e o teto de 3,5% nunca chega perto de morder." },
+      { q: "Por que negar o score 4?",
+        a: "A perda da faixa é 11,18%; a regra cobraria 2,62%, 65% acima do mercado. Aprová-lo daria +0,09pp de ROI e cortaria a folga pela metade." },
+    ],
+    rodape: "6. A política · aprovar ou negar, taxa, prazo máximo e entrada mínima por faixa de score, aplicada à Base C",
+    numero: n,
+  });
 
-  cartao(s, { x: M, y: 1.85, w: 11.9, h: 0.95, fill: NAVY, linha: NAVY });
+  cartao(s, { x: c.x, y: c.y, w: CORPO_L, h: 0.62, fill: NAVY, linha: NAVY });
   s.addText(
     [
       { text: "taxa da faixa  =  ", options: { color: GREY_ESCURO } },
@@ -525,324 +492,452 @@ function abrirBloco(s, { numero, quem, papel, afirmacao, razoes, minutos }) {
       { text: "10%", options: { color: CORAL, bold: true } },
       { text: "  ×  perda esperada da faixa", options: { color: WHITE, bold: true } },
     ],
-    { x: M, y: 2.12, w: 11.9, h: 0.45, fontSize: 21, fontFace: SERIF, align: "center",
-      isTextBox: true, margin: 0 }
+    { x: c.x, y: c.y + 0.16, w: CORPO_L, h: 0.35, fontSize: 15, fontFace: SERIF,
+      align: "center", isTextBox: true, margin: 0 }
   );
 
   const linhas = [
-    ["Score", "Faixa de PD", "Decisão", "Taxa a.m.", "Prazo", "Entrada", "Perda esp.", "ROI"],
-    ["10", "0,0–2,5%", "APROVAR", "1,634%", "48m", "10%", "1,34%", "10,5%"],
-    ["9", "2,5–3,5%", "APROVAR", "1,707%", "48m", "10%", "2,07%", "10,8%"],
-    ["8", "3,5–5,0%", "APROVAR", "1,792%", "48m", "10%", "2,92%", "11,2%"],
-    ["7", "5,0–7,0%", "APROVAR", "1,907%", "48m", "10%", "4,07%", "11,5%"],
-    ["6", "7,0–9,5%", "APROVAR", "2,077%", "48m", "10%", "5,77%", "12,1%"],
-    ["5", "9,5–13,0%", "APROVAR", "2,292%", "48m", "10%", "7,92%", "12,5%"],
-    ["4 a 1", "acima de 13%", "NEGAR", "—", "—", "—", "11,2% a 33,3%", "—"],
+    ["Score", "Faixa de PD", "Decisão", "Taxa a.m.", "Prazo", "Entrada", "Perda", "ROI"],
+    ["10", "0,0–2,5%", "Aprovar", "1,634%", "48 m", "10%", "1,34%", "10,5%"],
+    ["9", "2,5–3,5%", "Aprovar", "1,707%", "48 m", "10%", "2,07%", "10,8%"],
+    ["8", "3,5–5,0%", "Aprovar", "1,792%", "48 m", "10%", "2,92%", "11,2%"],
+    ["7", "5,0–7,0%", "Aprovar", "1,907%", "48 m", "10%", "4,07%", "11,5%"],
+    ["6", "7,0–9,5%", "Aprovar", "2,077%", "48 m", "10%", "5,77%", "12,1%"],
+    ["5", "9,5–13,0%", "Aprovar", "2,292%", "48 m", "10%", "7,92%", "12,5%"],
+    ["1 a 4", "acima de 13%", "Negar", "—", "—", "—", "11,2%+", "—"],
   ];
-  const cx = [M + 0.15, M + 1.0, M + 2.6, M + 4.3, M + 5.7, M + 6.9, M + 8.3, M + 10.3];
-  const cw = [0.8, 1.5, 1.6, 1.3, 1.1, 1.3, 1.9, 1.4];
+  const cx = [c.x + 0.1, c.x + 0.75, c.x + 1.95, c.x + 3.0, c.x + 4.1, c.x + 4.95, c.x + 5.95, c.x + 6.95];
+  const cw = [0.65, 1.2, 1.05, 1.1, 0.85, 1.0, 1.0, 0.9];
 
-  cartao(s, { x: M, y: 2.95, w: 11.9, h: 3.3, fill: WHITE });
+  cartao(s, { x: c.x, y: 2.72, w: CORPO_L, h: 3.15, fill: WHITE });
   linhas.forEach((linha, r) => {
-    const y = 3.1 + r * 0.385;
+    const y = 2.85 + r * 0.37;
     const cab = r === 0;
-    const negar = linha[2] === "NEGAR";
+    const negar = linha[2] === "Negar";
     if (cab) {
       s.addShape(pres.ShapeType.rect, {
-        x: M + 0.08, y: y - 0.04, w: 11.74, h: 0.36,
+        x: c.x + 0.05, y: y - 0.04, w: CORPO_L - 0.1, h: 0.35,
         fill: { color: NAVY }, line: { color: NAVY, width: 0 },
       });
     } else if (r % 2 === 0) {
       s.addShape(pres.ShapeType.rect, {
-        x: M + 0.08, y: y - 0.04, w: 11.74, h: 0.36,
+        x: c.x + 0.05, y: y - 0.04, w: CORPO_L - 0.1, h: 0.35,
         fill: { color: "F7F9FA" }, line: { color: "F7F9FA", width: 0 },
       });
     }
-    linha.forEach((cel, c) => {
+    linha.forEach((cel, k) => {
       s.addText(cel, {
-        x: cx[c], y, w: cw[c], h: 0.3,
-        fontSize: cab ? 10.5 : 12, bold: cab || c === 0,
+        x: cx[k], y, w: cw[k], h: 0.3,
+        fontSize: cab ? 9.5 : 11, bold: cab || k === 0,
         color: cab ? WHITE : (negar ? GREY : NAVY), fontFace: SANS,
         align: "center", isTextBox: true, margin: 0,
       });
     });
   });
 
-  fecho(s, "Na faixa 8, que perde 2,92%: 1,50% + 0,29% = 1,792%. Dá para conferir cada linha com uma calculadora.");
+  s.addText("Na faixa 8, que perde 2,92%: 1,50% + 0,29% = 1,792%. Dá para conferir cada linha com uma calculadora.", {
+    x: c.x, y: 5.95, w: CORPO_L, h: 0.3,
+    fontSize: 10.5, italic: true, color: NAVY, fontFace: SANS, isTextBox: true, margin: 0,
+  });
 }
 
-/* ========================================================================== */
-/* 11 · Léo 3 — prazo e entrada                                                */
-/* ========================================================================== */
+/* ========================================================== 10 · Contrato */
 {
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-  titulo(s, "3 · Prazo e entrada não são alavancas de preço",
-         "São de risco — e fixá-las foi decisão declarada, não omissão");
-
-  const alav = [
-    {
-      t: "Prazo de 48 meses para todas as faixas",
-      d: "Prazo maior rende mais juros, mas alonga a exposição e reduz a margem por ano. Testamos 24, 36, 48 e 60 em todas as combinações: 48 é o ótimo, e a 24 meses o teto viável cai para 7,6%.",
-      n: "48m",
-    },
-    {
-      t: "Entrada mínima de 10% para todas",
-      d: "A entrada reduz o LTV e, com ele, PD e LGD ao mesmo tempo — medimos re-escorando com o LTV ofertado, em vez de assumir. Não exigimos mais porque ela ataca o volume duas vezes.",
-      n: "10%",
-    },
-  ];
-
-  alav.forEach((a, i) => {
-    const y = 1.95 + i * 1.75;
-    cartao(s, { x: M, y, w: 11.9, h: 1.55, fill: WHITE });
-    s.addText(a.n, {
-      x: M + 0.4, y: y + 0.45, w: 1.5, h: 0.6,
-      fontSize: 28, bold: true, color: CORAL, fontFace: SERIF, align: "center",
-      isTextBox: true, margin: 0,
-    });
-    s.addText(a.t, {
-      x: M + 2.2, y: y + 0.25, w: 9.3, h: 0.38,
-      fontSize: 16.5, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
-    });
-    s.addText(a.d, {
-      x: M + 2.2, y: y + 0.68, w: 9.3, h: 0.75,
-      fontSize: 12.5, color: GREY, fontFace: SANS, lineSpacing: 17, isTextBox: true, margin: 0,
-    });
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Bloco 2 · do risco ao retorno",
+    titulo: "Num financiamento típico do score 8, a taxa de 1,79% cobre a perda\nesperada e rende 11,3% ao ano",
+    casoPede: "Perda esperada = PD × EAD × LGD. ROI anual = (juros − perda) ÷ volume ÷ prazo médio em anos.",
+    perguntas: [
+      { q: "Os juros contam até o fim do contrato?",
+        a: "Não. Quem dá calote paga só até o mês da quebra, ponderado pela distribuição real — por isso R$ 17.401 e não R$ 17.978." },
+      { q: "Por que 11,3% aqui e 11,3% na carteira?",
+        a: "Coincidência de arredondamento. O contrato é um caso; a carteira mistura as seis faixas e a reação do cliente." },
+    ],
+    rodape: "4 e 5 · perda esperada = PD × EAD × LGD · ROI anual = [(juros − perda realizada) ÷ volume financiado] ÷ prazo médio em anos",
+    numero: n,
   });
 
-  cartao(s, { x: M, y: 5.5, w: 11.9, h: 1.0, fill: NAVY, linha: NAVY });
-  s.addText(
-    [
-      { text: "O teto de 3,5% ao mês não é a restrição que morde.  ", options: { color: WHITE, bold: true } },
-      { text: "A política antiga praticou média de 1,59%, e é esse o preço que o cliente encontra no concorrente. Quem limita o nosso preço é o aceite, não o CET — cobrar 3% num mercado de 1,6% não é ilegal, é apenas não ter o cliente.", options: { color: GREY_ESCURO } },
-    ],
-    { x: M + 0.4, y: 5.72, w: 11.1, h: 0.62, fontSize: 12.5, fontFace: SANS,
-      lineSpacing: 17, isTextBox: true, margin: 0 }
-  );
+  s.addText("Veículo de R$ 40.000 · entrada de 10% · 48 meses · LTV 90% · veículo de 4 anos · score 8", {
+    x: c.x, y: c.y, w: CORPO_L, h: 0.3,
+    fontSize: 11.5, italic: true, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
+  });
+
+  const passos = [
+    ["1", "PD", "4,2%", "probabilidade de calote da faixa 8"],
+    ["2", "EAD", "R$ 37.440", "fator 1,040 × R$ 36.000 financiados"],
+    ["3", "LGD", "74,8%", "tabela: veículo de 3 a 5 anos, LTV de 80% a 90%"],
+    ["4", "Perda esperada", "R$ 1.176", "PD × EAD × LGD = 3,3% do financiado"],
+    ["5", "Juros esperados", "R$ 17.401", "taxa de 1,792% ao mês, parcela de R$ 1.125"],
+    ["6", "ROI anual", "11,3%", "(juros − perda) ÷ financiado ÷ 4 anos"],
+  ];
+
+  passos.forEach((p, i) => {
+    const y = 2.4 + i * 0.66;
+    const ultimo = i === 5;
+    cartao(s, { x: c.x, y, w: CORPO_L, h: 0.56,
+                fill: ultimo ? CORAL_SOFT : WHITE, linha: ultimo ? CORAL : GREY_LIGHT });
+    s.addShape(pres.ShapeType.ellipse, {
+      x: c.x + 0.2, y: y + 0.13, w: 0.3, h: 0.3,
+      fill: { color: ultimo ? CORAL : NAVY }, line: { color: ultimo ? CORAL : NAVY, width: 0 },
+    });
+    s.addText(p[0], {
+      x: c.x + 0.2, y: y + 0.17, w: 0.3, h: 0.22,
+      fontSize: 10, bold: true, color: WHITE, fontFace: SERIF, align: "center",
+      isTextBox: true, margin: 0,
+    });
+    s.addText(p[1], {
+      x: c.x + 0.65, y: y + 0.15, w: 1.9, h: 0.28,
+      fontSize: 12.5, bold: true, color: NAVY, fontFace: SANS, isTextBox: true, margin: 0,
+    });
+    s.addText(p[2], {
+      x: c.x + 2.6, y: y + 0.13, w: 1.55, h: 0.3,
+      fontSize: 13.5, bold: true, color: ultimo ? CORAL : NAVY, fontFace: SERIF,
+      align: "right", isTextBox: true, margin: 0,
+    });
+    s.addText(p[3], {
+      x: c.x + 4.35, y: y + 0.17, w: 3.4, h: 0.28,
+      fontSize: 10.5, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
+    });
+  });
 }
 
-/* ========================================================================== */
-/* 12 · BLOCO 3 — Renato                                                       */
-/* ========================================================================== */
+/* ========================================================== 11 · Bloco 3 */
 {
-  const s = pres.addSlide();
-  abrirBloco(s, {
+  const s = slide();
+  bloco(s, {
     numero: 3, quem: "Renato", papel: "RESULTADO E RISCO", minutos: 4,
     afirmacao: "O retorno sobrevive aos três cenários,\ne sabemos exatamente onde ele quebra",
     razoes: [
-      "Projetamos em três cenários de aceite, não em um — porque a submissão é única e a reação do cliente é desconhecida",
+      "Projetamos em três cenários de aceite, não em um — a submissão é única e a reação do cliente é desconhecida",
       "Escolhemos 12,7% de folga até o limite mais apertado, em vez do ROI máximo disponível",
-      "A meta de 15% não é alcançável dentro dos guard-rails, e medimos isso em vez de argumentar",
+      "A meta de 15% não cabe dentro dos guard-rails, e medimos isso em vez de argumentar",
     ],
   });
 }
 
-/* ========================================================================== */
-/* 13 · Renato 1 — os três cenários                                            */
-/* ========================================================================== */
+/* ========================================================== 12 · Perfil */
 {
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-  titulo(s, "1 · Três cenários, porque submetemos uma vez",
-         "A Base C reage às nossas decisões, e a intensidade dessa reação não é revelada");
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Bloco 3 · quem entra e quem fica de fora",
+    titulo: "Aprovamos 59,5% das propostas: bureau 206 pontos mais alto,\nrenda 70% maior e um terço das restrições",
+    casoPede: "Explicar por que aprovou quem aprovou e por que cobrou o que cobrou. A defesa vale 20 pontos.",
+    perguntas: [
+      { q: "Os negados são só o perfil fora do domínio?",
+        a: "Não. 72% deles estão fora, mas 28% são perfis que o modelo conhece bem — e mesmo assim têm PD alta." },
+    ],
+    rodape: "Defesa perante o conselho · por que aprovou quem aprovou e por que cobrou o que cobrou",
+    numero: n,
+  });
 
   const linhas = [
-    ["", "Otimista", "Central", "Pessimista", "Guard-rail"],
-    ["Taxa de aprovação", "59,5%", "59,5%", "59,5%", "mínimo de 35%"],
-    ["Volume originado", "R$ 86,1 mi", "R$ 66,7 mi", "R$ 45,1 mi", "mínimo de R$ 40 mi"],
-    ["Inadimplência", "6,2%", "6,3%", "6,6%", "máximo de 8%"],
-    ["Taxa média ao mês", "1,91%", "1,91%", "1,91%", "teto de 3,5%"],
-    ["ROI anualizado", "11,5%", "11,3%", "11,1%", "meta acima de 15%"],
+    ["Indicador (média do grupo)", "Aprovados (5 a 10)", "Negados (1 a 4)"],
+    ["Propostas", "2.976  (59,5%)", "2.024  (40,5%)"],
+    ["PD média", "5,9%", "28,0%"],
+    ["Score de bureau médio", "634", "428"],
+    ["Renda mediana", "R$ 5.076", "R$ 2.981"],
+    ["Com restrição ativa", "49%", "91%"],
+    ["Fora do domínio de treino", "12%", "72%"],
   ];
-  const cx = [M + 0.35, M + 3.6, M + 5.5, M + 7.4, M + 9.5];
-  const cw = [3.1, 1.8, 1.8, 1.8, 2.3];
+  const cx = [c.x + 0.2, c.x + 3.6, c.x + 5.8];
+  const cw = [3.3, 2.0, 2.0];
 
-  cartao(s, { x: M, y: 1.95, w: 11.9, h: 2.6, fill: WHITE });
+  cartao(s, { x: c.x, y: c.y, w: CORPO_L, h: 3.05, fill: WHITE });
   linhas.forEach((linha, r) => {
-    const y = 2.12 + r * 0.375;
+    const y = c.y + 0.15 + r * 0.4;
+    const cab = r === 0;
+    const dest = linha[0] === "Fora do domínio de treino";
+    if (cab) {
+      s.addShape(pres.ShapeType.rect, {
+        x: c.x + 0.05, y: y - 0.05, w: CORPO_L - 0.1, h: 0.38,
+        fill: { color: NAVY }, line: { color: NAVY, width: 0 },
+      });
+    } else if (dest) {
+      s.addShape(pres.ShapeType.rect, {
+        x: c.x + 0.05, y: y - 0.05, w: CORPO_L - 0.1, h: 0.38,
+        fill: { color: CORAL_SOFT }, line: { color: CORAL_SOFT, width: 0 },
+      });
+    }
+    linha.forEach((cel, k) => {
+      s.addText(cel, {
+        x: cx[k], y, w: cw[k], h: 0.32,
+        fontSize: cab ? 10.5 : 12, bold: cab || k === 0 || dest,
+        color: cab ? WHITE : NAVY, fontFace: SANS,
+        align: k === 0 ? "left" : "center", isTextBox: true, margin: 0,
+      });
+    });
+  });
+
+  cartao(s, { x: c.x, y: 5.2, w: CORPO_L, h: 1.0, fill: NAVY, linha: NAVY });
+  s.addText(
+    [
+      { text: "A linha que mais importa é a última. ", options: { color: WHITE, bold: true } },
+      { text: "A Base A só tem bureau a partir de 460 e no máximo 2 restrições; a Base C vai a zero e a cinco. Onde o modelo nunca viu, ele extrapola — e é por isso que deixamos margem em vez de confiar no nível da PD.", options: { color: GREY_ESCURO } },
+    ],
+    { x: c.x + 0.3, y: 5.4, w: CORPO_L - 0.6, h: 0.7, fontSize: 11.5, fontFace: SANS,
+      lineSpacing: 15, isTextBox: true, margin: 0 }
+  );
+}
+
+/* ========================================================== 13 · Limites */
+{
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Bloco 3 · os quatro limites",
+    titulo: "Os quatro limites passam nos três cenários de aceite,\ncom 12,7% de folga até o mais apertado",
+    casoPede: "Aprovação ≥ 35%, taxa ≤ 3,5% ao mês, inadimplência ≤ 8% e volume ≥ R$ 40 milhões. Estourar corta a nota pela metade.",
+    perguntas: [
+      { q: "As reações da Base C são reais?",
+        a: "São suposição nossa: o enunciado dá a direção de cada efeito, não a intensidade. Por isso três cenários, e não um." },
+      { q: "Por que não o ROI máximo?",
+        a: "Ele era 0,1 ponto maior e deixava metade da folga. O ganho é pequeno e certo; o risco de furar é grande e binário." },
+    ],
+    rodape: "7. Guard-rails · aprovação ≥ 35% · taxa ≤ 3,5% ao mês · inadimplência ≤ 8% · volume ≥ R$ 40 milhões",
+    numero: n,
+  });
+
+  const linhas = [
+    ["Indicador", "Otimista", "Central", "Pessimista", "Limite"],
+    ["Taxa de aprovação", "59,5%", "59,5%", "59,5%", "mín. 35%"],
+    ["Volume originado", "R$ 86,1 mi", "R$ 66,7 mi", "R$ 45,1 mi", "mín. R$ 40 mi"],
+    ["Inadimplência", "6,2%", "6,3%", "6,6%", "máx. 8%"],
+    ["Taxa média ao mês", "1,91%", "1,91%", "1,91%", "teto 3,5%"],
+    ["ROI anualizado", "11,5%", "11,3%", "11,1%", "meta 15%"],
+  ];
+  const cx = [c.x + 0.2, c.x + 2.6, c.x + 4.0, c.x + 5.4, c.x + 6.9];
+  const cw = [2.3, 1.35, 1.35, 1.45, 1.4];
+
+  cartao(s, { x: c.x, y: c.y, w: CORPO_L, h: 2.65, fill: WHITE });
+  linhas.forEach((linha, r) => {
+    const y = c.y + 0.15 + r * 0.39;
     const cab = r === 0;
     const roi = linha[0] === "ROI anualizado";
     if (cab) {
       s.addShape(pres.ShapeType.rect, {
-        x: M + 0.1, y: y - 0.04, w: 11.7, h: 0.35,
+        x: c.x + 0.05, y: y - 0.05, w: CORPO_L - 0.1, h: 0.37,
         fill: { color: NAVY }, line: { color: NAVY, width: 0 },
       });
     } else if (roi) {
       s.addShape(pres.ShapeType.rect, {
-        x: M + 0.1, y: y - 0.04, w: 11.7, h: 0.35,
+        x: c.x + 0.05, y: y - 0.05, w: CORPO_L - 0.1, h: 0.37,
         fill: { color: CORAL_SOFT }, line: { color: CORAL_SOFT, width: 0 },
       });
     }
-    linha.forEach((cel, c) => {
+    linha.forEach((cel, k) => {
       s.addText(cel, {
-        x: cx[c], y, w: cw[c], h: 0.3,
-        fontSize: cab ? 11 : 12.5, bold: cab || c === 0 || roi,
-        color: cab ? WHITE : (c === 4 ? GREY : NAVY), fontFace: SANS,
-        align: c === 0 ? "left" : (c === 4 ? "left" : "center"),
-        isTextBox: true, margin: 0,
+        x: cx[k], y, w: cw[k], h: 0.32,
+        fontSize: cab ? 10.5 : 11.5, bold: cab || k === 0 || roi,
+        color: cab ? WHITE : (k === 4 ? GREY : NAVY), fontFace: SANS,
+        align: k === 0 ? "left" : (k === 4 ? "left" : "center"), isTextBox: true, margin: 0,
       });
     });
   });
 
-  cartao(s, { x: M, y: 4.75, w: 5.75, h: 1.6, fill: WHITE });
+  cartao(s, { x: c.x, y: 4.85, w: 3.85, h: 1.35, fill: WHITE });
   s.addText("O ROI varia pouco. O volume, muito.", {
-    x: M + 0.35, y: 4.95, w: 5.05, h: 0.35,
-    fontSize: 15, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
+    x: c.x + 0.28, y: 5.02, w: 3.3, h: 0.3,
+    fontSize: 13, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   s.addText(
-    "O ROI é uma razão, e o aceite move numerador e denominador juntos. Foi pelo volume que medimos a folga — é ele que separa uma política robusta de uma que deu certo por pouco.",
-    { x: M + 0.35, y: 5.35, w: 5.05, h: 0.9, fontSize: 12, color: GREY, fontFace: SANS,
-      lineSpacing: 16, isTextBox: true, margin: 0 }
+    "O ROI é uma razão, e o aceite move numerador e denominador juntos. Foi pelo volume que medimos a folga.",
+    { x: c.x + 0.28, y: 5.36, w: 3.3, h: 0.7, fontSize: 11, color: GREY, fontFace: SANS,
+      lineSpacing: 14, isTextBox: true, margin: 0 }
   );
 
-  cartao(s, { x: M + 6.15, y: 4.75, w: 5.75, h: 1.6, fill: NAVY, linha: NAVY });
+  cartao(s, { x: c.x + 4.05, y: 4.85, w: 3.85, h: 1.35, fill: NAVY, linha: NAVY });
   s.addText("12,7% de folga, por escolha", {
-    x: M + 6.5, y: 4.95, w: 5.05, h: 0.35,
-    fontSize: 15, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+    x: c.x + 4.33, y: 5.02, w: 3.3, h: 0.3,
+    fontSize: 13, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   s.addText(
-    "O ROI máximo viável era 0,1 ponto maior e deixava metade dessa margem. Violar um guard-rail corta a nota de política pela metade — o ganho era pequeno e certo, o risco grande e binário.",
-    { x: M + 6.5, y: 5.35, w: 5.05, h: 0.9, fontSize: 12, color: GREY_ESCURO, fontFace: SANS,
-      lineSpacing: 16, isTextBox: true, margin: 0 }
+    "Violar um guard-rail corta a nota de política pela metade. Trocamos 0,1 ponto de ROI por essa margem.",
+    { x: c.x + 4.33, y: 5.36, w: 3.3, h: 0.7, fontSize: 11, color: GREY_ESCURO,
+      fontFace: SANS, lineSpacing: 14, isTextBox: true, margin: 0 }
   );
 }
 
-/* ========================================================================== */
-/* 14 · Renato 2 — a pergunta dos 15%                                          */
-/* ========================================================================== */
+/* ========================================================== 14 · Os 15% */
 {
-  const s = pres.addSlide();
-  s.background = { color: NAVY };
-
-  s.addText("A PERGUNTA QUE ESPERAMOS", {
-    x: M, y: 0.6, w: W - 2 * M, h: 0.35,
-    fontSize: 12, bold: true, color: CORAL, fontFace: SANS, charSpacing: 2,
-    isTextBox: true, margin: 0,
-  });
-  s.addText("Por que 11,3% e não os 15% que o conselho pede", {
-    x: M, y: 1.0, w: 11.5, h: 0.7,
-    fontSize: 32, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
-  });
-  s.addText("Fomos medir, em vez de argumentar.", {
-    x: M, y: 1.72, w: 11, h: 0.4,
-    fontSize: 14, color: GREY_ESCURO, fontFace: SANS, isTextBox: true, margin: 0,
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Bloco 3 · a pergunta que esperamos",
+    titulo: "A meta de 15% é incompatível com o piso de volume —\ne isso foi medido, não argumentado",
+    casoPede: "ROI anualizado acima de 15%. Entregamos 11,3% e explicamos por quê, com a varredura que sustenta.",
+    perguntas: [
+      { q: "O que teria de ser diferente?",
+        a: "O cliente teria de ser cinco vezes menos sensível a preço. Nesse mundo, cobrar 45% acima do mercado quase não afastaria ninguém." },
+      { q: "E se o simulador for menos elástico?",
+        a: "A fronteira inteira sobe e 15% volta ao alcance. É a nossa premissa mais frágil, e está declarada nos riscos." },
+    ],
+    rodape: "7. Guard-rails · a meta de ROI é o que se maximiza dentro dos quatro limites, não um quinto limite",
+    numero: n,
   });
 
   [
-    { v: "5.600", r: "políticas varridas\ncorte × preço × prazo × entrada" },
+    { v: "5.600", r: "políticas varridas:\ncorte × preço × prazo × entrada" },
     { v: "4.044", r: "batem a meta\nde 15% de ROI" },
-    { v: "0", r: "delas são\nviáveis", cor: CORAL },
-    { v: "11,46%", r: "o teto compatível\ncom os quatro limites" },
+    { v: "0", r: "delas respeitam\nos quatro limites", cor: CORAL },
   ].forEach((d, i) => {
-    numerao(s, { x: M + i * 2.95, y: 2.4, w: 2.7, valor: d.v, rotulo: d.r,
-                 cor: d.cor || WHITE, tamanho: 36, corRotulo: GREY_ESCURO });
+    destaque(s, { x: c.x + i * 2.7, y: c.y, w: 2.55, valor: d.v, rotulo: d.r,
+                  cor: d.cor || NAVY, tamanho: 33 });
   });
 
-  cartao(s, { x: M, y: 4.0, w: 5.75, h: 2.45, fill: NAVY_MID, linha: NAVY_MID });
+  cartao(s, { x: c.x, y: 3.5, w: CORPO_L, h: 1.75, fill: WHITE });
   s.addText("Um único limite bloqueia a meta", {
-    x: M + 0.35, y: 4.2, w: 5.05, h: 0.38,
-    fontSize: 16, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+    x: c.x + 0.28, y: 3.68, w: 4, h: 0.3,
+    fontSize: 14, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   [
     ["Inadimplência", "mínimo de 5,26%", "máx. 8%", true],
     ["Taxa de aprovação", "máximo de 68,7%", "mín. 35%", true],
     ["Volume originado", "máximo de R$ 20,5 mi", "mín. R$ 40 mi", false],
   ].forEach((l, i) => {
-    const y = 4.72 + i * 0.5;
+    const y = 4.08 + i * 0.36;
     s.addText(l[3] ? "✓" : "✕", {
-      x: M + 0.35, y, w: 0.3, h: 0.3,
-      fontSize: 14, bold: true, color: l[3] ? TEAL : CORAL, fontFace: SANS,
+      x: c.x + 0.3, y, w: 0.25, h: 0.28,
+      fontSize: 12, bold: true, color: l[3] ? TEAL : CORAL, fontFace: SANS,
       isTextBox: true, margin: 0,
     });
     s.addText(l[0], {
-      x: M + 0.7, y, w: 1.9, h: 0.3,
-      fontSize: 11.5, color: l[3] ? GREY_ESCURO : WHITE, bold: !l[3], fontFace: SANS,
+      x: c.x + 0.6, y, w: 2.0, h: 0.28,
+      fontSize: 11, color: l[3] ? GREY : NAVY, bold: !l[3], fontFace: SANS,
       isTextBox: true, margin: 0,
     });
     s.addText(l[1], {
-      x: M + 2.6, y, w: 1.8, h: 0.3,
-      fontSize: 11.5, color: l[3] ? GREY_ESCURO : CORAL, bold: !l[3], fontFace: SANS,
+      x: c.x + 2.6, y, w: 2.0, h: 0.28,
+      fontSize: 11, color: l[3] ? GREY : CORAL, bold: !l[3], fontFace: SANS,
       isTextBox: true, margin: 0,
     });
     s.addText(l[2], {
-      x: M + 4.4, y, w: 1.05, h: 0.3,
+      x: c.x + 4.7, y, w: 1.4, h: 0.28,
       fontSize: 10.5, color: GREY, fontFace: SANS, isTextBox: true, margin: 0,
     });
   });
   s.addText("Risco e seletividade passam. Só o volume mata.", {
-    x: M + 0.35, y: 6.1, w: 5.05, h: 0.3,
-    fontSize: 12, italic: true, color: CORAL, fontFace: SANS, isTextBox: true, margin: 0,
+    x: c.x + 0.28, y: 5.18 - 0.28, w: 4.5, h: 0.28,
+    fontSize: 11, italic: true, color: CORAL, fontFace: SANS, isTextBox: true, margin: 0,
   });
 
-  cartao(s, { x: M + 6.15, y: 4.0, w: 5.75, h: 2.45, fill: CORAL, linha: CORAL });
-  s.addText("5×", {
-    x: M + 6.5, y: 4.2, w: 5.05, h: 0.8,
-    fontSize: 46, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
-  });
-  s.addText("menos sensível a preço", {
-    x: M + 6.5, y: 5.0, w: 5.05, h: 0.3,
-    fontSize: 14, bold: true, color: WHITE, fontFace: SANS, isTextBox: true, margin: 0,
-  });
+  cartao(s, { x: c.x, y: 5.4, w: CORPO_L, h: 0.85, fill: NAVY, linha: NAVY });
   s.addText(
-    "é o quanto o cliente teria que ser para a primeira política de 15% sobreviver aos limites. Nesse mundo, cobrar 45% acima do mercado quase não afastaria ninguém — e o enunciado diz o contrário.",
-    { x: M + 6.5, y: 5.38, w: 5.05, h: 1.0, fontSize: 12, color: CORAL_SOFT, fontFace: SANS,
-      lineSpacing: 16, isTextBox: true, margin: 0 }
+    [
+      { text: "Por construção: ", options: { color: WHITE, bold: true } },
+      { text: "o ROI é retorno por real emprestado, e o jeito de aumentá-lo é cobrar mais caro — o que derruba o aceite. Na varredura, a correlação entre ROI e volume é de −0,914.", options: { color: GREY_ESCURO } },
+    ],
+    { x: c.x + 0.3, y: 5.58, w: CORPO_L - 0.6, h: 0.55, fontSize: 11.5, fontFace: SANS,
+      lineSpacing: 15, isTextBox: true, margin: 0 }
   );
 }
 
-/* ========================================================================== */
-/* 15 · Renato 3 — riscos                                                      */
-/* ========================================================================== */
+/* ========================================================== 15 · Riscos */
 {
-  const s = pres.addSlide();
-  s.background = { color: OFFWHITE };
-  titulo(s, "3 · Onde este número quebra",
-         "Quatro riscos, dois deles apontados no próprio enunciado — nomeá-los é mais barato que ser pego neles");
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Bloco 3 · riscos e limitações",
+    titulo: "Onde este número quebra: quatro riscos nomeados,\ne um deles derruba a política se o risco real for 30% maior",
+    casoPede: "Riscos e limitações declarados. Nomear o buraco é mais barato do que ser pego nele.",
+    perguntas: [
+      { q: "Qual é o mais provável?",
+        a: "O erro de nível da PD. A inferência de rejeitados o torna provável, e é o que o estresse de +30% testa." },
+      { q: "O que fariam com mais tempo?",
+        a: "Inferência de rejeitados de verdade, calibração formal e um piloto de preço para medir o aceite em vez de supor." },
+    ],
+    rodape: "8. Riscos e limitações · o que pode dar errado, com o tamanho de cada risco e a mitigação adotada",
+    numero: n,
+  });
 
   const riscos = [
-    { c: CORAL, t: "Inferência de rejeitados",
-      d: "A Base C tem score de bureau 96 pontos menor e 2,7× mais restrições. A ordenação sobrevive à mudança de população; o nível da PD, não — e é o nível que vira preço.",
-      m: "Daí parte da margem que deixamos." },
-    { c: CORAL, t: "A elasticidade do aceite é premissa, não medida",
-      d: "Assumimos que cobrar no teto de 3,5% deixaria aceite baixo mas não nulo, ancorados em que um teto só é guard-rail se as políticas quiserem chegar perto dele.",
-      m: "Se o simulador for mais elástico, o volume frustra — e volume é guard-rail." },
-    { c: TEAL, t: "As duas faixas aprovadas mais arriscadas rodam acima do limite",
-      d: "A faixa 6 projeta 9,1% de inadimplência e a faixa 5, 13,3%, contra os 8% do guard-rail. Cabem porque as faixas boas diluem o conjunto, que fecha em 6,3%.",
-      m: "Se a realizada surpreender, a correção é cortar em score 6." },
-    { c: TEAL, t: "Deriva de safra",
-      d: "A inadimplência caiu de 8,9% em 2023 para 7,2% em 2024. Se 2025 voltar ao patamar de 2023, a projeção sobe junto.",
-      m: "O PSI contra a Base B é de 0,002 — estabilidade que vale o curto prazo." },
+    { c: CORAL, t: "Inferência de rejeitados", d: "A Base C tem bureau 96 pontos menor e 2,7× mais restrições. A ordenação sobrevive; o nível da PD, não — e é o nível que vira preço." },
+    { c: CORAL, t: "A elasticidade do aceite é premissa, não medida", d: "Se o simulador for mais elástico que supusemos, o volume frustra — e volume é guard-rail." },
+    { c: TEAL, t: "As duas faixas mais arriscadas rodam acima do limite", d: "A 6 projeta 9,1% e a 5, 13,3%, contra os 8%. Cabem porque as boas diluem: a carteira fecha em 6,3%." },
+    { c: TEAL, t: "Deriva de safra", d: "O calote caiu de 8,9% em 2023 para 7,2% em 2024. Se 2025 voltar ao patamar anterior, a projeção sobe junto." },
   ];
-
   riscos.forEach((r, i) => {
-    const y = 1.9 + i * 1.22;
-    cartao(s, { x: M, y, w: 11.9, h: 1.08, fill: WHITE });
+    const y = c.y + i * 0.88;
+    cartao(s, { x: c.x, y, w: CORPO_L, h: 0.76, fill: WHITE });
     s.addShape(pres.ShapeType.rect, {
-      x: M, y, w: 0.07, h: 1.08, fill: { color: r.c }, line: { color: r.c, width: 0 },
+      x: c.x, y, w: 0.06, h: 0.76, fill: { color: r.c }, line: { color: r.c, width: 0 },
     });
     s.addText(r.t, {
-      x: M + 0.32, y: y + 0.12, w: 11.3, h: 0.3,
-      fontSize: 14.5, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
+      x: c.x + 0.25, y: y + 0.1, w: CORPO_L - 0.45, h: 0.26,
+      fontSize: 12.5, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
     });
     s.addText(r.d, {
-      x: M + 0.32, y: y + 0.44, w: 11.3, h: 0.4,
-      fontSize: 11.5, color: GREY, fontFace: SANS, lineSpacing: 15, isTextBox: true, margin: 0,
-    });
-    s.addText(r.m, {
-      x: M + 0.32, y: y + 0.8, w: 11.3, h: 0.25,
-      fontSize: 11, italic: true, color: r.c, fontFace: SANS, isTextBox: true, margin: 0,
+      x: c.x + 0.25, y: y + 0.36, w: CORPO_L - 0.45, h: 0.35,
+      fontSize: 10.5, color: GREY, fontFace: SANS, lineSpacing: 14, isTextBox: true, margin: 0,
     });
   });
 
-  fecho(s, "São oito itens no total, documentados com o que pulamos, o risco que corremos e o que faríamos com mais tempo.");
+  cartao(s, { x: c.x, y: 5.55, w: CORPO_L, h: 0.7, fill: CORAL_SOFT, linha: CORAL });
+  s.addText(
+    [
+      { text: "Testamos o risco 30% maior: ", options: { bold: true, color: NAVY } },
+      { text: "a inadimplência vai a 8,2% e estoura o limite. É o cenário que mais nos preocupa, e o monitoramento por safra existe para pegá-lo cedo.", options: { color: NAVY } },
+    ],
+    { x: c.x + 0.3, y: 5.72, w: CORPO_L - 0.6, h: 0.45, fontSize: 11.5, fontFace: SANS,
+      lineSpacing: 15, isTextBox: true, margin: 0 }
+  );
 }
 
-/* ========================================================================== */
-/* 16 · Fecho — a cadeia completa                                              */
-/* ========================================================================== */
+/* ========================================================== 16 · Plano */
 {
-  const s = pres.addSlide();
+  const s = slide();
+  const c = moldura(pres, s, {
+    kicker: "Recomendações finais",
+    titulo: "Submeter a política, monitorar por faixa e medir o aceite real —\nque é a premissa mais frágil de tudo",
+    casoPede: "O que avaliamos, o que recomendamos e os riscos, com a divisão do trabalho.",
+    perguntas: [
+      { q: "Quando revisar a política?",
+        a: "Por safra, ou antes se o PSI passar de 0,1 ou o erro de calibração passar de 3 pontos." },
+    ],
+    rodape: "9. Recomendações finais · o que avaliamos, o que recomendamos e os riscos assumidos",
+    numero: n,
+  });
+
+  const cols = [
+    { r: "MODELO", t: "Submeter o XGBoost", d: "AuROC 0,7234 fora do tempo, sem vazamento. Recalibrar a cada nova safra." },
+    { r: "POLÍTICA", t: "Aprovar score 5 a 10", d: "Taxa de 1,63% a 2,29%, prazo de 48 meses e entrada de 10%." },
+    { r: "MONITORAR", t: "Aceite, calote e volume", d: "Por faixa, todo mês. Ajustar a taxa se a reação do cliente for pior que a projetada." },
+  ];
+  cols.forEach((col, i) => {
+    const x = c.x + i * 2.7;
+    cartao(s, { x, y: c.y, w: 2.55, h: 2.0, fill: WHITE });
+    s.addText(col.r, {
+      x: x + 0.22, y: c.y + 0.18, w: 2.1, h: 0.25,
+      fontSize: 10, bold: true, color: CORAL, fontFace: SANS, charSpacing: 1,
+      isTextBox: true, margin: 0,
+    });
+    s.addText(col.t, {
+      x: x + 0.22, y: c.y + 0.45, w: 2.1, h: 0.55,
+      fontSize: 13.5, bold: true, color: NAVY, fontFace: SERIF, lineSpacing: 17,
+      isTextBox: true, margin: 0,
+    });
+    s.addText(col.d, {
+      x: x + 0.22, y: c.y + 1.05, w: 2.1, h: 0.85,
+      fontSize: 10.5, color: GREY, fontFace: SANS, lineSpacing: 14, isTextBox: true, margin: 0,
+    });
+  });
+
+  cartao(s, { x: c.x, y: 4.25, w: CORPO_L, h: 1.95, fill: NAVY, linha: NAVY });
+  s.addText("O passo seguinte, que o case não pede mas o negócio exige", {
+    x: c.x + 0.3, y: 4.45, w: CORPO_L - 0.6, h: 0.32,
+    fontSize: 15, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
+  });
+  s.addText(
+    [
+      { text: "Um piloto de preço. ", options: { color: CORAL, bold: true } },
+      { text: "Toda a projeção de ROI depende de quanto o cliente foge quando o preço sobe, e ninguém mediu isso — nem nós, nem o mercado. Um teste A/B numa fatia da carteira, por uma safra, transforma a premissa em dado. É a diferença entre uma política defensável e uma política calibrada.", options: { color: GREY_ESCURO } },
+    ],
+    { x: c.x + 0.3, y: 4.85, w: CORPO_L - 0.6, h: 1.1, fontSize: 12, fontFace: SANS,
+      lineSpacing: 17, isTextBox: true, margin: 0 }
+  );
+}
+
+/* ========================================================== 17 · Fecho */
+{
+  const s = slide();
+  n += 1;
   s.background = { color: NAVY };
 
   s.addText("O ENCADEAMENTO, DE PONTA A PONTA", {
@@ -929,7 +1024,7 @@ function abrirBloco(s, { numero, quem, papel, afirmacao, razoes, minutos }) {
 
 const destino = path.join("outputs", "apresentacoes");
 fs.mkdirSync(destino, { recursive: true });
-// O nome do arquivo e o que o professor ve no anexo: sem numero de
-// ordem interno e sem jargao de metodo.
+// O nome do arquivo é o que o professor vê no anexo: sem número de ordem
+// interno e sem jargão de método.
 const arquivo = path.join(destino, "AutoCred - Política de Crédito 2026 - Grupo 3.pptx");
 pres.writeFile({ fileName: arquivo }).then(() => console.log("Gerado:", arquivo));
