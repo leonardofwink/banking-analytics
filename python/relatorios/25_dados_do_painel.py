@@ -41,22 +41,42 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 from banking.dados import carregar_processada, preparar_base_c
 from banking.modelo import treinar_modelo_final
 from banking.perda import fator_ead, lgd
-from banking.politica import gerar_politica
+from banking.politica import ENTRADA_MAXIMA, gerar_politica
 from banking.projeto import DIR_OUTPUTS
 from banking.roi import CENARIOS, GUARD_RAILS, aplicar_politica, simular
-from banking.score import score_de_pd
+from banking.score import SCORE_MAXIMO, score_de_pd
 
 # --- A grade -----------------------------------------------------------------
-# Escolhida para conter a política escolhida em todos os eixos: quem abrir o
-# painel e não mexer em nada vê exatamente os números do documento.
-CORTES = [4, 5, 6, 7, 8]
-TAXAS_BASE = [0.013, 0.015, 0.017, 0.019]
-K_RISCOS = [0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.40]
+# Um SUPERCONJUNTO da grade do S12 (`12_fronteira_roi_volume.py`), e isso é a
+# propriedade que importa: as 5.600 políticas que o documento afirma ter
+# varrido estão todas aqui dentro. Por isso a régua de taxa anda de 0,25 em
+# 0,25 — é o passo que contém 1,75%, 2,25% e 2,75%, que uma régua de 0,10 a
+# partir de 1,00% pularia.
+#
+# Quem mexer aqui tem de manter a continência, senão o painel deixa de ser um
+# teste da conclusão do documento e vira um experimento à parte.
+CORTES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+TAXAS_BASE = [0.0100, 0.0125, 0.0150, 0.0175, 0.0200, 0.0225,
+              0.0250, 0.0275, 0.0300, 0.0325, 0.0350]
+K_RISCOS = [0.0, 0.10, 0.20, 0.30, 0.50]
 PRAZOS = [24, 36, 48, 60]
-ENTRADAS = [0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30]
+ENTRADAS = [0.0, 0.10, 0.20, 0.30, 0.40, 0.50]
+PASSOS = [0.0, 0.04]  # quanto a entrada sobe a cada faixa de score pior
 
-PADRAO = {"corte": 5, "taxa_base": 0.015, "k_risco": 0.10,
-          "prazo_max": 48, "entrada_base": 0.10}
+# A grade do S12, para conferir a continência antes de varrer. Se uma destas
+# listas deixar de caber nas de cima, a afirmação "as 5.600 estão aqui dentro"
+# vira falsa — e o script para em vez de gravar um painel que mente.
+GRADE_S12 = {
+    "corte": [7, 6, 5, 4],
+    "taxa_base": [0.0150, 0.0175, 0.0200, 0.0225, 0.0250, 0.0275, 0.0300],
+    "k_risco": [0.0, 0.10, 0.20, 0.30, 0.50],
+    "prazo_max": [24, 36, 48, 60],
+    "entrada_base": [0.0, 0.10, 0.20, 0.30, 0.40],
+    "entrada_passo": [0.0, 0.04],
+}
+
+PADRAO = {"corte": 5, "taxa_base": 0.015, "k_risco": 0.10, "prazo_max": 48,
+          "entrada_base": 0.10, "entrada_passo": 0.0}
 
 CENARIOS_ORDEM = ["otimista", "central", "pessimista"]
 
@@ -65,8 +85,36 @@ def _log(msg: str) -> None:
     print(f"  {msg}", flush=True)
 
 
+def _conferir_continencia() -> int:
+    """Garante que as 5.600 do documento cabem nesta grade, e diz quantas são.
+
+    É barato e evita o erro caro: uma grade que não contém a do S12 faz o
+    painel varrer *outro* experimento, e a comparação com o documento deixa
+    de significar o que promete.
+    """
+    nossa = {"corte": CORTES, "taxa_base": TAXAS_BASE, "k_risco": K_RISCOS,
+             "prazo_max": PRAZOS, "entrada_base": ENTRADAS, "entrada_passo": PASSOS}
+    faltando = {}
+    for eixo, valores in GRADE_S12.items():
+        fora = [v for v in valores
+                if not any(abs(v - u) < 1e-9 for u in nossa[eixo])]
+        if fora:
+            faltando[eixo] = fora
+    if faltando:
+        raise SystemExit(
+            "A grade não contém a do S12 — o painel varreria outro experimento.\n"
+            + "\n".join(f"  {e}: faltam {v}" for e, v in faltando.items()))
+    n = 1
+    for valores in GRADE_S12.values():
+        n *= len(valores)
+    return n
+
+
 def main() -> None:
     inicio = time.time()
+
+    n_s12 = _conferir_continencia()
+    _log(f"a grade contém as {n_s12:,} políticas do S12 ✓")
 
     base_a = carregar_processada("A")
     base_c = carregar_processada("C")
@@ -87,11 +135,17 @@ def main() -> None:
     # Feita aqui, sobre TODAS as propostas, independente de aprovação: uma
     # proposta negada numa política é aprovada em outra, e o painel precisa
     # mostrar a oferta certa nas duas.
-    _log("re-escorando a base C em cada combinação de prazo e entrada…")
+    _log("re-escorando a base C em cada combinação de prazo, entrada e passo…")
+    desejada = p["pct_entrada_desejada"].to_numpy()
+    # Com escalonamento, a entrada exigida depende da FAIXA da proposta — é o
+    # mesmo `entrada_base + passo × degraus` do `gerar_politica`, degrau
+    # contado do score 10 para baixo.
+    degraus = (SCORE_MAXIMO - p["score"].to_numpy()).astype(float)
     pd_grade: dict[str, list[int]] = {}
-    for prazo, entrada in itertools.product(PRAZOS, ENTRADAS):
+    for prazo, entrada, passo in itertools.product(PRAZOS, ENTRADAS, PASSOS):
+        exigida = np.minimum(entrada + passo * degraus, ENTRADA_MAXIMA)
+        efetiva = np.maximum(desejada, exigida)
         ajustada = p.copy()
-        efetiva = np.maximum(p["pct_entrada_desejada"].to_numpy(), entrada)
         ajustada["ltv"] = 1.0 - efetiva
         ajustada["valor_financiado"] = p["valor_bem"].to_numpy() * (1.0 - efetiva)
         # O prazo ofertado é o da política, **não** o mínimo entre ele e o
@@ -100,7 +154,7 @@ def main() -> None:
         # recebem mais prazo do que pediram — e a PD tem de refletir isso.
         ajustada["prazo_meses"] = float(prazo)
         # 0,01 pp de resolução: o suficiente para exibir, e metade do tamanho
-        pd_grade[f"{prazo}|{entrada:.2f}"] = np.round(
+        pd_grade[f"{prazo}|{entrada:.2f}|{passo:.2f}"] = np.round(
             escorar_cru(ajustada) * 10000).astype(int).tolist()
     _log(f"{len(pd_grade)} combinações ({time.time() - inicio:.1f}s)")
 
@@ -108,14 +162,15 @@ def main() -> None:
     # Ela custa ~10 min. Guardar o resultado assim que sai evita perdê-la por
     # um erro em qualquer passo posterior — que foi exatamente o que aconteceu
     # na primeira execução, num `astype(int)` sobre coluna com ausentes.
-    total = len(CORTES) * len(TAXAS_BASE) * len(K_RISCOS) * len(PRAZOS) * len(ENTRADAS)
+    total = (len(CORTES) * len(TAXAS_BASE) * len(K_RISCOS)
+             * len(PRAZOS) * len(ENTRADAS) * len(PASSOS))
     cache = DIR_OUTPUTS / "painel" / "_grade.json"
     if cache.exists():
         colunas = json.loads(cache.read_text(encoding="utf-8"))
         if len(colunas.get("viavel", [])) == total:
             _log(f"grade lida do cache ({total:,} políticas) — apague "
                  f"{cache.name} para refazer")
-            return _montar(colunas, p, base_c, perda_por_faixa, pd_grade, inicio)
+            return _montar(colunas, p, base_c, perda_por_faixa, pd_grade, inicio, n_s12)
         _log("cache com tamanho diferente da grade atual; refazendo")
     _log(f"varrendo {total:,} políticas × 3 cenários…")
 
@@ -127,13 +182,13 @@ def main() -> None:
             colunas[f"{m}_{c}"] = []
 
     feitas = 0
-    for corte, prazo, entrada in itertools.product(CORTES, PRAZOS, ENTRADAS):
-        # A escoragem depende de (corte, prazo, entrada) — não do preço. Vale
-        # guardar: são 140 escoragens em vez de 4.480.
+    for corte, prazo, entrada, passo in itertools.product(
+            CORTES, PRAZOS, ENTRADAS, PASSOS):
+        # A escoragem depende de (corte, prazo, entrada, passo) — não do preço.
         for taxa_base, k_risco in itertools.product(TAXAS_BASE, K_RISCOS):
             politica = gerar_politica(
                 corte=corte, taxa_base=taxa_base, k_risco=k_risco,
-                prazo_max=prazo, entrada_base=entrada, entrada_passo=0.0,
+                prazo_max=prazo, entrada_base=entrada, entrada_passo=passo,
                 perda_por_faixa=perda_por_faixa)
             ofertas = aplicar_politica(p, politica, escorar=escorar_cru)
 
@@ -169,10 +224,10 @@ def main() -> None:
     cache.write_text(json.dumps(colunas, separators=(",", ":")), encoding="utf-8")
     _log(f"grade gravada em cache ({time.time() - inicio:.0f}s)")
 
-    return _montar(colunas, p, base_c, perda_por_faixa, pd_grade, inicio)
+    return _montar(colunas, p, base_c, perda_por_faixa, pd_grade, inicio, n_s12)
 
 
-def _montar(colunas, p, base_c, perda_por_faixa, pd_grade, inicio) -> None:
+def _montar(colunas, p, base_c, perda_por_faixa, pd_grade, inicio, n_s12) -> None:
     """Monta o JSON final a partir da grade — separado para que um erro aqui
     não custe a varredura inteira."""
     # --- As propostas --------------------------------------------------------
@@ -197,8 +252,10 @@ def _montar(colunas, p, base_c, perda_por_faixa, pd_grade, inicio) -> None:
         "gerado_em": time.strftime("%Y-%m-%d"),
         "padrao": PADRAO,
         "eixos": {"corte": CORTES, "taxa_base": TAXAS_BASE, "k_risco": K_RISCOS,
-                  "prazo_max": PRAZOS, "entrada_base": ENTRADAS},
+                  "prazo_max": PRAZOS, "entrada_base": ENTRADAS,
+                  "entrada_passo": PASSOS},
         "cenarios": CENARIOS_ORDEM,
+        "politicas_s12": n_s12,
         "elasticidades": {c: {"a0": CENARIOS[c].a0, "beta_taxa": CENARIOS[c].beta_taxa,
                               "beta_entrada": CENARIOS[c].beta_entrada,
                               "beta_prazo": CENARIOS[c].beta_prazo,
@@ -219,9 +276,13 @@ def _montar(colunas, p, base_c, perda_por_faixa, pd_grade, inicio) -> None:
     _log(f"gravado: {destino} ({mb:.2f} MB, {time.time() - inicio:.0f}s)")
 
     # --- Confere que o padrão do painel bate com o do documento --------------
-    i = ((((CORTES.index(PADRAO["corte"]) * len(PRAZOS)
-            + PRAZOS.index(PADRAO["prazo_max"])) * len(ENTRADAS)
-           + ENTRADAS.index(PADRAO["entrada_base"])) * len(TAXAS_BASE)
+    # O mesmo encadeamento dos laços acima: corte > prazo > entrada > passo >
+    # taxa > k. O painel refaz esta conta em JavaScript; se uma das duas mudar
+    # sozinha, o painel passa a ler a política errada sem acusar nada.
+    i = (((((CORTES.index(PADRAO["corte"]) * len(PRAZOS)
+             + PRAZOS.index(PADRAO["prazo_max"])) * len(ENTRADAS)
+            + ENTRADAS.index(PADRAO["entrada_base"])) * len(PASSOS)
+           + PASSOS.index(PADRAO["entrada_passo"])) * len(TAXAS_BASE)
           + TAXAS_BASE.index(PADRAO["taxa_base"])) * len(K_RISCOS)
          + K_RISCOS.index(PADRAO["k_risco"]))
     _log(f"conferência do padrão (índice {i}):")
@@ -230,6 +291,7 @@ def _montar(colunas, p, base_c, perda_por_faixa, pd_grade, inicio) -> None:
     _log(f"  inadimplência {colunas['inadimplencia_central'][i]:.2%}   (documento: 6,33%)")
     _log(f"  aprovação     {colunas['aprovacao'][i]:.1%}   (documento: 59,5%)")
     _log(f"  viável        {'sim' if colunas['viavel'][i] else 'NÃO'}")
+    _log(f"  grade         {len(colunas['viavel']):,} políticas")
 
 
 if __name__ == "__main__":
