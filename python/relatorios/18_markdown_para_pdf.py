@@ -71,6 +71,9 @@ pre {
   margin: 9pt 0 12pt; white-space: pre-wrap; word-break: break-word;
 }
 strong { color: #16293A; }
+/* No cabeçalho e no bloco de código o fundo JÁ é #16293A: sem isto o negrito
+   fica navy sobre navy e o texto some sem deixar rastro. */
+th strong, pre strong { color: inherit; }
 hr { border: none; border-top: 0.75pt solid #DDE3E8; margin: 16pt 0; }
 ul, ol { margin: 0 0 8pt; padding-left: 16pt; }
 li { margin-bottom: 3pt; }
