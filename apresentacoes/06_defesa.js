@@ -188,9 +188,12 @@ const slide = () => { n += 1; return pres.addSlide(); };
   });
 
   [
-    { n: "1 · MODELO", t: "XGBoost", d: "AuROC 0,7234 fora do tempo, sem vazamento" },
-    { n: "2 · POLÍTICA", t: "Corte no score 5", d: "Taxa de 1,63% a 2,29% ao mês, por faixa" },
-    { n: "3 · ROBUSTEZ", t: "Três cenários de aceite", d: "12,7% de folga até o limite mais apertado" },
+    // Os tres pilares espelham a cadeia: quem mede o risco, quem o preca, e
+    // quanto sobra se a premissa falhar. Cada um entrega um numero — "robustez"
+    // sozinho nao dizia nada.
+    { n: "1 · MODELO", t: "XGBoost", d: "AuROC de 0,7234 fora do tempo, sem vazamento" },
+    { n: "2 · PREÇO", t: "Corte no score 5", d: "Taxa de 1,63% a 2,29% ao mês, por faixa de risco" },
+    { n: "3 · MARGEM", t: "12,7% de folga", d: "até o limite mais apertado, no pior dos três cenários" },
   ].forEach((d, i) => {
     const x = c.x + i * 2.7;
     s.addText(d.n, {
