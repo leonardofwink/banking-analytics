@@ -29,6 +29,10 @@
 | Taxa de juros | **1,63% a 2,29% a.m.** | ≤ 3,5% | 1,21 pp na mesa |
 | Contratos fechados | **1.829** de 2.976 aprovados | — | aceite 61,4% |
 
+> 🔑 **E um nono número, que não é nosso resultado mas decide o argumento:**
+> com inadimplência **zero**, o ROI seria **12,42%**. Nenhuma alavanca de risco
+> chega aos 15% — só preço chega, e preço custa volume. Ver §1.1.
+
 **A frase de abertura, se ele pedir o resumo em dez segundos:**
 
 > *"Aprovamos 59,5% das propostas, cobramos de 1,63% a 2,29% ao mês conforme o
@@ -68,6 +72,25 @@ implementação em um deles:
 | Varredura de 5.600 políticas (S12) | 11,46% |
 | Varredura de prazo e entrada por faixa | 11,42% |
 | Trocando o nosso modelo pelo do Marcelo | 11,54% |
+
+**E o argumento que encerra a discussão — a aritmética do numerador:**
+
+```
+ROI = (juros − perda) / volume / prazo = (33,12 − 2,90) / 66,68 / 4 = 11,33%
+
+A perda é R$ 2,90 mi contra R$ 33,12 mi de juros: 8,8% da receita.
+Com perda ZERO:  33,12 / 66,68 / 4 = 12,42%
+```
+
+> **Diga isto quando ele sugerir mexer no risco:** *"Mesmo com inadimplência
+> zero — modelo perfeito, nenhum calote — o ROI seria 12,42%. Faltariam 2,58
+> pontos para a meta. Isso significa que **nenhuma alavanca de risco** chega
+> aos 15%: nem corte mais duro, nem entrada maior, nem teto de comprometimento.
+> O que nos separa da meta é preço, e preço custa volume."*
+
+Para ROI de 15% seriam precisos R$ 42,91 mi de juros — **+29,6%** —, o que leva
+a taxa média de 1,86% para ~2,41% a.m. É exatamente a linha do `k_risco` 0,30
+acima, e é onde o volume morre.
 
 **Se ele insistir "então a meta era impossível?":** *"Não necessariamente — ela
 é impossível **com a nossa premissa de elasticidade**. Se o cliente for 5×
@@ -126,10 +149,11 @@ não estar cobrando o preço certo por ela."*
 
 ### 2.2 "O que a sua política muda na prática?"
 
-*"Três coisas. Primeira: entrada mínima de 10% para todo mundo, o que trava o
-LTV em 90% e tira a carteira da faixa em que a LGD explode. Segunda: preço por
-faixa de risco, de 1,63% a 2,29% — hoje a empresa não diferencia. Terceira: um
-corte objetivo em score 5, no lugar da regra antiga."*
+*"Três coisas. Primeira: entrada mínima de 10%, que trava o LTV em 90% e tira
+a carteira da faixa em que a LGD explode — na prática a entrada média fica em
+25%, porque o cliente já quer dar mais. Segunda: preço por faixa de risco, de
+1,63% a 2,29% — hoje a empresa não diferencia. Terceira: um corte objetivo em
+score 5, no lugar da regra antiga."*
 
 ### 2.3 "Por que o conselho deveria aprovar 11,33% e não exigir mais?"
 
@@ -278,17 +302,146 @@ alonga a exposição ao risco — o senhor colocou isso na tabela de alavancas.
 Nos nossos testes o efeito líquido não compensou, e 48 meses mantém a carteira
 girando mais rápido."*
 
-### 4.3 "Por que entrada de 10% e não mais?"
+> ⚠️ **Cuidado:** esta pergunta é sobre *diferenciar* o prazo por faixa. Se ele
+> for pelo outro lado — *"vocês dão 48 a quem pediu 24"* — é a §4.5, e a
+> resposta lá é uma concessão, não uma defesa. Não misture as duas.
 
-*"Porque medimos os dois lados. A entrada de 10% derruba a PD reescorada de
-6,38% para 6,12% — e isso é medido **reescorando** as propostas com o LTV novo,
-não estimado. Ela também trava o LTV máximo em 90%, tirando a carteira da faixa
-onde a LGD dispara."*
+### 4.3 ⚠️⚠️ "Entrada de só 10%? O mercado pratica 20% a 30%. Vocês estão emprestando com LTV de 90%."
 
-*"Acima disso, o aceite começa a cair mais rápido do que o risco melhora. E o
-senhor mesmo avisou: exigir muito derruba o aceite do cliente."*
+**Provavelmente a pergunta de negócio mais forte que ele pode fazer.** A
+resposta tem três camadas, e a primeira desarma a premissa.
 
-### 4.4 ⚠️ "Seu teto é 3,5% e vocês param em 2,29%. Deixaram 1,21 ponto na mesa."
+**Camada 1 — a carteira não é de entrada 10%:**
+
+> *"Os 10% são o piso, não a prática. A entrada **efetiva média** dos nossos
+> aprovados é de **25%** — dentro do padrão de mercado que o senhor citou. A
+> mediana do que o cliente já quer dar é 20%, então o piso de 10% só morde
+> 21% da carteira. O LTV médio ofertado é de 71,7% a 78,8% por faixa, não 90%."*
+
+| Score | Entrada efetiva média | No piso de 10% | LTV ofertado |
+| ----- | --------------------- | -------------- | ------------ |
+| 10 | 28,3% | 3,9% | 71,7% |
+| 8 | 24,8% | 11,8% | 75,2% |
+| 6 | 23,0% | 21,7% | 77,0% |
+| **5** | **21,2%** | **25,1%** | **78,8%** |
+
+**Camada 2 — mas ele tem razão na direção:** *"O senhor está certo que a
+alavancagem se concentra nas faixas piores: 25,1% do score 5 fica no piso,
+contra 3,9% do score 10. Por isso o preço da faixa 5 é 2,29% e o da 10 é 1,63%."*
+
+**Camada 3 — e medimos o que custaria exigir mais:**
+
+| Entrada | ROI | Volume pior | |
+| ------- | --- | ----------- | - |
+| **10% (atual)** | **11,33%** | **R$ 45,1 mi** | ✅ |
+| 20% | 11,37% | R$ 39,4 mi | ❌ volume |
+| 30% | 11,42% | R$ 30,8 mi | ❌ volume |
+| 40% | 11,59% | R$ 21,6 mi | ❌ volume |
+
+*"Subir para 20% rende **+0,04 ponto de ROI** e custa **R$ 5,7 milhões** de
+volume no pior cenário — o suficiente para furar o guard-rail. A entrada não é
+uma alavanca de retorno: é uma alavanca de risco, e o risco já não é o que nos
+separa da meta."*
+
+**Se ele perguntar pela entrada escalonada por faixa** (exigir mais de quem tem
+score pior — a versão mais inteligente da crítica):
+
+| Entrada | ROI | Volume pior | Inadimpl. | Aguenta PD errar |
+| ------- | --- | ----------- | --------- | ---------------- |
+| 10% fixa (atual) | 11,33% | R$ 45,1 mi | 6,33% | +26,3% |
+| 20% a 10% | 11,33% | R$ 42,8 mi | 6,24% | — |
+| 30% a 10% | 11,31% | **R$ 39,6 mi** ❌ | 6,20% | **+29,1%** |
+
+*"Testamos. É conceitualmente superior — melhora a robustez em 2,8 pontos, que
+é a nossa fragilidade principal. Mas a versão que entrega essa robustez fura o
+volume por R$ 0,4 milhão. A versão que cabe troca 5,7 pontos de folga de volume
+por 0,09 ponto de inadimplência. No limite que mais aperta, não compensou."*
+
+### 4.4 ⚠️ "Vocês não limitaram o comprometimento de renda? A parcela não pode passar de 25% a 30% da renda."
+
+**A resposta contraintuitiva — e é medida.**
+
+**Resposta curta:** *"Não limitamos, e não foi esquecimento: medimos que o
+corte de score já captura o comprometimento. Na nossa carteira o DTI mediano é
+de 20,3%, e 31,2% dos aprovados passam de 25%."*
+
+**A prova — inadimplência REAL na Base A, por faixa de score:**
+
+| Score | DTI ≤ 30% | DTI > 30% | diferença |
+| ----- | --------- | --------- | --------- |
+| 8 | 1,70% | 0,29% | **−1,41 pp** |
+| 7 | 5,19% | 3,41% | **−1,78 pp** |
+| 6 | 7,82% | 8,04% | +0,23 pp |
+| 5 | 11,73% | 10,57% | −1,16 pp |
+| — | — | — | — |
+| 4 | 16,35% | 21,94% | +5,59 pp |
+| 2 | 32,34% | 41,57% | **+9,23 pp** |
+
+> **O argumento:** *"Nas faixas que **aprovamos**, comprometimento alto não
+> piora a inadimplência — em várias ela é menor. O DTI só machuca nas faixas 1
+> a 4, que já negamos. A leitura de crédito é conhecida: entre bons pagadores,
+> parcela grande é sinal de quem **pode** assumi-la; entre maus pagadores, é
+> aperto real. O nosso corte já separou os dois."*
+
+**O efeito no resultado, se aplicássemos o teto mesmo assim:**
+
+| Teto de DTI | ROI | Volume pior | Inadimpl. | Aprovação |
+| ----------- | --- | ----------- | --------- | --------- |
+| **sem teto (atual)** | **11,33%** | **R$ 45,1 mi** | 6,33% | 59,5% |
+| 30% | 11,33% | R$ 35,3 mi ❌ | 5,71% | 46,9% |
+| 25% | 11,32% | R$ 30,9 mi ❌ | 5,50% | 40,9% |
+
+*"O ROI não se move um centésimo — 11,33% para 11,32%. O teto corta volume sem
+melhorar retorno, porque corta gente que não era mais arriscada."*
+
+⚠️ **A ressalva honesta, se ele apertar:** *"Esse resultado carrega uma
+limitação: a Base A só tem quem a política antiga aprovou. Se ela já filtrava
+por comprometimento, quem tem DTI alto e passou pode ter sido filtrado em outra
+dimensão. Não temos como descartar isso."*
+
+**Se ele perguntar por que não usamos como preditora:** → §6.5, a circularidade.
+São coisas diferentes: como preditora ela é circular; como **regra de política
+aplicada depois da oferta**, não é — e foi assim que testamos.
+
+### 4.5 ⚠️⚠️ "Vocês ofertam 48 meses a quem pediu 24. Não estão alongando a exposição de graça?"
+
+**A pergunta mais perigosa deste bloco, e a que menos esperamos.** Ele tem
+razão nos fatos.
+
+**Os números, sem rodeio:**
+
+| Pediu | n | Recebeu | PD do pedido | PD ofertada | |
+| ----- | - | ------- | ------------ | ----------- | - |
+| 24 | 620 | 48 | 6,06% | 6,58% | **+0,52 pp** |
+| 36 | 838 | 48 | 5,81% | 6,94% | **+1,13 pp** |
+| 48 | 899 | 48 | 6,02% | 5,82% | −0,21 pp |
+| 60 | 619 | 48 | 5,55% | 4,99% | −0,56 pp |
+
+**49% dos aprovados recebem mais prazo do que pediram.**
+
+**Resposta curta:** *"Sim, e é uma decisão consciente. A alavanca do enunciado
+se chama **prazo máximo**, e o exemplo de submissão que o senhor nos deu oferta
+prazo mais longo que o pedido em metade das linhas — conferimos contra ele
+antes de decidir."*
+
+**E medimos o custo de não fazer isso:**
+
+| | ROI central | Volume | Inadimplência |
+| - | ----------- | ------ | ------------- |
+| **48 para todos (atual)** | **11,33%** | R$ 66,7 mi | 6,33% |
+| respeitando o prazo pedido | 11,21% | **R$ 66,7 mi** | **5,70%** |
+
+> **A concessão honesta, se ele insistir:** *"Essa é provavelmente a alavanca
+> de risco mais barata que deixamos na mesa. Respeitar o prazo pedido custaria
+> 0,12 ponto de ROI e **não custaria volume nenhum** — o volume é o valor
+> financiado, que não depende do prazo — e melhoraria a inadimplência em 0,63
+> ponto. É a melhor troca risco/retorno que encontramos, e escolhemos o ROI.
+> Numa segunda rodada, é o primeiro item que eu revisitaria."*
+
+💡 **Por que responder assim:** ele vai gostar mais de um grupo que conhece a
+própria lacuna e a quantificou do que de um que a esconde. Compare com §8.
+
+### 4.6 ⚠️ "Seu teto é 3,5% e vocês param em 2,29%. Deixaram 1,21 ponto na mesa."
 
 **Resposta curta:** *"Deixamos de propósito, e medimos o que aconteceria se não
 tivéssemos deixado."* → mostrar a tabela de `k_risco` da §1.1.
@@ -299,7 +452,7 @@ alta atrai o cliente errado. A nossa seleção adversa está modelada — quem
 aceita pagar caro tem PD maior. Cobrar o teto compraria receita e risco ao
 mesmo tempo."*
 
-### 4.5 "Como vocês agruparam as PDs em dez faixas?"
+### 4.7 "Como vocês agruparam as PDs em dez faixas?"
 
 *"Por cortes de PD, com a convenção do enunciado: 1 é o pior risco e 10 o
 melhor. A escolha tem consequência, como o senhor sinalizou — faixas largas
@@ -524,6 +677,18 @@ possíveis na banca, e a segunda é melhor:
 ❌ Esconder e torcer para não perguntarem.
 ✅ **Trazer nós mesmos**, com o ponto de virada medido: *"a política aguenta a
 PD errar até +26,3%"*. Antecipar a objeção vale mais que sobreviver a ela.
+
+**As duas lacunas que conhecemos e quantificamos.** Se sobrar tempo na
+apresentação, dizê-las é ganho líquido — mostra que auditamos o próprio
+trabalho:
+
+| Lacuna | O que custaria corrigir |
+| ------ | ----------------------- |
+| Estresse de PD: quebramos em +26,3% (§5.4) | subir o corte para 6 com a PD 20% acima do previsto |
+| Prazo alongado para 49% dos aprovados (§4.5) | −0,12 pp de ROI, **zero** de volume, −0,63 pp de inadimplência |
+
+A segunda é a mais barata que deixamos passar, e é a que eu levaria para uma
+próxima rodada.
 
 ---
 
