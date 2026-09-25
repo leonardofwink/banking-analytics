@@ -16,7 +16,7 @@
  * bloco abre com a afirmação que aquela pessoa precisa defender. Quem
  * apresenta decora a afirmação do topo, não os números.
  *
- * Gerar:  node apresentacoes/06_defesa_minto.js
+ * Gerar:  node apresentacoes/06_defesa.js
  */
 
 const pptxgen = require("pptxgenjs");
@@ -929,5 +929,7 @@ function abrirBloco(s, { numero, quem, papel, afirmacao, razoes, minutos }) {
 
 const destino = path.join("outputs", "apresentacoes");
 fs.mkdirSync(destino, { recursive: true });
-const arquivo = path.join(destino, "06_defesa_minto.pptx");
+// O nome do arquivo e o que o professor ve no anexo: sem numero de
+// ordem interno e sem jargao de metodo.
+const arquivo = path.join(destino, "AutoCred - Política de Crédito 2026 - Grupo 3.pptx");
 pres.writeFile({ fileName: arquivo }).then(() => console.log("Gerado:", arquivo));

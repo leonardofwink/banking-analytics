@@ -9,9 +9,8 @@
 > de ninguém: três dos achados aqui são coisas que o Léo não tinha feito e os
 > outros sim.
 >
-> ⚠️ **Falta o Renato.** Na reunião de 24/09 ele apresentou números próximos
-> aos do Léo, mas ainda não subiu os arquivos. Quando subir, entra aqui — e
-> vale conferir se a proximidade se sustenta no mesmo motor.
+> O Renato entregou só a apresentação, sem CSVs — a seção 4b faz o pente fino
+> do que dá para medir a partir dela.
 
 ## O resumo, se você só ler uma coisa
 
@@ -25,7 +24,8 @@ LGD do professor e as premissas de aceite dele:
 | Política | Aprovação | ROI | Volume central | Volume pior | Inadimpl. pior | Viável |
 | -------- | --------- | --- | -------------- | ----------- | -------------- | ------ |
 | **Léo** (score ≥ 5) | 59,5% | 11,33% | **R$ 66,7 mi** | **R$ 45,1 mi** | **6,58%** | ✅ **sim** |
-| Marcelo (submissão dele, PD dele) | 49,2% | **12,32%** | R$ 52,8 mi | R$ 34,6 mi | 7,03% | ❌ volume |
+| Marcelo (submissão dele, PD dele) | 49,2% | 12,32% | R$ 52,8 mi | R$ 34,6 mi | 7,03% | ❌ volume |
+| Renato (tabela reconstruída) | 44,8% | **12,53%** | R$ 46,1 mi | R$ 29,3 mi | 7,49% | ❌ volume |
 | Deni (tabela reconstruída) | 50,2% | **13,78%** | R$ 38,2 mi | R$ 22,3 mi | 7,95% | ❌ volume |
 
 > ⚠️ **Estes números não são os que cada um reporta.** São o resultado de
@@ -404,6 +404,94 @@ frentes.
 
 ---
 
+## 4b. 🔑 O Renato — o material que mais resiste ao pente fino
+
+Ele entregou só a apresentação, sem CSVs. Mesmo assim é o material mais
+verificável dos três, porque quase toda afirmação é numérica e rastreável
+(`python/analises/23_conferir_renato.py`).
+
+### As afirmações sobre as bases
+
+| Afirmação dele | Medido |
+| -------------- | ------ |
+| "a inadimplência chegou a 8,3%" | ✅ 8,3% |
+| "LTV médio da carteira é 74%" | ✅ 74% |
+| "a retomada perde cerca de 70% do exposto" | ✅ 67,2% |
+| "PD média de 8,4% na Base A" | ✅ 8,3% |
+| **"36% (1.800) fora do domínio do treino"** | ✅ **36,0% / 1.800** |
+| "estabilidade 0,44 na Base C, 0,02 na Base B" | ✅ 0,39 / 0,01 |
+| "ausentes: bureau 3%, renda 8%, emprego 12%" | ✅ 3% / 8% / 12% |
+| "PD média de 19,4% na Base C" | ≈ 14,8% — modelo diferente |
+
+O **1.800 exato** é o mesmo tipo de sinal que apareceu no material do Marcelo:
+só bate assim quando o slide é gerado do mesmo código que rodou a análise.
+
+### O slide 9 — um contrato, passo a passo
+
+Ele percorre os seis passos da cadeia num único financiamento. Refiz cada um:
+
+| Passo | Ele diz | Medido |
+| ----- | ------- | ------ |
+| Fator de EAD | 1,032 | ✅ 1,032 |
+| EAD | R$ 30.960 | ✅ R$ 30.960 |
+| LGD da célula | 70,4% | ✅ 70,4% |
+| Perda esperada | R$ 1.322 | ✅ R$ 1.330 |
+| Parcela | R$ 1.039 | ✅ R$ 1.039 |
+| Juros esperados | R$ 18.930 | ✅ R$ 18.924 |
+| **ROI do contrato** | **14,7%** | ✅ **14,7%** |
+
+**Os sete batem.** E o detalhe que mais impressiona é o dos juros: eles não são
+os R$ 19.858 do contrato inteiro, e sim os **R$ 18.924 ponderados pela chance
+de o cliente quebrar no meio**. Ele modela isso e declara no slide — *"quem dá
+calote paga só até o mês da quebra"*.
+
+> Na primeira conferência marquei este item como divergência, comparando com
+> os juros integrais. **O erro era meu**: ele está certo, e mais rigoroso do
+> que a comparação que fiz.
+
+### A política dele no motor do Léo
+
+| Cenário | ROI | Volume | Inadimplência | Guard-rails |
+| ------- | --- | ------ | ------------- | ----------- |
+| otimista | 12,79% | R$ 62,5 mi | 6,42% | ✅ todos |
+| **central** | **12,53%** | R$ 46,1 mi | 6,86% | ✅ todos |
+| pessimista | 12,18% | **R$ 29,3 mi** | 7,49% | ❌ volume |
+
+Mesmo padrão dos outros: **ROI maior que o do Léo (12,53% contra 11,33%), e
+volume que não sobrevive ao cenário pessimista.** Ele cobra mais caro nas
+faixas boas (1,8% contra 1,63%) e dá 60 meses onde o Léo dá 48.
+
+### 🔑 O teste que ele tem e o Léo não
+
+Ele estressa a PD em +30% e mostra que os quatro limites seguem valendo. **É
+uma dimensão de robustez que a análise do Léo não cobre** — o Léo varia o
+aceite, não o risco.
+
+Aplicando o mesmo estresse às duas políticas, no cenário central:
+
+| | Inadimplência base | Com PD +30% | |
+| - | ------------------ | ----------- | - |
+| Renato | 6,86% | **8,91%** | ❌ estoura |
+| **Léo** | 6,33% | **8,23%** | ❌ **estoura** |
+
+**As duas quebram — inclusive a nossa.** Ele reporta 7,0% porque a composição
+da carteira dele é outra sob as premissas de aceite dele; no motor do Léo, com
+as elasticidades do Léo, nenhuma das duas aguenta.
+
+Isso não desmente o teste dele — **valida a ideia**. Ter medido é o mérito, e é
+uma lacuna real do nosso trabalho.
+
+### O que vale copiar dele
+
+| | Por quê |
+| - | ------- |
+| **Estresse de PD +30%** | robustez ao erro de nível do modelo, que a inferência de rejeitados torna provável |
+| **"O CASE PEDE" em cada slide** | amarra cada página a uma exigência do enunciado — a banca não precisa procurar |
+| **O slide do contrato passo a passo** | torna a cadeia PD → EAD → LGD → perda → preço → ROI concreta em números que dá para conferir |
+| **Calibração declarada** | "previmos 8,5% e observamos 7,2%, erro a favor da segurança" |
+
+---
+
 ## 5. Onde o Léo está melhor
 
 | | Diferencial |
@@ -508,6 +596,8 @@ parâmetros corretos desde que o aceite seja alto.
 | Regras de exclusão | **Marcelo** | mesmos limites que o Léo achou, com o argumento de domínio |
 | Validação contra default real | **Marcelo** | âncora que não depende do simulador |
 | Documento e defesa | **Léo** | cadeia completa, com a lacuna dos 15% medida e declarada |
+| Estresse de risco | **Renato** | PD +30%: a dimensão que o Léo não cobriu, e que quebra as duas políticas |
+| Narrativa por slide | **Renato** | o "O CASE PEDE" amarrando cada página ao enunciado |
 
 **A juntar, se der tempo:** as restrições monotônicas no modelo e a validação
 contra o default realizado de 2024. As duas vêm do Marcelo, e nenhuma passa
