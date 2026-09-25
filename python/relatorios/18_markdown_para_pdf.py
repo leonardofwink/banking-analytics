@@ -42,7 +42,16 @@ h3 {
   font-family: Cambria, Georgia, serif; font-size: 12pt; color: #3D7A8C;
   margin: 14pt 0 5pt; page-break-after: avoid;
 }
-p { margin: 0 0 7pt; text-align: justify; }
+p { margin: 0 0 7pt; text-align: justify; orphans: 2; widows: 2; }
+/* `page-break-after: avoid` no título só garante que UMA linha o acompanhe —
+   e um título com uma linha solta no pé da página continua órfão para quem
+   lê. Estas três regras mantêm o título junto do bloco que ele anuncia, e
+   qualquer linha de chamada ("Os números:") junto da tabela que ela chama. */
+h2 + p, h3 + p { page-break-after: avoid; break-after: avoid; }
+p:has(+ table), p:has(+ blockquote), p:has(+ pre) {
+  page-break-after: avoid; break-after: avoid;
+}
+h2 + p + table, h3 + p + table { page-break-before: avoid; break-before: avoid; }
 blockquote {
   margin: 10pt 0; padding: 9pt 13pt; background: #F2F4F6;
   border-left: 3pt solid #3D7A8C; font-size: 9.5pt; color: #405060;
