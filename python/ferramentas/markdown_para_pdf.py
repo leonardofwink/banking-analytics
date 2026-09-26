@@ -6,7 +6,7 @@ modo headless, que é o mesmo motor de impressão do navegador.
 
 Rodar::
 
-    .\\scripts\\py.cmd python\\relatorios\\18_markdown_para_pdf.py docs\\COMPARACAO_COLEGAS.md
+    .\\scripts\\py.cmd python\\relatorios\\markdown_para_pdf.py docs\\COMPARACAO_COLEGAS.md
 """
 
 from __future__ import annotations
@@ -212,7 +212,7 @@ def para_html(markdown: str, titulo: str) -> str:
 
 def main(argv: list[str]) -> int:
     if len(argv) < 2:
-        log_step("uso: 18_markdown_para_pdf.py <caminho.md> [saida.pdf]", "erro")
+        log_step("uso: markdown_para_pdf.py <caminho.md> [saida.pdf]", "erro")
         return 1
 
     origem = Path(argv[1])

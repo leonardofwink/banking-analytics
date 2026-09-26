@@ -9,7 +9,7 @@
  * cada coisa está e o que ainda falta. Quem for defender precisa saber
  * reconstruir o raciocínio, não decorar números.
  *
- * Gerar:  node apresentacoes/05_visao_geral_grupo.js
+ * Gerar:  node apresentacoes/_superados/05_visao_geral_grupo.js
  */
 
 const pptxgen = require("pptxgenjs");

@@ -3,14 +3,14 @@
 > Arquivo **canônico** de convenções deste repositório (padrão cross-tool: Claude Code, Cursor, Copilot…).
 > Vale para **humanos e IA**. O `CLAUDE.md` apenas aponta para cá. **Leia antes de editar ou rodar qualquer coisa.**
 > Regras críticas estão aqui no corpo; o resto é ponteiro para os docs detalhados (sem duplicar).
-> **Idioma:** português (pt-BR) em docs, comentários e commits; inglês só nos identificadores do código R (idiomático).
+> **Idioma:** português (pt-BR) em docs, comentários, identificadores e commits. O domínio é em português e o código acompanha — `perda_esperada`, não `expected_loss`.
 > **Princípio geral:** mudanças pequenas e validadas, código legível e sem redundância; **toda ação externa (push, merge, criar repo/PR) só com o "ok" do Leonardo**. Entre "rápido" e "bem feito", prefira **bem feito**.
 
 ## Sobre o projeto
 
 **Banking Analytics** — projeto de **modelagem de crédito e banking analytics** desenvolvido no âmbito da mentoria **ANALITICA**.
 
-O escopo detalhado está sendo definido conforme a mentoria avança — a fonte da verdade é o [`docs/PRD.md`](docs/PRD.md), e o diário das aulas é o [`docs/MENTORIA.md`](docs/MENTORIA.md). **Não invente escopo:** o que não estiver registrado no PRD está em aberto.
+O escopo detalhado está sendo definido conforme a mentoria avança — a fonte da verdade é o [`docs/processo/PRD.md`](docs/processo/PRD.md), e o diário das aulas é o [`docs/processo/MENTORIA.md`](docs/processo/MENTORIA.md). **Não invente escopo:** o que não estiver registrado no PRD está em aberto.
 
 O eixo conceitual do projeto:
 
@@ -22,13 +22,13 @@ Vocabulário completo em [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md).
 
 ### Fases
 
-> Princípio: *"não dá pra construir o telhado sem as paredes"* — respeitar a ordem das dependências. Detalhe em [`docs/PRD.md`](docs/PRD.md#6-fases).
+> Princípio: *"não dá pra construir o telhado sem as paredes"* — respeitar a ordem das dependências. Detalhe em [`docs/processo/PRD.md`](docs/processo/PRD.md#6-fases).
 
 **Fase 0 — Fundações** *(atual)* → 1. Dados → 2. Exploração → 3. Modelagem → 4. Validação → 5. Decisão e comunicação.
 
 ## Specs e DoD (Definition of Done)
 
-O trabalho é dividido em **passos pequenos** ([`docs/ROADMAP.md`](docs/ROADMAP.md)). Cada passo é uma **spec** em `docs/specs/`, e cada spec se quebra em **subetapas** numeradas (`S01.1`, `S01.2`, …) para dar rastreio.
+O trabalho é dividido em **passos pequenos** ([`docs/processo/ROADMAP.md`](docs/processo/ROADMAP.md)). Cada passo é uma **spec** em `docs/specs/`, e cada spec se quebra em **subetapas** numeradas (`S01.1`, `S01.2`, …) para dar rastreio.
 
 **Toda spec e toda subetapa tem um DoD explícito.** Sem exceção.
 
@@ -65,74 +65,65 @@ Modelo de referência: [`docs/specs/S01_INGESTAO.md`](docs/specs/S01_INGESTAO.md
 
 > **Mapa central:** o [`README.md`](README.md) é a fonte única da estrutura — árvore de pastas, como rodar, mapa dos documentos. Atualize-o sempre que um script for adicionado ou renomeado. A tabela abaixo é o resumo de convenção.
 
-O projeto é **poliglota: R e Python**, com papéis definidos (ver § A fronteira entre as duas linguagens).
+O projeto é **Python**. O andaime de R (`scripts/_setup.R`, `scripts/rscript.cmd`) continua aqui, mas nenhuma análise foi escrita nele — ver § A linguagem que ficou de fora.
 
 | O que | Onde |
 | ----- | ---- |
-| **Funções R reutilizáveis** (puras, testáveis) | `R/` — carregadas automaticamente pelo `_setup.R` |
-| Âncora R (raiz, diretórios, log, semente) | [`scripts/_setup.R`](scripts/_setup.R) — sourçada no topo de todo script R |
-| Pipelines R: ETL, exploratória, relatórios | `scripts/etl/` · `scripts/analises/` · `scripts/relatorios/` — prefixos de ordem `00_`, `01_`, … |
-| **Funções Python reutilizáveis** (pacote interno `banking`) | `python/banking/` |
-| Âncora Python (raiz, diretórios, log, semente) | [`python/banking/projeto.py`](python/banking/projeto.py) — importada no topo de todo script Python |
-| Pipelines Python: ETL, modelagem, relatórios | `python/etl/` · `python/modelagem/` · `python/relatorios/` |
+| **Funções reutilizáveis** (puras, testáveis) | `python/banking/` — o pacote interno |
+| Âncora (raiz, diretórios, log, semente) | [`python/banking/projeto.py`](python/banking/projeto.py) — importada no topo de todo script |
+| Pipelines do desafio, numerados na ordem em que foram feitos | `python/etl/` (01–02) · `python/modelagem/` (03–14) · `python/relatorios/` (11, 25–26) |
+| Investigações sobre a nossa política | `python/analises/` (16, 21, 24) |
+| O trabalho dos colegas, rodado no nosso motor | `python/conferencias/` (15, 17, 19, 20, 22, 23) |
+| Utilitários sem lugar na ordem | `python/ferramentas/` — sem número, porque não são passo de nada |
+| Geradores de deck (pptxgenjs) | `apresentacoes/` — o vigente é `06_defesa.js`; `_superados/` guarda os anteriores |
+| O simulador interativo | `painel/` — HTML e os dados que ele consome |
 | Dados (**NUNCA versionar**) | `dados/brutos/` · `dados/intermediarios/` · `dados/processados/` |
 | Saídas geradas (**NÃO versionar**) | `outputs/` |
-| Documentação | `docs/` |
-| Testes | `tests/testthat/` (R) · `tests/python/` (pytest) |
+| Documentação | `docs/` — `specs/` por passo, `processo/` para o que é nosso e não do avaliador |
+| Testes | `tests/python/` (pytest) — um arquivo por módulo da biblioteca |
 
-**Biblioteca × pipeline** — vale para as duas linguagens. `R/` e `python/banking/` têm **funções**: não rodam nada ao ser carregadas, não leem nem escrevem arquivo, não imprimem. `scripts/` e `python/{etl,modelagem,relatorios}/` têm **pipelines**: rodam, leem, escrevem e logam. Cálculo que vale testar (WOE, IV, KS, perda esperada) vira função na biblioteca; a sequência que orquestra vira pipeline.
+**A numeração é global e cronológica.** Um pipeline leva o número da ordem em que foi escrito, não da pasta onde mora: por isso `analises/` tem 16, 21 e 24 e `conferencias/` tem os outros. O número é a linha do tempo; a pasta é o propósito. Script novo pega o próximo número livre.
+
+**Biblioteca × pipeline.** `python/banking/` tem **funções**: não rodam nada ao ser importadas, não leem nem escrevem arquivo, não imprimem. As outras pastas de `python/` têm **pipelines**: rodam, leem, escrevem e logam. Cálculo que vale testar (perda esperada, Price, ROI, faixa de score) vira função na biblioteca; a sequência que orquestra vira pipeline. É isso que permite 167 testes sem rodar nada de ponta a ponta.
 
 **Camadas de dado:** `brutos/` é **somente leitura** — nunca editar nem sobrescrever. `intermediarios/` e `processados/` são sempre **regeneráveis pelos scripts**. Se não for possível regenerar, existe um passo manual escondido e o projeto deixou de ser reprodutível.
 
-## A fronteira entre as duas linguagens
+## A linguagem que ficou de fora
 
-> Projeto bilíngue sem fronteira declarada vira **dois projetos que discordam**: a mesma variável calculada de dois jeitos, dois números diferentes, e ninguém sabe qual está certo. A regra abaixo existe para que isso não aconteça.
+O projeto foi desenhado poliglota: Python para o ferramental de crédito
+(`optbinning`, `lightgbm`, `shap`), R para exploração e comunicação
+(`dplyr`, `ggplot2`, Quarto), conversando por Parquet em `dados/processados/`.
 
-**Divisão de trabalho (convenção inicial — ajustável conforme a mentoria):**
+**Não foi o que aconteceu.** Em treze dias entre o lançamento e a entrega, não
+houve espaço para manter duas linguagens em sincronia — e a regra que
+sustentava o desenho era que a ABT tivesse **uma única construção**, porque
+duas viram dois projetos que discordam. Tudo foi feito em Python; `R/` foi
+removido e o que sobrou de R é o andaime (`scripts/_setup.R`,
+`scripts/rscript.cmd`), mantido caso a linguagem volte.
 
-| Etapa | Linguagem | Por quê |
-| ----- | --------- | ------- |
-| Ingestão e limpeza | **qualquer uma** | Quem estiver mais confortável. Sem ganho técnico de um lado |
-| Construção da ABT | **uma só, escolhida e registrada** | A ABT é o contrato do projeto. Duas construções = dois projetos |
-| Binning, WOE/IV, scorecard | **Python** | `optbinning` não tem equivalente maduro em R. É o motivo de o Python estar aqui |
-| Modelos challenger, explicabilidade | **Python** | `lightgbm`, `shap` |
-| Regressão logística com significância | **Python** (`statsmodels`) ou R (`glm`) | Empate técnico — R é até mais idiomático aqui |
-| Exploratória, safras, visualização | **R** | `ggplot2` e `dplyr` continuam melhores para investigar e comunicar |
-| Relatório final | **R** (Quarto/RMarkdown) | Idem |
+Registrado em [`docs/processo/DEBITO_TECNICO.md`](docs/processo/DEBITO_TECNICO.md).
 
-**A fronteira física é o arquivo [Parquet](https://parquet.apache.org/) em `dados/`:**
+### Se o R voltar, duas coisas continuam valendo
 
-```
-Python  ──escreve──►  dados/processados/abt.parquet  ──lê──►  R
-```
+**A fronteira é o arquivo, nunca a chamada.** Nada de `reticulate` ou `rpy2`:
+a troca é por Parquet, para que cada lado rode sozinho e a dependência fique
+visível. Parquet e não CSV, porque CSV perde tipo — data vira texto, decimal
+vira `float` com vírgula errada, categórico com nível vazio vira `NA` silencioso.
 
-- **Use Parquet, não CSV**, para tudo que cruza a fronteira. CSV perde tipo: data vira texto, decimal vira `float` com vírgula errada, categórico com nível vazio vira `NA` silencioso. Parquet preserva o esquema — `pyarrow` de um lado, `arrow` do outro.
-- **Ninguém importa código da outra linguagem.** A troca é **sempre por arquivo**, nunca por `reticulate`, `rpy2` ou chamada de sistema. Assim cada lado roda sozinho e a dependência fica visível.
-- **Quem escreve um arquivo de fronteira, documenta o esquema** em [`docs/DICIONARIO_DADOS.md`](docs/DICIONARIO_DADOS.md). Coluna nova sem registro é como função sem docstring.
-- **Constantes duplicadas precisam bater.** `SEMENTE = 42` existe nos dois lados (`scripts/_setup.R` e `python/banking/projeto.py`), assim como os nomes dos diretórios. Mudou em um, muda no outro **no mesmo commit**.
-
-### ⚠️ Data de negócio atravessa a fronteira como `date32`, nunca como timestamp
-
-Armadilha **verificada neste repositório**, não teórica. O `pandas` grava `datetime64` **sem fuso**; o `arrow` do lado R lê como UTC e converte para o fuso local (−3h em São Paulo). Resultado real do teste:
+**⚠️ Data de negócio atravessa como `date32`, nunca como timestamp.** Armadilha
+*verificada neste repositório*, não teórica. O `pandas` grava `datetime64` sem
+fuso; o `arrow` do lado R lê como UTC e converte para o fuso local (−3h em São
+Paulo):
 
 ```
 Python grava:  2026-01-15  ──►  R lê:  2026-01-14 21:00:00
 ```
 
-O dia **retrocede**. Num contrato originado no dia 1º, isso joga a operação para o mês anterior e **muda a safra** — e safra é a unidade de análise de todo o projeto. O erro não levanta exceção, não aparece no `head()` e sobrevive até alguém estranhar a curva de inadimplência.
-
-**Regra:** data de calendário (originação, vencimento, referência) é gravada como `date32` — data pura, sem hora e sem fuso, portanto sem nada a converter:
-
-```python
-import pyarrow as pa, pyarrow.parquet as pq
-
-tabela = pa.Table.from_pandas(df).cast(
-    pa.schema([("id_contrato", pa.int64()), ("data_originacao", pa.date32())])
-)
-pq.write_table(tabela, DIR_PROCESSADOS / "abt.parquet")
-```
-
-Do lado R chega como `Date`, com o dia correto. Timestamp com hora só quando a hora importar de fato — e aí **com fuso explícito**, nunca ingênuo.
+O dia **retrocede**. Num contrato originado no dia 1º, isso joga a operação
+para o mês anterior e **muda a safra** — que é a unidade de análise de todo o
+projeto. Não levanta exceção, não aparece no `head()` e sobrevive até alguém
+estranhar a curva de inadimplência. Data de calendário é gravada como
+`date32`: data pura, sem hora e sem fuso, portanto sem nada a converter.
 
 ## ⚠️ Regras críticas (não quebrar)
 
@@ -150,20 +141,8 @@ Do lado R chega como `Date`, com o dia correto. Timestamp com hora só quando a 
 2. **LGPD e anonimização.** CPF, nome, endereço, telefone e e-mail não devem sair da camada bruta. Se a modelagem precisar de identificador, use chave substituta (hash ou ID sequencial) gerada na ingestão. Dado pessoal nunca vai para `outputs/`, para documentação ou para o chat.
 3. **Segredos fora do versionamento.** `.Renviron`, tokens e credenciais **jamais** vão para o git. Use `.Renviron` local (modelo em `.Renviron.example`) e `Sys.getenv()`.
 4. **Termo novo da mentoria vai para o glossário.** Todo conceito apresentado nas aulas entra em [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md), na seção certa. O Leonardo **não vem de banking** — não presuma vocabulário conhecido: ao usar um termo técnico pela primeira vez numa resposta ou num comentário de código, explique-o em uma linha e registre-o no glossário.
-5. **Decisão de modelagem é registrada antes de ser usada.** Definição de default, janelas de observação e performance, partição treino/teste, tratamento de rejeitados: tudo em [`docs/PRD.md`](docs/PRD.md#4-decisões-de-modelagem). Sem isso, resultado de hoje não é comparável com o de amanhã.
+5. **Decisão de modelagem é registrada antes de ser usada.** Definição de default, janelas de observação e performance, partição treino/teste, tratamento de rejeitados: tudo em [`docs/processo/PRD.md`](docs/processo/PRD.md#4-decisões-de-modelagem). Sem isso, resultado de hoje não é comparável com o de amanhã.
 6. **Ações externas só com confirmação.** Rodar scripts e mostrar preview do resultado pode; **push / merge / criar repo / abrir PR** exigem o "ok" do Leonardo.
-
-## Convenções de código R
-
-- **Âncora de caminhos:** todo script começa com `source(here::here("scripts", "_setup.R"))`. **Nunca** use `setwd()` avulso nem caminhos absolutos soltos — sempre os objetos `DIR_*` definidos na âncora.
-- **Pacotes:** `pacman::p_load(...)` no `_setup.R` para os transversais; no topo do script para os específicos daquela tarefa.
-- **Logs informativos:** helper `log_step()` do `_setup.R`, no padrão `[HH:MM:SS] mensagem`. Semântica de cor: **ciano** = progresso · **verde** = sucesso · **amarelo** = aviso · **vermelho** = erro. Sempre `cli::col_*`, nunca cores ANSI cruas. **Nunca erro mudo** — diga o quê, onde e com qual dado; `tryCatch` com mensagem de contexto.
-- **Reprodutibilidade:** semente fixa (`SEMENTE` no `_setup.R`) antes de qualquer amostragem, partição ou bootstrap. O script deve rodar do zero, sem passo manual escondido.
-- **Docstrings** roxygen (`#'`) nas funções de `R/`: o que faz, `@param`, `@return`. Em funções de crédito, documentar também **a convenção de unidade** (PD e LGD em fração 0–1, não em 0–100).
-- **Nomes:** funções e objetos em `snake_case`. Identificadores em inglês (`calculate_woe`, `expected_loss`), comentários e mensagens em pt-BR.
-- **Chamar o R: use o wrapper [`scripts/rscript.cmd`](scripts/rscript.cmd).** O `Rscript` não fica no PATH e o caminho da instalação muda de máquina. O wrapper resolve o interpretador local (`$env:RSCRIPT` → PATH → registro → pastas padrão; entre versões, vence a mais recente):
-  `.\scripts\rscript.cmd scripts\etl\01_ingestao.R`
-  Sem argumentos, imprime o caminho resolvido. **Nunca fixe caminho absoluto de R** em script ou documentação. Requer **R ≥ 4.5**.
 
 ## Convenções de código Python
 
@@ -201,7 +180,7 @@ Do lado R chega como `Date`, com o dia correto. Timestamp com hora só quando a 
 | ------- | --------- | ------- |
 | `feat` | **cria** uma capacidade nova | script que calcula WOE e IV |
 | `fix` | **corrige** um comportamento errado | corrige janela de performance que invadia a observação |
-| `refactor` | **reestrutura** sem mudar resultado | extrai cálculo de KS para função em `R/` |
+| `refactor` | **reestrutura** sem mudar resultado | extrai cálculo de KS para função em `banking/metricas.py` |
 | `chore` | **manutenção/config** que não muda resultado | `.gitignore`; estrutura de pastas |
 | `docs` | só **documentação** | registra conceito de perda esperada no glossário |
 
@@ -238,7 +217,7 @@ Ex.: `feat(modelagem): adiciona cálculo de perda esperada por contrato`.
 ## Pendências (TODO)
 
 - [ ] Criar o repositório remoto **privado** `leonardofwink/banking-analytics` e dar o primeiro push (ação externa — pede "ok").
-- [ ] Preencher o escopo em [`docs/PRD.md`](docs/PRD.md) conforme a mentoria o apresentar.
+- [ ] Preencher o escopo em [`docs/processo/PRD.md`](docs/processo/PRD.md) conforme a mentoria o apresentar.
 - [ ] Registrar a **definição de default** e as janelas antes da primeira modelagem.
 - [ ] Documentar a base de dados em [`docs/DICIONARIO_DADOS.md`](docs/DICIONARIO_DADOS.md) quando ela chegar.
 - [ ] Preencher a [`docs/MATRIZ_RISCOS.md`](docs/MATRIZ_RISCOS.md) com os riscos reais (as linhas atuais são exemplos ilustrativos).
