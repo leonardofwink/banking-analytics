@@ -47,20 +47,20 @@ from banking.roi import CENARIOS, GUARD_RAILS, aplicar_politica, simular
 from banking.score import SCORE_MAXIMO, score_de_pd
 
 # --- A grade -----------------------------------------------------------------
-# Um SUPERCONJUNTO da grade do S12 (`12_fronteira_roi_volume.py`), e isso é a
-# propriedade que importa: as 5.600 políticas que o documento afirma ter
-# varrido estão todas aqui dentro. Por isso a régua de taxa anda de 0,25 em
-# 0,25 — é o passo que contém 1,75%, 2,25% e 2,75%, que uma régua de 0,10 a
-# partir de 1,00% pularia.
+# É EXATAMENTE a grade do S12 (`12_fronteira_roi_volume.py`), e tem de
+# continuar sendo: o documento de política entregue ao professor diz
+# "varremos 5.600 combinações de corte, preço, prazo e entrada: 4.044 batem os
+# 15% e nenhuma respeita o piso de R$ 40 milhões". O painel mostra essa mesma
+# varredura — não outra, nem maior.
 #
-# Quem mexer aqui tem de manter a continência, senão o painel deixa de ser um
-# teste da conclusão do documento e vira um experimento à parte.
-CORTES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-TAXAS_BASE = [0.0100, 0.0125, 0.0150, 0.0175, 0.0200, 0.0225,
-              0.0250, 0.0275, 0.0300, 0.0325, 0.0350]
+# Já experimentamos estender para 26.400 (cortes 1 a 10, taxa até 3,50%,
+# entrada até 50%). A conclusão não mudou, mas o número na tela deixava de
+# bater com o documento que já estava nas mãos do professor. Revertido.
+CORTES = [7, 6, 5, 4]
+TAXAS_BASE = [0.0150, 0.0175, 0.0200, 0.0225, 0.0250, 0.0275, 0.0300]
 K_RISCOS = [0.0, 0.10, 0.20, 0.30, 0.50]
 PRAZOS = [24, 36, 48, 60]
-ENTRADAS = [0.0, 0.10, 0.20, 0.30, 0.40, 0.50]
+ENTRADAS = [0.0, 0.10, 0.20, 0.30, 0.40]
 PASSOS = [0.0, 0.04]  # quanto a entrada sobe a cada faixa de score pior
 
 # A grade do S12, para conferir a continência antes de varrer. Se uma destas
