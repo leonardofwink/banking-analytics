@@ -516,7 +516,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
       { q: "As reações da Base C são reais?",
         a: "São suposição nossa: o enunciado dá a direção de cada efeito, não a intensidade. Por isso três cenários, e não um." },
       { q: "Por que não o ROI máximo?",
-        a: "Ele era 0,1 ponto maior e deixava metade da folga. O ganho é pequeno e certo; o risco de furar é grande e binário." },
+        a: "Ele rende 0,13 ponto a mais e para a R$ 0,9 mi do piso, contra os R$ 5,1 mi da nossa. O ganho é pequeno e certo; o risco de furar é grande e binário." },
     ],
     rodape: "7. Guard-rails · aprovação ≥ 35% · taxa ≤ 3,5% ao mês · inadimplência ≤ 8% · volume ≥ R$ 40 milhões",
     numero: n,
@@ -571,12 +571,12 @@ const slide = () => { n += 1; return pres.addSlide(); };
   );
 
   cartao(s, { x: c.x + 4.05, y: 4.85, w: 3.85, h: 1.35, fill: NAVY, linha: NAVY });
-  s.addText("12,7% de folga, por escolha", {
+  s.addText("A troca que fizemos", {
     x: c.x + 4.33, y: 5.02, w: 3.3, h: 0.3,
     fontSize: 13, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   s.addText(
-    "Violar um guard-rail corta a nota de política pela metade. Trocamos 0,1 ponto de ROI por essa margem.",
+    "Mais 0,13 ponto de ROI custaria R$ 4,2 mi de margem: a política de maior retorno viável fecha o pior cenário a R$ 0,9 mi do piso, a nossa a R$ 5,1 mi. Furar o piso corta a nota pela metade.",
     { x: c.x + 4.33, y: 5.36, w: 3.3, h: 0.7, fontSize: 11, color: GREY_ESCURO,
       fontFace: SANS, lineSpacing: 14, isTextBox: true, margin: 0 }
   );
