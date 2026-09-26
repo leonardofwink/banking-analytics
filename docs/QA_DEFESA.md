@@ -47,8 +47,9 @@
 ### 1.1 "Vocês não bateram a meta de 15%. Por quê?"
 
 **Resposta curta:** *"Porque medimos que 15% e os guard-rails não coexistem
-sob as nossas premissas de aceite. Testamos 26.400 políticas; 16.820 passam
-dos 15% e nenhuma sobrevive aos quatro limites nos três cenários."*
+sob as nossas premissas de aceite. Testamos 5.600 políticas; 4.044 passam dos
+15% e nenhuma sobrevive ao guard-rail de volume — é o número do documento
+que entregamos. Depois estendemos para 26.400 e a conclusão não mudou."*
 
 **A prova mais limpa** — a nossa própria política, com o preço mais agressivo:
 
@@ -69,7 +70,7 @@ implementação em um deles:
 
 | Caminho | Teto viável |
 | ------- | ----------- |
-| Varredura de 26.400 políticas | 11,97% |
+| Varredura de 5.600 políticas (S12) | 11,46% |
 | Varredura de prazo e entrada por faixa | 11,42% |
 | Trocando o nosso modelo pelo do Marcelo | 11,54% |
 
@@ -97,6 +98,26 @@ acima, e é onde o volume morre.
 menos sensível a preço do que supusemos, 15% é alcançável. Não temos como
 saber: o enunciado dá a direção de cada efeito e declara que a intensidade não
 está dada. Foi a única premissa que tivemos de inventar, e declaramos isso."*
+
+### 1.1a ⚠️ "Seu documento diz 5.600 combinações. Seu painel diz 26.400. Qual é o número?"
+
+**Resposta curta:** *"5.600 é a varredura do estudo, que está no documento.
+26.400 é a mesma fronteira num recorte mais fino, que fizemos depois para o
+painel — e que **contém** as 5.600. A conclusão é a mesma nas duas: nenhuma
+política que bate os 15% respeita o piso de volume."*
+
+| | Varridas | Batem 15% | Viáveis |
+| - | -------- | --------- | ------- |
+| Estudo (no documento) | 5.600 | 4.044 | **nenhuma** |
+| Painel (estendido) | 26.400 | 16.820 | **nenhuma** |
+
+*"A grade maior abre os cortes de 1 a 10, a taxa de 1,00% a 3,50% e a entrada
+até 50%. Testamos a nossa própria conclusão num espaço 4,7 vezes maior, e ela
+se manteve."*
+
+💡 O script que gera o painel **verifica essa continência antes de varrer** e
+aborta se algum valor da grade do estudo não couber na dele. Sem isso, o painel
+estaria medindo outro experimento, e a comparação não significaria nada.
 
 ### 1.1b ⚠️⚠️ "Seu próprio painel mostra uma política viável que rende 11,97%. Por que vocês submeteram a de 11,33%?"
 

@@ -169,7 +169,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
     casoPede: "ROI anualizado acima de 15% dentro dos guard-rails. Cumprimos os quatro limites; o ROI fica em 11,3%.",
     perguntas: [{
       q: "Por que o ROI não chega a 15%?",
-      a: "Das 26.400 políticas que testamos, 16.820 batem a meta e nenhuma respeita o piso de volume. O slide 9 traz a medição.",
+      a: "Das 5.600 políticas que testamos, 4.044 batem a meta e nenhuma respeita o piso de volume. O slide 9 traz a medição.",
     }],
     rodape: "ROI anualizado na Base C acima de 15%, respeitados os guard-rails de aprovação, taxa, inadimplência e volume",
     numero: n,
@@ -600,8 +600,8 @@ const slide = () => { n += 1; return pres.addSlide(); };
   });
 
   [
-    { v: "26.400", r: "as seis alavancas:\ncorte × preço × prazo × entrada" },
-    { v: "16.820", r: "batem a meta\nde 15% de ROI" },
+    { v: "5.600", r: "políticas varridas:\ncorte × preço × prazo × entrada" },
+    { v: "4.044", r: "batem a meta\nde 15% de ROI" },
     { v: "0", r: "delas respeitam\nos quatro limites", cor: CORAL },
   ].forEach((d, i) => {
     destaque(s, { x: c.x + i * 2.7, y: c.y, w: 2.55, valor: d.v, rotulo: d.r,
@@ -614,8 +614,8 @@ const slide = () => { n += 1; return pres.addSlide(); };
     fontSize: 14, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   [
-    ["Inadimplência", "mínimo de 3,27%", "máx. 8%", true],
-    ["Taxa de aprovação", "até 100% das propostas", "mín. 35%", true],
+    ["Inadimplência", "mínimo de 5,26%", "máx. 8%", true],
+    ["Taxa de aprovação", "máximo de 68,7%", "mín. 35%", true],
     ["Volume originado", "máximo de R$ 20,5 mi", "mín. R$ 40 mi", false],
   ].forEach((l, i) => {
     const y = 3.98 + i * 0.34;
