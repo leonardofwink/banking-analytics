@@ -5,7 +5,7 @@
  * background de banking. Por isso cada conceito de crédito é definido na hora,
  * e as decisões de modelagem são explicadas, não só apresentadas.
  *
- * Gerar:  node apresentacoes/01_modelo_pd.js
+ * Gerar:  node apresentacoes/_superados/01_modelo_pd.js
  * Saída:  outputs/apresentacoes/01_modelo_pd.pptx  (fora do git, regenerável)
  */
 

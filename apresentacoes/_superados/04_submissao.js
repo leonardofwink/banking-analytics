@@ -7,7 +7,7 @@
  * pontos → o validador recusa antes de enviar → e cada regra dele foi testada
  * quebrando o arquivo de propósito.
  *
- * Gerar:  node apresentacoes/04_submissao.js
+ * Gerar:  node apresentacoes/_superados/04_submissao.js
  */
 
 const pptxgen = require("pptxgenjs");

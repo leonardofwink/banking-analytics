@@ -8,7 +8,7 @@
  * peça por peça da fórmula oficial → validamos contra o dado → e o dado revelou
  * por que a AutoCred quebrou.
  *
- * Gerar:  node apresentacoes/02_motor_roi.js
+ * Gerar:  node apresentacoes/_superados/02_motor_roi.js
  */
 
 const pptxgen = require("pptxgenjs");

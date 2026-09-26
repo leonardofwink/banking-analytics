@@ -9,7 +9,7 @@
  * degenerou e a premissa estava errada → a tabela final, e por que ela nega o
  * que nega.
  *
- * Gerar:  node apresentacoes/03_politica_credito.js
+ * Gerar:  node apresentacoes/_superados/03_politica_credito.js
  */
 
 const pptxgen = require("pptxgenjs");

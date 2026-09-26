@@ -44,9 +44,9 @@ proposta, com a PD re-escorada pelo LTV e prazo que a política oferta.
 
 ## Sobre o repositório
 
-Repositório **poliglota (R + Python)**, organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts. (A única exceção é `painel/dados.js`, para o painel abrir de um clone; o porquê está no [`.gitignore`](.gitignore) e no [`AGENTS.md`](AGENTS.md).)
+Organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts. (A única exceção é `painel/dados.js`, para o painel abrir de um clone; o porquê está no [`.gitignore`](.gitignore) e no [`AGENTS.md`](AGENTS.md).)
 
-**Python modela · R explora e comunica.** Python entra pelo ferramental de crédito que não tem equivalente maduro em R (`optbinning` para binning/WOE/scorecard, `lightgbm`, `shap`); R continua melhor para investigar e apresentar (`dplyr`, `ggplot2`, Quarto). As duas linguagens **não se importam** — conversam por arquivo Parquet em `dados/`. A regra completa está em [`AGENTS.md`](AGENTS.md#a-fronteira-entre-as-duas-linguagens).
+**Tudo em Python.** O projeto foi montado para ser poliglota — R para exploração e comunicação, Python para o ferramental de crédito — e o wrapper de R (`scripts/rscript.cmd`, `scripts/_setup.R`) continua no repositório. Mas **o R acabou não sendo usado**: o prazo de treze dias não deixou espaço para manter duas linguagens em sincronia, e a regra do projeto é que a ABT tenha uma única construção. Está registrado em [`docs/processo/DEBITO_TECNICO.md`](docs/processo/DEBITO_TECNICO.md).
 
 > 📖 **Vocabulário:** o [glossário](docs/GLOSSARIO.md) cobre risco inerente, risco residual, mitigação, PD/EAD/LGD, ROE e os termos que aparecem em todo o resto.
 
@@ -107,12 +107,12 @@ que batam. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
 | Documento | Para quê |
 | --------- | -------- |
 | 🎯 [`docs/DESAFIO.md`](docs/DESAFIO.md) | **O briefing da AutoCred** — requisitos, bases, guard-rails, rubrica e formato de submissão. Fonte única do que foi pedido |
-| 🗺️ [`docs/ROADMAP.md`](docs/ROADMAP.md) | **O objetivo quebrado em 11 passos** — o que fazer, por quê, como e quando está pronto |
+| 🗺️ [`docs/processo/ROADMAP.md`](docs/processo/ROADMAP.md) | **O objetivo quebrado em 11 passos** — o que fazer, por quê, como e quando está pronto |
 | 🧮 [`docs/ENTREGAVEL_1_MODELO.md`](docs/ENTREGAVEL_1_MODELO.md) | Decisões do entregável 1 — modelo de PD (40 pts) |
 | 💰 [`docs/ENTREGAVEL_2_POLITICA.md`](docs/ENTREGAVEL_2_POLITICA.md) | Decisões do entregável 2 — política e precificação (40 pts) |
-| 📋 [`docs/PRD.md`](docs/PRD.md) | Plano de execução: SDD, divisão do grupo, cronograma até 25/09, riscos |
+| 📋 [`docs/processo/PRD.md`](docs/processo/PRD.md) | Plano de execução: SDD, divisão do grupo, cronograma até 25/09, riscos |
 | 📖 [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md) | **O vocabulário do projeto.** Risco inerente/residual, mitigação, perda esperada, scorecard, regulação, rentabilidade |
-| 🎓 [`docs/MENTORIA.md`](docs/MENTORIA.md) | Diário de bordo das aulas: conceito → implicação → pendência |
+| 🎓 [`docs/processo/MENTORIA.md`](docs/processo/MENTORIA.md) | Diário de bordo das aulas: conceito → implicação → pendência |
 | ⚠️ [`docs/MATRIZ_RISCOS.md`](docs/MATRIZ_RISCOS.md) | Riscos do negócio, do modelo e do projeto: inerente → controles → residual |
 | 🗂️ [`docs/DICIONARIO_DADOS.md`](docs/DICIONARIO_DADOS.md) | O que cada campo da base significa, e as armadilhas encontradas nela |
 | 📊 [`docs/PAINEL.md`](docs/PAINEL.md) | O simulador interativo: o que ele mostra e por que é fiel ao motor |
@@ -123,55 +123,43 @@ que batam. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
 
 ```
 .
-├── R/                      🇷 Funções R reutilizáveis (carregadas pelo _setup.R)
-├── scripts/                🇷 Pipelines R + wrappers de execução
-│   ├── _setup.R            Âncora R: raiz, diretórios, pacotes, log, semente
-│   ├── rscript.cmd         Acha o Rscript desta máquina
-│   ├── setup_python.cmd    Cria o .venv e instala as dependências Python
-│   ├── py.cmd              Roda Python no .venv, sem precisar ativá-lo
-│   ├── etl/                Ingestão e limpeza
-│   ├── analises/           Exploratória, safras, univariadas
-│   ├── modelagem/          Modelagem em R (quando fizer sentido)
-│   └── relatorios/         Saídas para apresentação
-├── python/                 🐍 Lado Python
-│   ├── banking/            Biblioteca interna (pacote importável)
-│   │   └── projeto.py      Âncora Python: raiz, diretórios, log, semente
-│   ├── etl/                Ingestão e construção da ABT
-│   ├── modelagem/          Binning, WOE/IV, scorecard, challenger, SHAP
-│   └── relatorios/         Saídas geradas em Python
-├── dados/                  ⛔ NÃO versionado
-│   ├── brutos/             Como chegou — somente leitura
-│   ├── intermediarios/     Limpo e padronizado
-│   └── processados/        ABT — base analítica pronta (fronteira Python ↔ R)
+├── python/
+│   ├── banking/            A biblioteca: funções puras e testadas
+│   │   ├── projeto.py      Âncora: raiz, diretórios, log, semente
+│   │   ├── dados.py        Ingestão, colunas proibidas, preparação da base C
+│   │   ├── modelo.py       Pipeline de PD, preditoras, treino
+│   │   ├── perda.py        EAD e LGD — as tabelas do enunciado
+│   │   ├── price.py        Tabela Price: parcela e saldo devedor
+│   │   ├── politica.py     Geração da tabela de política
+│   │   ├── roi.py          O motor: oferta → aceite → ROI e guard-rails
+│   │   └── score.py        PD → faixa de 1 a 10
+│   ├── etl/                01–02  ingestão e parâmetros de EAD/LGD
+│   ├── modelagem/          03–14  do EDA à fronteira ROI × volume
+│   ├── analises/           16·21·24  investigações sobre a nossa política
+│   ├── conferencias/       15·17·19·20·22·23  o trabalho dos colegas, no nosso motor
+│   ├── relatorios/         11·25·26  documento de política e dados do painel
+│   └── ferramentas/        utilitários sem ordem — markdown → PDF
+├── scripts/                Wrappers de execução (py.cmd, rscript.cmd, setup)
 ├── apresentacoes/          🎞️ Geradores dos decks (pptxgenjs)
-├── painel/                 📊 O simulador interativo (HTML; os dados são gerados)
-├── outputs/                ⛔ NÃO versionado (figuras, tabelas, relatórios, painel montado)
-├── docs/                   Documentação
-└── tests/                  testthat/ (R) · python/ (pytest)
+│   ├── 06_defesa.js        O deck da defesa — este é o vigente
+│   └── _superados/         Decks de trabalho, mantidos por histórico
+├── painel/                 📊 O simulador: HTML + os dados que ele consome
+├── docs/                   Documentação (ver mapa acima)
+│   ├── specs/              Uma spec por passo, com DoD
+│   └── processo/           PRD, roadmap, diário e débito técnico
+├── tests/python/           pytest — um arquivo por módulo da biblioteca
+├── dados/                  ⛔ NÃO versionado — brutos, intermediários, processados
+└── outputs/                ⛔ NÃO versionado — figuras, tabelas, entregáveis gerados
 ```
 
-**A distinção que importa, nas duas linguagens:** `R/` e `python/banking/` têm **funções** (puras, testáveis, sem efeito colateral ao carregar); `scripts/` e `python/{etl,modelagem,relatorios}/` têm **pipelines** (rodam, leem e escrevem arquivos, imprimem log). Cálculo que vale testar vira função na biblioteca; a sequência que orquestra vira pipeline.
+**A numeração dos pipelines é global e cronológica** (01→26): ela conta a ordem
+em que o trabalho foi feito, não a pasta onde mora. Por isso `analises/` tem
+16, 21 e 24, e `conferencias/` tem os demais — o número é a linha do tempo, a
+pasta é o propósito.
+
+**A distinção que sustenta tudo:** `python/banking/` tem **funções** — puras, testáveis, sem efeito colateral ao ser importadas. As outras pastas de `python/` têm **pipelines** — rodam, leem e escrevem arquivos, imprimem log. Cálculo que vale testar vira função na biblioteca; a sequência que orquestra vira pipeline. É o que permite que os 167 testes cubram o que importa sem precisar rodar nada de ponta a ponta.
 
 ## Como rodar
-
-### R
-
-**Pré-requisito:** R ≥ 4.5. Não precisa estar no PATH — o wrapper descobre a instalação.
-
-```powershell
-.\scripts\rscript.cmd                          # qual R o projeto vai usar
-.\scripts\rscript.cmd scripts\etl\01_ingestao.R
-```
-
-Todo script começa sourçando a âncora, que resolve os caminhos a partir da raiz do repositório:
-
-```r
-source(here::here("scripts", "_setup.R"))
-```
-
-Os pacotes são instalados sob demanda por `pacman::p_load()` na primeira execução.
-
-### Python
 
 **Pré-requisito:** Python ≥ 3.12. Uma vez por máquina (e sempre que o `requirements.txt` mudar):
 
@@ -183,11 +171,11 @@ Depois, rode sem precisar ativar o ambiente — o wrapper usa o interpretador do
 
 ```powershell
 .\scripts\py.cmd                                  # qual interpretador está em uso
-.\scripts\py.cmd python\modelagem\01_scorecard.py
-.\scripts\py.cmd -m pytest                        # testes
+.\scripts\py.cmd python\modelagem_desafiantes.py
+.\scripts\py.cmd -m pytest                        # os 167 testes
 ```
 
-Todo script Python começa importando a âncora:
+Todo script começa importando a âncora, que resolve os caminhos a partir da raiz:
 
 ```python
 from banking.projeto import DIR_PROCESSADOS, SEMENTE, log_step, semear

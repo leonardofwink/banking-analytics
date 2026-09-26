@@ -1,7 +1,7 @@
 # Comparação com o material dos colegas
 
 > Feito em 2026-09-24, a partir dos arquivos que o Deni e o Marcelo colocaram
-> na pasta do grupo. Reprodutível por `python/analises/15_comparar_colegas.py`.
+> na pasta do grupo. Reprodutível por `python/conferencias/15_comparar_colegas.py`.
 >
 > **Leitura de uso interno**, para o grupo decidir o que submeter. As frentes
 > aparecem pelo nome — **Léo**, **Deni**, **Marcelo** — em vez de "nós" e
@@ -292,7 +292,7 @@ Três coisas, e todas são adotáveis.
 
 O documento do Marcelo é o mais rico em números verificáveis dos três. Testei
 cada afirmação contra as bases do professor e contra o CSV que ele submeteu
-(`python/analises/22_conferir_marcelo.py`). **Dezesseis de dezoito batem.**
+(`python/conferencias/22_conferir_marcelo.py`). **Dezesseis de dezoito batem.**
 
 **O que ele diz sobre a Base C — tudo confere:**
 
@@ -408,7 +408,7 @@ frentes.
 
 Ele entregou só a apresentação, sem CSVs. Mesmo assim é o material mais
 verificável dos três, porque quase toda afirmação é numérica e rastreável
-(`python/analises/23_conferir_renato.py`).
+(`python/conferencias/23_conferir_renato.py`).
 
 ### As afirmações sobre as bases
 
@@ -543,7 +543,7 @@ juros mais do que reduz a perda. Nenhum perfil chega perto dos 15%.
 
 O Marcelo submeteu a PD das 5.000 propostas da Base C, então dá para rodar
 **a política do Léo sobre o modelo dele** e isolar o efeito
-(`python/analises/17_modelo_do_marcelo.py`). Os dois sem re-escoragem, para
+(`python/conferencias/17_modelo_do_marcelo.py`). Os dois sem re-escoragem, para
 ser justo:
 
 | | Aprovação | ROI | Volume (pior) | Inadimpl. (pior) |
