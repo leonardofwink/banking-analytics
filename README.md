@@ -42,66 +42,6 @@ proposta, com a PD re-escorada pelo LTV e prazo que a política oferta.
 
 ---
 
-## Sobre o repositório
-
-Organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts. (A única exceção é `painel/dados.js`, para o painel abrir de um clone; o porquê está no [`.gitignore`](.gitignore) e no [`AGENTS.md`](AGENTS.md).)
-
-**Tudo em Python.** O projeto foi montado para ser poliglota — R para exploração e comunicação, Python para o ferramental de crédito — mas **o R acabou não sendo usado**: o prazo de treze dias não deixou espaço para manter duas linguagens em sincronia, e a regra do projeto é que a ABT tenha uma única construção. O andaime de R foi removido do repositório; o registro da decisão está em [`docs/processo/DEBITO_TECNICO.md`](docs/processo/DEBITO_TECNICO.md).
-
-> 📖 **Vocabulário:** o [glossário](docs/GLOSSARIO.md) cobre risco inerente, risco residual, mitigação, PD/EAD/LGD, ROE e os termos que aparecem em todo o resto.
-
----
-
-## Reproduzir os nossos números
-
-O que defendemos: **ROI de 11,33%** ao ano no cenário central, **R$ 66,7 mi** de
-volume originado, **6,33%** de inadimplência e **59,5%** de aprovação — com os
-quatro guard-rails cumpridos **nos três cenários** de aceite.
-
-O repositório não carrega dado nenhum. Para chegar nesses números do zero:
-
-```powershell
-# 1. as bases do desafio em dados/brutos/professor/bases/
-#    base_A_...csv · base_B_...csv · base_C_...csv
-#    AutoCred_parametros_ead_lgd.xlsx · AutoCred_Dicionario_de_Dados.xlsx
-
-.\scripts\setup_python.cmd                                   # 2. o ambiente (uma vez)
-
-.\scripts\py.cmd python\etl\01_ingestao.py                   # 3. ingestão e ABT
-.\scripts\py.cmd python\etl\02_parametros_ead_lgd.py         #    tabelas de EAD e LGD
-.\scripts\py.cmd python\modelagem\05_desafiantes.py          # 4. o modelo de PD
-.\scripts\py.cmd python\modelagem\06_submissao_modelo.py     #    escoragem da base B
-.\scripts\py.cmd python\modelagem\09_buscar_politica.py      # 5. a política
-.\scripts\py.cmd python\modelagem\10_submissao_politica.py   #    decisões da base C
-
-.\scripts\py.cmd -m pytest                                   # 6. 167 testes
-```
-
-O passo 5 é o que importa para a defesa: ele varre o espaço de políticas e
-mostra por que a escolhida foi a escolhida. O
-[`12_fronteira_roi_volume.py`](python/modelagem/12_fronteira_roi_volume.py)
-estende a varredura para 5.600 políticas e produz a medição de que **a meta de
-15% de ROI e o piso de volume não coexistem** sob as nossas premissas de aceite.
-
-### Refazer a varredura do painel
-
-O painel **não recalcula** o ROI no navegador: consulta a varredura das 5.600
-políticas — a mesma do S12 — feita no mesmo motor que produziu os números acima. É o que o torna
-fiel — e é por isso que abrir `painel/index.html` basta, sem ambiente nem bases.
-Para refazê-la:
-
-```powershell
-.\scripts\py.cmd python\relatorios\25_dados_do_painel.py     # ~17 min: 5.600 políticas
-.\scripts\py.cmd python\relatorios\26_tabelas_do_painel.py   # tabelas de EAD/LGD + dados.js
-```
-
-Ao terminar, o primeiro passo confere sozinho que o padrão da grade devolve os
-11,33% de ROI e os R$ 45,1 mi de volume pessimista deste README. Se divergir, a
-grade e a política saíram de sincronia — e o painel não deve ser publicado até
-que batam. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
-
----
-
 ## Mapa da documentação
 
 | Documento | Para quê |
@@ -159,6 +99,16 @@ pasta é o propósito.
 
 **A distinção que sustenta tudo:** `python/banking/` tem **funções** — puras, testáveis, sem efeito colateral ao ser importadas. As outras pastas de `python/` têm **pipelines** — rodam, leem e escrevem arquivos, imprimem log. Cálculo que vale testar vira função na biblioteca; a sequência que orquestra vira pipeline. É o que permite que os 167 testes cubram o que importa sem precisar rodar nada de ponta a ponta.
 
+## Sobre o repositório
+
+Organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts. (A única exceção é `painel/dados.js`, para o painel abrir de um clone; o porquê está no [`.gitignore`](.gitignore) e no [`AGENTS.md`](AGENTS.md).)
+
+**Tudo em Python.** O projeto foi montado para ser poliglota — R para exploração e comunicação, Python para o ferramental de crédito — mas **o R acabou não sendo usado**: o prazo de treze dias não deixou espaço para manter duas linguagens em sincronia, e a regra do projeto é que a ABT tenha uma única construção. O andaime de R foi removido do repositório; o registro da decisão está em [`docs/processo/DEBITO_TECNICO.md`](docs/processo/DEBITO_TECNICO.md).
+
+> 📖 **Vocabulário:** o [glossário](docs/GLOSSARIO.md) cobre risco inerente, risco residual, mitigação, PD/EAD/LGD, ROE e os termos que aparecem em todo o resto.
+
+---
+
 ## Como rodar
 
 **Pré-requisito:** Python ≥ 3.12. Uma vez por máquina (e sempre que o `requirements.txt` mudar):
@@ -182,6 +132,56 @@ from banking.projeto import DIR_PROCESSADOS, SEMENTE, log_step, semear
 ```
 
 As versões instaladas ficam travadas em `requirements.lock.txt` (gerado — não editar à mão). É ele que garante que outra máquina chegue no mesmo número.
+
+---
+
+## Reproduzir os nossos números
+
+O que defendemos: **ROI de 11,33%** ao ano no cenário central, **R$ 66,7 mi** de
+volume originado, **6,33%** de inadimplência e **59,5%** de aprovação — com os
+quatro guard-rails cumpridos **nos três cenários** de aceite.
+
+O repositório não carrega dado nenhum. Para chegar nesses números do zero:
+
+```powershell
+# 1. as bases do desafio em dados/brutos/professor/bases/
+#    base_A_...csv · base_B_...csv · base_C_...csv
+#    AutoCred_parametros_ead_lgd.xlsx · AutoCred_Dicionario_de_Dados.xlsx
+
+.\scripts\setup_python.cmd                                   # 2. o ambiente (uma vez)
+
+.\scripts\py.cmd python\etl\01_ingestao.py                   # 3. ingestão e ABT
+.\scripts\py.cmd python\etl\02_parametros_ead_lgd.py         #    tabelas de EAD e LGD
+.\scripts\py.cmd python\modelagem\05_desafiantes.py          # 4. o modelo de PD
+.\scripts\py.cmd python\modelagem\06_submissao_modelo.py     #    escoragem da base B
+.\scripts\py.cmd python\modelagem\09_buscar_politica.py      # 5. a política
+.\scripts\py.cmd python\modelagem\10_submissao_politica.py   #    decisões da base C
+
+.\scripts\py.cmd -m pytest                                   # 6. 167 testes
+```
+
+O passo 5 é o que importa para a defesa: ele varre o espaço de políticas e
+mostra por que a escolhida foi a escolhida. O
+[`12_fronteira_roi_volume.py`](python/modelagem/12_fronteira_roi_volume.py)
+estende a varredura para 5.600 políticas e produz a medição de que **a meta de
+15% de ROI e o piso de volume não coexistem** sob as nossas premissas de aceite.
+
+### Refazer a varredura do painel
+
+O painel **não recalcula** o ROI no navegador: consulta a varredura das 5.600
+políticas — a mesma do S12 — feita no mesmo motor que produziu os números acima. É o que o torna
+fiel — e é por isso que abrir `painel/index.html` basta, sem ambiente nem bases.
+Para refazê-la:
+
+```powershell
+.\scripts\py.cmd python\relatorios\25_dados_do_painel.py     # ~17 min: 5.600 políticas
+.\scripts\py.cmd python\relatorios\26_tabelas_do_painel.py   # tabelas de EAD/LGD + dados.js
+```
+
+Ao terminar, o primeiro passo confere sozinho que o padrão da grade devolve os
+11,33% de ROI e os R$ 45,1 mi de volume pessimista deste README. Se divergir, a
+grade e a política saíram de sincronia — e o painel não deve ser publicado até
+que batam. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
 
 ---
 
