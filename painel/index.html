@@ -241,6 +241,83 @@
 
   .vazio { padding: 26px 16px; text-align: center; color: var(--texto-3); font-size: 13px; }
 
+  /* --- calculadora ---------------------------------------------------------- */
+  .calc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+          gap: 26px; align-items: start; }
+  @media (max-width: 900px) { .calc { grid-template-columns: 1fr; gap: 22px; } }
+  .calc-h { font-family: "Source Serif 4", Cambria, Georgia, serif; font-size: 15px;
+    font-weight: 600; margin: 0 0 10px; color: var(--texto); }
+  .calc-sub { font-size: 12px; color: var(--texto-3); margin: -6px 0 10px; }
+  .calc-rot { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; }
+  .calc-carregar { display: flex; gap: 8px; margin-bottom: 9px; }
+  .calc-carregar input { flex: 1; min-width: 0; font: inherit; font-size: 13px;
+    font-family: "IBM Plex Mono", monospace; padding: 8px 11px; border-radius: var(--r);
+    border: 1px solid var(--linha-forte); background: var(--surface); color: var(--texto); }
+  .calc-carregar input:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+  .calc-carregar button { font: inherit; font-size: 13px; font-weight: 600; padding: 8px 17px;
+    border-radius: var(--r); border: 0; background: var(--coral); color: #fff; cursor: pointer; }
+  .calc-carregar button:hover { filter: brightness(1.08); }
+  .calc-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .calc-nav button { font: inherit; font-size: 12.5px; padding: 6px 13px; border-radius: var(--r);
+    border: 1px solid var(--linha-forte); background: var(--surface); color: var(--texto);
+    cursor: pointer; }
+  .calc-nav button:hover { border-color: var(--teal); }
+  .calc-nav button:disabled { opacity: .4; cursor: default; border-color: var(--linha); }
+  .calc-pos { font-size: 11.5px; color: var(--texto-3); }
+
+  .calc-campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px 16px; margin: 0; }
+  @media (max-width: 480px) { .calc-campos { grid-template-columns: 1fr; } }
+  .calc-campos > div { min-width: 0; }
+  .calc-campos dt { font-size: 11.5px; color: var(--texto-2); margin-bottom: 3px; }
+  .calc-campos dd { margin: 0; font-size: 13.5px; font-weight: 500;
+    font-variant-numeric: tabular-nums; padding: 7px 11px; border-radius: var(--r);
+    border: 1px solid var(--linha); background: var(--surface-2); }
+  .calc-grupo { grid-column: 1 / -1; font-size: 12px; font-weight: 600; color: var(--texto);
+    margin: 5px 0 -3px; }
+
+  /* O veredito é o que a pessoa veio ver: ocupa a primeira dobra do resultado. */
+  .veredito-caixa { border-radius: var(--r); padding: 15px 18px; margin-bottom: 16px;
+    border: 1px solid transparent; }
+  .veredito-caixa.sim { background: var(--verde-soft);
+    border-color: color-mix(in srgb, var(--verde) 34%, transparent); }
+  .veredito-caixa.nao { background: var(--coral-soft);
+    border-color: color-mix(in srgb, var(--coral) 38%, transparent); }
+  .veredito-caixa .t { display: flex; align-items: center; gap: 9px;
+    font-family: "Source Serif 4", Cambria, serif; font-size: 20px; font-weight: 700;
+    letter-spacing: .01em; margin-bottom: 5px; }
+  .veredito-caixa.sim .t { color: var(--verde); }
+  .veredito-caixa.nao .t { color: var(--coral); }
+  .veredito-caixa .p { font-size: 12.5px; line-height: 1.5; margin: 0; }
+  .veredito-caixa.sim .p { color: color-mix(in srgb, var(--verde) 78%, var(--texto)); }
+  .veredito-caixa.nao .p { color: color-mix(in srgb, var(--coral) 74%, var(--texto)); }
+
+  .calc-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px; background: var(--linha); border: 1px solid var(--linha);
+    border-radius: var(--r); overflow: hidden; }
+  @media (max-width: 620px) { .calc-cards { grid-template-columns: repeat(2, 1fr); } }
+  .calc-card { background: var(--surface); padding: 11px 13px 12px; }
+  .calc-card .r { font-size: 10.5px; color: var(--texto-2); margin-bottom: 5px; }
+  .calc-card .v { font-family: "Source Serif 4", Cambria, serif; font-size: 21px;
+    font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .calc-card .n { font-size: 11px; color: var(--texto-3); margin-top: 3px; }
+
+  .calc-perda { font-size: 12.5px; color: var(--texto-2); margin: 11px 0 0; }
+  .calc-perda b { color: var(--texto); font-weight: 600; }
+  .calc-alerta { margin-top: 14px; padding: 11px 13px; border-radius: var(--r);
+    font-size: 12.5px; line-height: 1.5; background: color-mix(in srgb, var(--ambar) 12%, transparent);
+    border-left: 3px solid var(--ambar); color: color-mix(in srgb, var(--ambar) 72%, var(--texto)); }
+
+  .calc-tabela { min-width: 430px; font-size: 11.5px; }
+  .calc-tabela td { padding: 6px 7px; white-space: nowrap; }
+  .calc-tabela th { padding: 7px; font-size: 10px; letter-spacing: .02em; white-space: nowrap; }
+  .calc-tabela tbody tr { cursor: default; }
+  .calc-tabela tbody tr:hover td { background: inherit; }
+  .calc-tabela tr.aqui td { background: var(--teal) !important; color: var(--surface);
+    font-weight: 600; }
+  .calc-tabela tr.negada td { color: var(--texto-3); }
+  .calc-tabela tr.aqui.negada td { color: var(--surface); }
+
   footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--linha);
            font-size: 12px; color: var(--texto-3); display: flex; justify-content: space-between;
            gap: 12px; flex-wrap: wrap; }
@@ -451,9 +528,55 @@
 
       <!-- detalhe -->
       <section class="bloco" aria-labelledby="h-dt">
-        <h2 id="h-dt">A cadeia de um contrato</h2>
-        <p class="desc" id="desc-dt">Selecione uma proposta acima.</p>
-        <div id="detalhe"></div>
+        <h2 id="h-dt">Calculadora da política</h2>
+        <p class="desc">
+          Uma proposta por vez: o que a política decide, com que condições, e por quê.
+          A PD vem do motor — esta página aplica a tabela, não recalcula o modelo.
+        </p>
+
+        <div class="calc">
+          <div class="calc-lado">
+            <h3 class="calc-h">Dados da proposta</h3>
+
+            <label class="calc-rot" for="calc-id">Carregar proposta da Base C</label>
+            <div class="calc-carregar">
+              <input type="text" id="calc-id" placeholder="P000123" spellcheck="false">
+              <button type="button" id="calc-ir">Carregar</button>
+            </div>
+            <div class="calc-nav">
+              <button type="button" id="calc-ant">‹ anterior</button>
+              <button type="button" id="calc-prox">próxima ›</button>
+              <span id="calc-pos" class="calc-pos"></span>
+            </div>
+
+            <dl class="calc-campos" id="calc-campos"></dl>
+            <p class="calc-nota">
+              Campos vindos da Base C, só para leitura: a PD de cada proposta já vem
+              calculada, e esta página não carrega o modelo para recalculá-la com
+              dados novos.
+            </p>
+          </div>
+
+          <div class="calc-lado">
+            <h3 class="calc-h">Resultado da política</h3>
+            <div id="calc-veredito"></div>
+            <div id="calc-condicoes"></div>
+            <div id="calc-aviso"></div>
+            <div id="calc-pds"></div>
+
+            <h3 class="calc-h" style="margin-top:20px">Política por faixa</h3>
+            <p class="calc-sub">A linha da proposta aparece destacada.</p>
+            <div class="rolo"><table class="calc-tabela">
+              <thead><tr>
+                <th scope="col">Score</th><th scope="col">Decisão</th>
+                <th scope="col">PD da faixa</th><th scope="col">Taxa</th>
+                <th scope="col">Prazo</th><th scope="col">Entrada</th>
+                <th scope="col">Perda</th>
+              </tr></thead>
+              <tbody id="calc-faixas"></tbody>
+            </table></div>
+          </div>
+        </div>
       </section>
     </div>
   </div>
@@ -959,7 +1082,7 @@
 
     Array.prototype.forEach.call(el("corpo").querySelectorAll("tr[data-j]"), function (tr) {
       tr.addEventListener("click", function () {
-        selecionada = +tr.getAttribute("data-j"); desenharTabela(); desenharDetalhe();
+        selecionada = +tr.getAttribute("data-j"); desenharTabela(); desenharCalculadora();
       });
     });
   }
@@ -970,82 +1093,139 @@
   el("prox").addEventListener("click", function () {
     if ((pagina + 1) * POR_PAG < filtrados.length) { pagina++; desenharTabela(); } });
 
-  /* ---------- detalhe -------------------------------------------------------- */
-  function passo(rot, val, peq) {
-    return '<div class="passo"><div class="rot">' + rot + '</div><div class="val">' + val +
-      "</div>" + (peq ? '<div class="peq">' + peq + "</div>" : "") + "</div>";
+  /* ---------- a calculadora ------------------------------------------------ */
+  // Uma proposta por vez. O veredito vem primeiro e ocupa a primeira dobra:
+  // quem abre quer saber se passa, e só depois com que condições.
+  function campo(rot, val) {
+    return "<div><dt>" + rot + "</dt><dd>" + val + "</dd></div>";
   }
-  function par(k, v) { return '<div class="par"><dt>' + k + "</dt><dd>" + v + "</dd></div>"; }
+  function cardCalc(rot, val, nota) {
+    return '<div class="calc-card"><div class="r">' + rot + '</div><div class="v">' +
+      val + "</div>" + (nota ? '<div class="n">' + nota + "</div>" : "") + "</div>";
+  }
 
-  function desenharDetalhe() {
-    var alvo = el("detalhe");
-    if (selecionada == null) {
-      alvo.innerHTML = '<p class="vazio">Nenhuma proposta selecionada.</p>';
-      el("desc-dt").textContent = "Selecione uma proposta na tabela acima.";
-      return;
-    }
+  function desenharCalculadora() {
+    if (selecionada == null) selecionada = 0;
     var j = selecionada, o = oferta(j);
-    el("desc-dt").innerHTML = "Proposta <b>" + o.id + "</b> — " + P.ocupacao[j] + ", " +
-      P.idade_cliente[j] + " anos, renda de " + reais(P.renda[j]) +
-      ", canal " + P.canal[j] + ". Veículo de " + P.idade_veiculo[j] + " ano(s)" +
-      (P.avalista[j] ? ", com avalista" : ", sem avalista") + ".";
+    var corte = EIXOS.corte[S.corte];
 
-    if (!o.aprovada) {
-      alvo.innerHTML = '<div class="cadeia">' +
-        passo("PD do pedido", pct(o.pdPedido), "o modelo escorou assim") +
-        passo("Score", String(o.score), "a política aprova a partir de " + EIXOS.corte[S.corte]) +
-        passo("Decisão", "NEGAR", "score abaixo do corte") +
-        "</div>" +
-        '<div class="veredito ruim" style="margin-top:15px"><b>Negada pela política ativa.</b> ' +
-        "Se o corte descesse para " + o.score + ", esta proposta entraria — e a carteira inteira mudaria com ela.</div>" +
-        '<dl class="linhas">' +
-        par("Valor do bem", reais(P.valor_bem[j])) +
-        par("Entrada desejada", pct(P.entrada_desejada[j], 0)) +
-        par("Prazo desejado", P.prazo_desejado[j] + " meses") +
-        par("Score do bureau", P.score_bureau[j] < 0 ? "ausente" : nInt(P.score_bureau[j])) +
-        par("Restrições ativas", String(P.restricoes[j])) +
-        "</dl>";
-      return;
+    el("calc-id").value = P.id[j];
+    el("calc-pos").textContent = "proposta " + nInt(j + 1) + " de " + nInt(N);
+    el("calc-ant").disabled = j <= 0;
+    el("calc-prox").disabled = j >= N - 1;
+
+    // --- os dados que entraram ---------------------------------------------
+    var bureau = P.score_bureau[j] < 0 ? "não informado" : nInt(P.score_bureau[j]);
+    var renda = P.renda[j] < 0 ? "não declarada" : reais(P.renda[j]);
+    el("calc-campos").innerHTML =
+      campo("Valor do veículo", reais(P.valor_bem[j])) +
+      campo("Entrada desejada", pct(P.entrada_desejada[j], 1)) +
+      campo("Prazo desejado", P.prazo_desejado[j] + " meses") +
+      campo("Idade do veículo", P.idade_veiculo[j] + " ano(s)") +
+      '<div class="calc-grupo">Cliente</div>' +
+      campo("Idade", P.idade_cliente[j] + " anos") +
+      campo("Ocupação", P.ocupacao[j]) +
+      campo("Renda mensal", renda) +
+      campo("Canal", P.canal[j]) +
+      campo("Score de bureau", bureau) +
+      campo("Restrições ativas", String(P.restricoes[j])) +
+      campo("Avalista", P.avalista[j] ? "sim" : "não") +
+      campo("LTV pedido", pct(1 - P.entrada_desejada[j], 0));
+
+    // --- o veredito ---------------------------------------------------------
+    var v = el("calc-veredito");
+    if (o.aprovada) {
+      v.className = "veredito-caixa sim";
+      v.innerHTML = '<p class="t">✓ Proposta aprovada</p><p class="p">Score ' +
+        o.score + ", dentro da política (aprova a partir do score " + corte + ").</p>";
+    } else {
+      v.className = "veredito-caixa nao";
+      v.innerHTML = '<p class="t">✕ Proposta negada</p><p class="p">O score ' + o.score +
+        " está abaixo do corte de aprovação (score ≥ " + corte + "). PD do pedido: " +
+        pct(o.pdPedido, 1) + ".</p>";
     }
 
-    var margem = o.taxa * o.prazo * o.financiado;
-    alvo.innerHTML =
-      '<div class="cadeia">' +
-      passo("PD ofertada", pct(o.pd), "do pedido: " + pct(o.pdPedido)) +
-      passo("Fator de EAD", o.fator.toFixed(3).replace(".", ","), "prazo " + o.prazo + " · LTV " + pct(o.ltv, 0)) +
-      passo("EAD", reais(o.ead), "o que fica exposto") +
-      passo("LGD", pct(o.lgd, 1), "da tabela, após workout") +
-      passo("Perda esperada", reais(o.el), pct(o.el / o.financiado, 2) + " do financiado") +
-      passo("Taxa ofertada", pct(o.taxa), "faixa " + o.score) +
-      "</div>" +
-      '<dl class="linhas">' +
-      par("Valor do bem", reais(P.valor_bem[j])) +
-      par("Entrada exigida", pct(o.entrada, 0) + (o.entrada > P.entrada_desejada[j] ?
-        " (pedia " + pct(P.entrada_desejada[j], 0) + ")" : " (a que já queria)")) +
-      par("Valor financiado", reais(o.financiado)) +
-      par("LTV ofertado", pct(o.ltv, 0)) +
-      par("Prazo", o.prazo + " meses" + (o.prazo > P.prazo_desejado[j] ?
-        " (pediu " + P.prazo_desejado[j] + ")" : o.prazo < P.prazo_desejado[j] ?
-        " (pediu " + P.prazo_desejado[j] + ")" : "")) +
-      par("Parcela", reais(o.parcela)) +
-      par("Comprometimento", o.dti == null ? "—" : pct(o.dti, 1) + " da renda") +
-      par("Chance de aceitar", pct(o.aceite, 1)) +
-      par("PD com seleção adversa", pct(o.pdEfetiva)) +
-      par("Juros do contrato cheio", reais(margem)) +
-      "</dl>" +
-      '<div class="veredito" style="margin-top:15px">' +
-      (o.prazo > P.prazo_desejado[j]
-        ? "<b>Recebe mais prazo do que pediu:</b> " + o.prazo + " meses contra " +
-          P.prazo_desejado[j] + ". Isso alonga a exposição e sobe a PD de " +
-          pct(o.pdPedido) + " para " + pct(o.pd) + "."
-        : o.entrada > P.entrada_desejada[j]
-        ? "<b>A entrada exigida morde aqui:</b> pedia " + pct(P.entrada_desejada[j], 0) +
-          " e a política exige " + pct(o.entrada, 0) + ". O LTV cai para " + pct(o.ltv, 0) +
-          " e a chance de aceitar vai a " + pct(o.aceite, 1) + "."
-        : "<b>A oferta bate com o pedido.</b> Nem a entrada nem o prazo foram alterados — " +
-          "o que muda o resultado desta proposta é só o preço da faixa " + o.score + ".") +
+    // --- as condições ofertadas --------------------------------------------
+    var cond = el("calc-condicoes");
+    if (o.aprovada) {
+      var pediuPrazo = P.prazo_desejado[j], pediuEnt = P.entrada_desejada[j];
+      cond.innerHTML =
+        '<div class="calc-cards">' +
+        cardCalc("Taxa de juros", pct(o.taxa) + " a.m.", "da faixa " + o.score) +
+        cardCalc("Prazo", o.prazo + " meses", pediuPrazo === o.prazo
+          ? "como pediu" : "pediu " + pediuPrazo) +
+        cardCalc("Entrada", pct(o.entrada, 0), Math.abs(o.entrada - pediuEnt) < 1e-9
+          ? "a que já queria" : "pediu " + pct(pediuEnt, 0)) +
+        cardCalc("Valor financiado", reais(o.financiado), "LTV de " + pct(o.ltv, 0)) +
+        cardCalc("Parcela", reais(o.parcela), o.dti == null
+          ? "renda não declarada" : pct(o.dti, 0) + " da renda") +
+        cardCalc("Chance de aceitar", pct(o.aceite, 0),
+          "cenário " + D.cenarios[S.cenario]) +
+        "</div>" +
+        '<p class="calc-perda">Perda esperada: <b>' + reais(o.el) + "</b> (" +
+        pct(o.el / o.financiado, 1) + " do financiado), contra <b>" +
+        reais(o.parcela * o.prazo - o.financiado) + "</b> de juros se o contrato " +
+        "for até o fim.</p>";
+    } else {
+      cond.innerHTML = "";
+    }
+
+    // --- o aviso de extrapolação -------------------------------------------
+    var fora = (P.score_bureau[j] >= 0 && P.score_bureau[j] < 460) || P.restricoes[j] > 2;
+    el("calc-aviso").innerHTML = fora
+      ? '<div class="calc-alerta"><b>Fora do domínio de treino.</b> A Base A só tem ' +
+        "bureau a partir de 460 e no máximo 2 restrições; esta proposta está fora " +
+        "disso. A PD é extrapolação — a ordenação costuma valer, o nível não. " +
+        "É a inferência de rejeitados aparecendo em um caso concreto.</div>"
+      : "";
+
+    // --- as três PDs --------------------------------------------------------
+    el("calc-pds").innerHTML =
+      '<div class="calc-cards" style="margin-top:16px">' +
+      cardCalc("PD do pedido", pct(o.pdPedido), "é ela que define o score") +
+      cardCalc("PD ofertada", pct(o.pd), "com o LTV e o prazo da oferta") +
+      cardCalc("Score", String(o.score), "1 = pior risco · 10 = melhor") +
       "</div>";
+
+    // --- a tabela de faixas, com a linha da proposta ------------------------
+    var linhas = "";
+    for (var sc = 10; sc >= 1; sc--) {
+      var aprova = sc >= corte;
+      var faixa = (sc === 10 ? "até " + pct(PAR.cortes_pd[0], 1)
+        : sc === 1 ? "acima de " + pct(PAR.cortes_pd[8], 1)
+        : pct(PAR.cortes_pd[10 - sc - 1], 1) + " a " + pct(PAR.cortes_pd[10 - sc], 1));
+      var cls = (sc === o.score ? "aqui " : "") + (aprova ? "" : "negada");
+      linhas += '<tr class="' + cls.trim() + '"><td>' + sc + "</td><td>" +
+        (aprova ? "Aprovar" : "Negar") + "</td><td>" + faixa + "</td><td>" +
+        (aprova ? pct(taxaDaFaixa(sc, S.taxa, S.k), 3) : "—") + "</td><td>" +
+        (aprova ? EIXOS.prazo_max[S.prazo] + " m" : "—") + "</td><td>" +
+        (aprova ? pct(Math.min(EIXOS.entrada_base[S.entrada] +
+          EIXOS.entrada_passo[S.passo] * (10 - sc), ENTRADA_MAXIMA), 0) : "—") +
+        "</td><td>" + pct(PAR_PERDA[sc] || 0, 2) + "</td></tr>";
+    }
+    el("calc-faixas").innerHTML = linhas;
   }
+
+  function irParaProposta(j) {
+    if (j < 0 || j >= N) return;
+    selecionada = j;
+    desenharCalculadora();
+    desenharTabela();
+  }
+  el("calc-ant").addEventListener("click", function () { irParaProposta(selecionada - 1); });
+  el("calc-prox").addEventListener("click", function () { irParaProposta(selecionada + 1); });
+  el("calc-ir").addEventListener("click", function () {
+    var alvo = el("calc-id").value.trim().toUpperCase();
+    var k = P.id.indexOf(alvo);
+    if (k < 0) {
+      el("calc-pos").textContent = "não achei " + alvo + " na base";
+      return;
+    }
+    irParaProposta(k);
+  });
+  el("calc-id").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); el("calc-ir").click(); }
+  });
 
   /* ---------- tema: automático · claro · escuro ---------------------------- */
   // O artifact e o navegador já resolvem o tema sozinhos; este controle existe
@@ -1119,7 +1299,7 @@
     desenharCurvas();
     reconstruirLista();
     desenharTabela();
-    desenharDetalhe();
+    desenharCalculadora();
     marcarPreset(i);
   }
 
