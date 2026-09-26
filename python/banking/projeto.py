@@ -1,4 +1,4 @@
-"""Âncora do projeto Banking Analytics — equivalente Python do ``scripts/_setup.R``.
+"""Âncora do projeto Banking Analytics: raiz, diretórios, log e semente.
 
 Importar no topo de todo script Python do projeto::
 
@@ -68,7 +68,7 @@ DIR_DOCS = PROJ_ROOT / "docs"
 
 # Cria os diretórios de dados/saída se ainda não existirem (idempotente).
 # Eles não são versionados, então num clone novo não existem — é aqui (e no
-# lado R, no _setup.R) que a árvore de pastas do projeto é reconstruída.
+# que a árvore de pastas do projeto é reconstruída em qualquer clone.
 for _d in (
     DIR_BRUTOS,
     DIR_INTERMED,
@@ -80,7 +80,7 @@ for _d in (
     _d.mkdir(parents=True, exist_ok=True)
 
 # --- Reprodutibilidade -------------------------------------------------------
-# Mesmo valor do lado R (scripts/_setup.R). Modelagem de crédito envolve
+# Modelagem de crédito envolve
 # amostragem (treino/teste, bootstrap, validação cruzada): semente fixa é o que
 # garante que rodar de novo dá o mesmo número.
 SEMENTE = 42

@@ -65,7 +65,7 @@ Modelo de referência: [`docs/specs/S01_INGESTAO.md`](docs/specs/S01_INGESTAO.md
 
 > **Mapa central:** o [`README.md`](README.md) é a fonte única da estrutura — árvore de pastas, como rodar, mapa dos documentos. Atualize-o sempre que um script for adicionado ou renomeado. A tabela abaixo é o resumo de convenção.
 
-O projeto é **Python**. O andaime de R (`scripts/_setup.R`, `scripts/rscript.cmd`) continua aqui, mas nenhuma análise foi escrita nele — ver § A linguagem que ficou de fora.
+O projeto é **Python**. Ele nasceu para ser poliglota e não foi — ver § A linguagem que ficou de fora.
 
 | O que | Onde |
 | ----- | ---- |
@@ -98,8 +98,9 @@ O projeto foi desenhado poliglota: Python para o ferramental de crédito
 houve espaço para manter duas linguagens em sincronia — e a regra que
 sustentava o desenho era que a ABT tivesse **uma única construção**, porque
 duas viram dois projetos que discordam. Tudo foi feito em Python; `R/` foi
-removido e o que sobrou de R é o andaime (`scripts/_setup.R`,
-`scripts/rscript.cmd`), mantido caso a linguagem volte.
+removido, junto com o andaime que o sustentava: `_setup.R`, os wrappers
+`rscript.*`, o `.Rproj` e o `.Renviron.example`. Repositório que carrega
+estrutura para algo que não existe ensina o errado a quem chega.
 
 Registrado em [`docs/processo/DEBITO_TECNICO.md`](docs/processo/DEBITO_TECNICO.md).
 
@@ -139,7 +140,7 @@ estranhar a curva de inadimplência. Data de calendário é gravada como
    > lado da regra que ela excepciona.
 
 2. **LGPD e anonimização.** CPF, nome, endereço, telefone e e-mail não devem sair da camada bruta. Se a modelagem precisar de identificador, use chave substituta (hash ou ID sequencial) gerada na ingestão. Dado pessoal nunca vai para `outputs/`, para documentação ou para o chat.
-3. **Segredos fora do versionamento.** `.Renviron`, tokens e credenciais **jamais** vão para o git. Use `.Renviron` local (modelo em `.Renviron.example`) e `Sys.getenv()`.
+3. **Segredos fora do versionamento.** Tokens e credenciais **jamais** vão para o git — use variáveis de ambiente e leia com `os.environ`. O `.gitignore` já bloqueia `secrets/`, `token*.json` e `credentials*.json`.
 4. **Termo novo da mentoria vai para o glossário.** Todo conceito apresentado nas aulas entra em [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md), na seção certa. O Leonardo **não vem de banking** — não presuma vocabulário conhecido: ao usar um termo técnico pela primeira vez numa resposta ou num comentário de código, explique-o em uma linha e registre-o no glossário.
 5. **Decisão de modelagem é registrada antes de ser usada.** Definição de default, janelas de observação e performance, partição treino/teste, tratamento de rejeitados: tudo em [`docs/processo/PRD.md`](docs/processo/PRD.md#4-decisões-de-modelagem). Sem isso, resultado de hoje não é comparável com o de amanhã.
 6. **Ações externas só com confirmação.** Rodar scripts e mostrar preview do resultado pode; **push / merge / criar repo / abrir PR** exigem o "ok" do Leonardo.
@@ -201,7 +202,7 @@ Ex.: `feat(modelagem): adiciona cálculo de perda esperada por contrato`.
 - **Nunca versionar dados nem segredos** — regras críticas 1, 2 e 3.
 - Commits em **pt-BR**, Conventional Commits, **sem `Co-Authored-By`**.
 - **Mudança grande ou regra de negócio:** aprove o entendimento antes de implementar.
-- Ao criar script, verificar se `_setup.R` é sourçado no topo e se as saídas caem em `outputs/`.
+- Ao criar script, verificar se a âncora (`from banking.projeto import …`) é importada no topo e se as saídas caem em `outputs/`.
 
 ## Glossário de Git (para quem está aprendendo)
 
