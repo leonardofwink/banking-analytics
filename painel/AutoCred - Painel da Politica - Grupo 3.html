@@ -502,9 +502,9 @@
       <section class="bloco" aria-labelledby="h-bc">
         <h2 id="h-bc">A base C, proposta a proposta</h2>
         <p class="desc">
-          As 5.000 propostas sob a política ativa. A PD é <b>re-escorada</b> com o LTV e o
-          prazo que a sua política oferta — não é a PD do pedido. Clique numa linha para
-          ver a cadeia inteira.
+          As 5.000 propostas sob a política ativa, dez por página. A PD é
+          <b>re-escorada</b> com o LTV e o prazo que a sua política oferta — não é a do
+          pedido. Clique numa linha para abri-la na calculadora, abaixo.
         </p>
         <div class="busca-linha">
           <input type="search" id="busca" placeholder="Buscar por id, ocupação ou canal…" aria-label="Buscar propostas">
@@ -1052,7 +1052,10 @@
   }
 
   /* ---------- tabela -------------------------------------------------------- */
-  var POR_PAG = 25, pagina = 0, selecionada = null, filtrados = [];
+  // Dez linhas por página: a tabela é para navegar até uma proposta, não para
+  // ser lida inteira. Vinte e cinco empurravam a calculadora — que é onde a
+  // resposta está — para fora da tela.
+  var POR_PAG = 10, pagina = 0, selecionada = null, filtrados = [];
   function reconstruirLista() {
     var q = el("busca").value.trim().toLowerCase();
     var f = el("filtro").value, ord = el("ordem").value;
