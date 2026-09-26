@@ -1066,10 +1066,16 @@
         if (viavel) batemViaveis++;
       }
     }
+    // O documento entregue reporta a varredura de 5.600 do estudo. Esta grade a
+    // CONTÉM — e dizer isso aqui evita que a diferença pareça contradição.
+    var nS12 = D.politicas_s12 || 5600;
     el("ins-1").innerHTML = "Das <b>" + nInt(n) + "</b> políticas varridas, <b>" +
       nInt(batem) + "</b> passam dos 15% de ROI. Delas, <b>" +
       (batemViaveis === 0 ? "nenhuma" : nInt(batemViaveis)) +
-      "</b> respeita os quatro limites. O que bloqueia é sempre o volume.";
+      "</b> respeita os quatro limites. O que bloqueia é sempre o volume." +
+      "<br><span style=\"font-size:11.5px;color:var(--texto-3)\">O documento " +
+      "entregue reporta as " + nInt(nS12) + " do estudo — elas estão todas " +
+      "aqui dentro, e a conclusão não muda.</span>";
 
     // Com perda zero o ROI seria juros ÷ volume ÷ prazo. É o teto de TODA
     // alavanca de risco: corte, entrada, comprometimento, modelo melhor.
