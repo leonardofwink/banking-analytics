@@ -47,8 +47,8 @@
 ### 1.1 "Vocês não bateram a meta de 15%. Por quê?"
 
 **Resposta curta:** *"Porque medimos que 15% e os guard-rails não coexistem
-sob as nossas premissas de aceite. Testamos 5.600 políticas; 4.044 passam dos
-15% e nenhuma sobrevive ao guard-rail de volume."*
+sob as nossas premissas de aceite. Testamos 26.400 políticas; 16.820 passam
+dos 15% e nenhuma sobrevive aos quatro limites nos três cenários."*
 
 **A prova mais limpa** — a nossa própria política, com o preço mais agressivo:
 
@@ -69,7 +69,7 @@ implementação em um deles:
 
 | Caminho | Teto viável |
 | ------- | ----------- |
-| Varredura de 5.600 políticas (S12) | 11,46% |
+| Varredura de 26.400 políticas | 11,97% |
 | Varredura de prazo e entrada por faixa | 11,42% |
 | Trocando o nosso modelo pelo do Marcelo | 11,54% |
 
@@ -97,6 +97,44 @@ acima, e é onde o volume morre.
 menos sensível a preço do que supusemos, 15% é alcançável. Não temos como
 saber: o enunciado dá a direção de cada efeito e declara que a intensidade não
 está dada. Foi a única premissa que tivemos de inventar, e declaramos isso."*
+
+### 1.1b ⚠️⚠️ "Seu próprio painel mostra uma política viável que rende 11,97%. Por que vocês submeteram a de 11,33%?"
+
+**A pergunta mais perigosa do dia, e ela vem do nosso próprio material.**
+Responda com a tabela, não com adjetivos.
+
+| | ROI central | Volume no pior caso | Folga até o piso |
+| - | ----------- | ------------------- | ---------------- |
+| **A que submetemos** | 11,33% | R$ 45,08 mi | **+12,7%** |
+| A de maior ROI viável | **11,97%** | R$ 40,03 mi | **+0,1%** |
+
+**Resposta curta:** *"Porque ela sobrevive ao nosso cenário pessimista por
+R$ 30 mil. E o cenário pessimista é uma premissa nossa, não um dado."*
+
+**A munição, se ele apertar** — os quatro limites das duas, no pior cenário:
+
+| Limite | A nossa | A de 11,97% |
+| ------ | ------- | ----------- |
+| Aprovação | +70,1% | +96,4% |
+| Inadimplência | +17,8% | +18,5% |
+| Taxa máxima | +34,5% | **+0,4%** |
+| Volume | **+12,7%** | **+0,1%** |
+
+> *"A nossa tem um gargalo com 12,7% de margem. A de 11,97% tem **dois**
+> gargalos com menos de meio por cento: a taxa a 0,01 ponto do teto e o volume
+> a R$ 30 mil do piso. Ela rende 0,65 ponto a mais no cenário que projetamos, e
+> quebra no primeiro cenário que não projetamos."*
+
+**E o argumento que fecha:** *"O senhor escreveu que furar um guard-rail corta
+a nota de política pela metade. Estávamos escolhendo entre ganhar 0,65 ponto de
+ROI e arriscar metade da nota num limite cuja folga depende de uma elasticidade
+que o próprio enunciado diz não estar dada. Preferimos o retorno que aguenta a
+premissa estar errada."*
+
+💡 **Por que levar isso à banca em vez de torcer para não perguntarem:** o
+painel mostra a fronteira inteira, com o ótimo destacado em verde. Ele vai ver.
+Um grupo que conhece a política melhor que a sua e sabe dizer por que não a
+escolheu está numa posição muito mais forte do que um que se surpreende com ela.
 
 ### 1.2 "Por que aprovaram quem aprovaram?"
 
