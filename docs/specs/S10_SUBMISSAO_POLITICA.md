@@ -8,11 +8,11 @@
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S10.1 | Decisão de formato: qual PD vai no arquivo | 2/2 | ✅ | `bd827bd` |
-| S10.2 | Aplicação da política às 5.000 propostas | 3/3 | ✅ | `bd827bd` |
-| S10.3 | Validador de coerência tabela ↔ CSV | 5/5 | ✅ | `bd827bd` |
-| S10.4 | `submissao_politica.csv` gerado | 3/3 | ✅ | `bd827bd` |
-| S10.5 | Testes | 2/2 | ✅ | `bd827bd` |
+| S10.1 | Decisão de formato: qual PD vai no arquivo | 2/2 | ✅ | `6b0cf63` |
+| S10.2 | Aplicação da política às 5.000 propostas | 3/3 | ✅ | `6b0cf63` |
+| S10.3 | Validador de coerência tabela ↔ CSV | 5/5 | ✅ | `6b0cf63` |
+| S10.4 | `submissao_politica.csv` gerado | 3/3 | ✅ | `6b0cf63` |
+| S10.5 | Testes | 2/2 | ✅ | `6b0cf63` |
 
 ## Objetivo
 

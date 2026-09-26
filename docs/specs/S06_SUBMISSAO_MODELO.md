@@ -8,12 +8,12 @@
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S06.1 | Configuração vencedora registrada **em código** | 3/3 | ✅ | `f21ec72` |
-| S06.2 | Retreino na base A inteira | 3/3 | ✅ | `f21ec72` |
-| S06.3 | Escoragem da base B | 3/3 | ✅ | `f21ec72` |
-| S06.4 | `banking/submissao.py` — validador do arquivo | 4/4 | ✅ | `f21ec72` |
-| S06.5 | `submissao_modelo.csv` gerado | 3/3 | ✅ | `f21ec72` |
-| S06.6 | Testes | 2/2 | ✅ | `f21ec72` |
+| S06.1 | Configuração vencedora registrada **em código** | 3/3 | ✅ | `186c315` |
+| S06.2 | Retreino na base A inteira | 3/3 | ✅ | `186c315` |
+| S06.3 | Escoragem da base B | 3/3 | ✅ | `186c315` |
+| S06.4 | `banking/submissao.py` — validador do arquivo | 4/4 | ✅ | `186c315` |
+| S06.5 | `submissao_modelo.csv` gerado | 3/3 | ✅ | `186c315` |
+| S06.6 | Testes | 2/2 | ✅ | `186c315` |
 
 ## Objetivo
 

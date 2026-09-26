@@ -8,11 +8,11 @@
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S08.1 | Tabela Price — parcela, saldo e juros pagos até o mês *m* | 4/4 | ✅ | `c5b6ade` |
-| S08.2 | `aplicar_politica()` — da proposta à oferta | 4/4 | ✅ | `c5b6ade` |
-| S08.3 | Aceite e seleção adversa como **cenários** | 3/3 | ✅ | `c5b6ade` |
-| S08.4 | `simular()` — ROI, inadimplência, volume, aprovação | 4/4 | ✅ | `c5b6ade` |
-| S08.5 | Testes contra casos de resposta conhecida | 3/3 | ✅ | `c5b6ade` |
+| S08.1 | Tabela Price — parcela, saldo e juros pagos até o mês *m* | 4/4 | ✅ | `bfcf9bd` |
+| S08.2 | `aplicar_politica()` — da proposta à oferta | 4/4 | ✅ | `bfcf9bd` |
+| S08.3 | Aceite e seleção adversa como **cenários** | 3/3 | ✅ | `bfcf9bd` |
+| S08.4 | `simular()` — ROI, inadimplência, volume, aprovação | 4/4 | ✅ | `bfcf9bd` |
+| S08.5 | Testes contra casos de resposta conhecida | 3/3 | ✅ | `bfcf9bd` |
 
 ## Objetivo
 

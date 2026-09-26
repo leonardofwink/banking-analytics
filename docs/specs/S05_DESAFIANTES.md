@@ -8,12 +8,12 @@
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S05.1 | Busca de hiperparâmetros com CV temporal **dentro do treino** | 3/3 | ✅ | `88f3e87` |
-| S05.2 | Random Forest no mesmo pipeline | 3/3 | ✅ | `88f3e87` |
-| S05.3 | XGBoost no mesmo pipeline | 3/3 | ✅ | `88f3e87` |
-| S05.4 | Comparação final na validação — **medida uma vez só** | 3/3 | ✅ | `88f3e87` |
-| S05.5 | Escolha pela regra declarada antes | 2/2 | ✅ | `88f3e87` |
-| S05.6 | Testes | 2/2 | ✅ | `88f3e87` |
+| S05.1 | Busca de hiperparâmetros com CV temporal **dentro do treino** | 3/3 | ✅ | `69851b0` |
+| S05.2 | Random Forest no mesmo pipeline | 3/3 | ✅ | `69851b0` |
+| S05.3 | XGBoost no mesmo pipeline | 3/3 | ✅ | `69851b0` |
+| S05.4 | Comparação final na validação — **medida uma vez só** | 3/3 | ✅ | `69851b0` |
+| S05.5 | Escolha pela regra declarada antes | 2/2 | ✅ | `69851b0` |
+| S05.6 | Testes | 2/2 | ✅ | `69851b0` |
 
 ## Objetivo
 

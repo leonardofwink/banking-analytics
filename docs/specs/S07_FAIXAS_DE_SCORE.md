@@ -8,11 +8,11 @@
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S07.1 | Critérios de uma boa faixa, declarados antes | 3/3 | ✅ | `8248b29` |
-| S07.2 | `banking/score.py` — cortes e `score_de_pd()` | 4/4 | ✅ | `8248b29` |
-| S07.3 | Distribuição verificada nas três bases | 3/3 | ✅ | `8248b29` |
-| S07.4 | Perda esperada por faixa | 3/3 | ✅ | `8248b29` |
-| S07.5 | Testes + relatório | 3/3 | ✅ | `8248b29` |
+| S07.1 | Critérios de uma boa faixa, declarados antes | 3/3 | ✅ | `40216c7` |
+| S07.2 | `banking/score.py` — cortes e `score_de_pd()` | 4/4 | ✅ | `40216c7` |
+| S07.3 | Distribuição verificada nas três bases | 3/3 | ✅ | `40216c7` |
+| S07.4 | Perda esperada por faixa | 3/3 | ✅ | `40216c7` |
+| S07.5 | Testes + relatório | 3/3 | ✅ | `40216c7` |
 
 ## Objetivo
 

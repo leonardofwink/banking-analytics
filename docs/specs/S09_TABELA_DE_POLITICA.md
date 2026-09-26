@@ -8,11 +8,11 @@
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S09.1 | Parametrização do espaço de políticas | 3/3 | ✅ | `0e79a98` |
-| S09.2 | Busca com os guard-rails como restrição dura | 4/4 | ✅ | `0e79a98` |
-| S09.3 | Critério de robustez — escolher a que sobrevive aos três cenários | 3/3 | ✅ | `0e79a98` |
-| S09.4 | A tabela final, com justificativa linha a linha | 3/3 | ✅ | `0e79a98` |
-| S09.5 | Testes | 2/2 | ✅ | `0e79a98` |
+| S09.1 | Parametrização do espaço de políticas | 3/3 | ✅ | `2832bee` |
+| S09.2 | Busca com os guard-rails como restrição dura | 4/4 | ✅ | `2832bee` |
+| S09.3 | Critério de robustez — escolher a que sobrevive aos três cenários | 3/3 | ✅ | `2832bee` |
+| S09.4 | A tabela final, com justificativa linha a linha | 3/3 | ✅ | `2832bee` |
+| S09.5 | Testes | 2/2 | ✅ | `2832bee` |
 
 ## Objetivo
 

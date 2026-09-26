@@ -8,12 +8,12 @@
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| S04.1 | `banking/modelo.py` — pré-processamento no `Pipeline` | 4/4 | ✅ | `bfa3c5f` |
-| S04.2 | Logística treinada no treino 2022–2023 | 3/3 | ✅ | `bfa3c5f` |
-| S04.3 | `avaliar()` — AuROC, KS, Gini, calibração | 4/4 | ✅ | `bfa3c5f` |
-| S04.4 | Variante sem variáveis dependentes da política | 3/3 | ✅ | `bfa3c5f` |
-| S04.5 | Coeficientes — a explicação para a defesa | 2/2 | ✅ | `bfa3c5f` |
-| S04.6 | Testes + pipeline | 3/3 | ✅ | `bfa3c5f` |
+| S04.1 | `banking/modelo.py` — pré-processamento no `Pipeline` | 4/4 | ✅ | `776540d` |
+| S04.2 | Logística treinada no treino 2022–2023 | 3/3 | ✅ | `776540d` |
+| S04.3 | `avaliar()` — AuROC, KS, Gini, calibração | 4/4 | ✅ | `776540d` |
+| S04.4 | Variante sem variáveis dependentes da política | 3/3 | ✅ | `776540d` |
+| S04.5 | Coeficientes — a explicação para a defesa | 2/2 | ✅ | `776540d` |
+| S04.6 | Testes + pipeline | 3/3 | ✅ | `776540d` |
 
 ## Objetivo
 
