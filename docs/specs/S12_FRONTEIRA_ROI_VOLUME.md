@@ -81,6 +81,13 @@ saída.
 
 ## Por que toda alavanca troca ROI por volume
 
+> **Estendida em 25/09/2026.** O painel interativo varre a mesma fronteira
+> numa grade que **contém** esta — cortes de 1 a 10, taxa de 1,00% a 3,50% e
+> entrada até 50%, num total de **26.400 políticas**. O resultado não muda:
+> **16.820 passam dos 15% de ROI e nenhuma respeita os quatro limites nos três
+> cenários.** O `25_dados_do_painel.py` confere a continência antes de varrer e
+> aborta se algum valor desta grade não couber na dele.
+
 A correlação de Pearson entre ROI e volume na varredura é **−0,767**
 (Spearman: −0,840). Não é acaso da
 grade; é a estrutura do problema:
