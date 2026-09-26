@@ -46,7 +46,7 @@ proposta, com a PD re-escorada pelo LTV e prazo que a política oferta.
 
 Organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts. (A única exceção é `painel/dados.js`, para o painel abrir de um clone; o porquê está no [`.gitignore`](.gitignore) e no [`AGENTS.md`](AGENTS.md).)
 
-**Tudo em Python.** O projeto foi montado para ser poliglota — R para exploração e comunicação, Python para o ferramental de crédito — e o wrapper de R (`scripts/rscript.cmd`, `scripts/_setup.R`) continua no repositório. Mas **o R acabou não sendo usado**: o prazo de treze dias não deixou espaço para manter duas linguagens em sincronia, e a regra do projeto é que a ABT tenha uma única construção. Está registrado em [`docs/processo/DEBITO_TECNICO.md`](docs/processo/DEBITO_TECNICO.md).
+**Tudo em Python.** O projeto foi montado para ser poliglota — R para exploração e comunicação, Python para o ferramental de crédito — mas **o R acabou não sendo usado**: o prazo de treze dias não deixou espaço para manter duas linguagens em sincronia, e a regra do projeto é que a ABT tenha uma única construção. O andaime de R foi removido do repositório; o registro da decisão está em [`docs/processo/DEBITO_TECNICO.md`](docs/processo/DEBITO_TECNICO.md).
 
 > 📖 **Vocabulário:** o [glossário](docs/GLOSSARIO.md) cobre risco inerente, risco residual, mitigação, PD/EAD/LGD, ROE e os termos que aparecem em todo o resto.
 
@@ -139,7 +139,7 @@ que batam. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
 │   ├── conferencias/       15·17·19·20·22·23  o trabalho dos colegas, no nosso motor
 │   ├── relatorios/         11·25·26  documento de política e dados do painel
 │   └── ferramentas/        utilitários sem ordem — markdown → PDF
-├── scripts/                Wrappers de execução (py.cmd, rscript.cmd, setup)
+├── scripts/                Wrappers de execução (py.cmd, setup_python.cmd)
 ├── apresentacoes/          🎞️ Geradores dos decks (pptxgenjs)
 │   ├── 06_defesa.js        O deck da defesa — este é o vigente
 │   └── _superados/         Decks de trabalho, mantidos por histórico
@@ -182,14 +182,6 @@ from banking.projeto import DIR_PROCESSADOS, SEMENTE, log_step, semear
 ```
 
 As versões instaladas ficam travadas em `requirements.lock.txt` (gerado — não editar à mão). É ele que garante que outra máquina chegue no mesmo número.
-
-### Variáveis de ambiente
-
-Credenciais e caminhos de máquina ficam em um `.Renviron` local, **fora do git**:
-
-```powershell
-Copy-Item .Renviron.example .Renviron   # depois preencha os valores
-```
 
 ---
 

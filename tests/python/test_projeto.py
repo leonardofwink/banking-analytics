@@ -35,19 +35,6 @@ def test_diretorios_de_dados_existem_e_ficam_dentro_da_raiz() -> None:
         assert PROJ_ROOT in d.parents, f"caminho fora do repositório: {d}"
 
 
-def test_semente_bate_com_o_lado_r() -> None:
-    """SEMENTE é duplicada em scripts/_setup.R — os dois lados têm que bater.
-
-    Constante duplicada entre linguagens é dívida aceita conscientemente (ver
-    AGENTS.md § A fronteira entre as duas linguagens); este teste é o que
-    impede que ela se perca.
-    """
-    setup_r = (PROJ_ROOT / "scripts" / "_setup.R").read_text(encoding="utf-8")
-    assert f"SEMENTE <- {SEMENTE}" in setup_r, (
-        "SEMENTE divergente entre python/banking/projeto.py e scripts/_setup.R"
-    )
-
-
 def test_semear_e_reprodutivel() -> None:
     """Duas chamadas com a mesma semente produzem a mesma sequência."""
     import random
