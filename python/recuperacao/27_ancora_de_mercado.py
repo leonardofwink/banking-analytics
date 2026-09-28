@@ -74,6 +74,10 @@ PRECOS = {
 }
 
 
+#: Onde o bruto fica. Existindo, é ele que manda — ver :func:`_do_cache`.
+BRUTO = DIR_EXTERNOS / "bcb_taxas_veiculos_2025s2.json"
+
+
 def _buscar(url: str, descricao: str) -> list[dict]:
     """GET com o encoding certo e mensagem de erro que diz o que fazer.
 
@@ -87,8 +91,8 @@ def _buscar(url: str, descricao: str) -> list[dict]:
     except requests.RequestException as erro:
         raise SystemExit(
             f"não foi possível consultar {descricao}: {erro}\n"
-            f"  Sem rede, baixe à mão e salve em {DIR_EXTERNOS} — "
-            f"ver docs/FONTES_EXTERNAS.md."
+            f"  Sem rede: rode a partir de um {BRUTO.name} já baixado, "
+            f"em {DIR_EXTERNOS}. Ver docs/FONTES_EXTERNAS.md."
         ) from erro
 
     if r.status_code != 200:
@@ -97,6 +101,33 @@ def _buscar(url: str, descricao: str) -> list[dict]:
     r.encoding = "utf-8"
     corpo = r.json()
     return corpo["value"] if isinstance(corpo, dict) else corpo
+
+
+def _do_cache() -> tuple[pd.DataFrame, pd.DataFrame, str] | None:
+    """Reusa o bruto já baixado, se ele cobrir exatamente o período pedido.
+
+    Não é otimização: é **reprodutibilidade**. Série do BCB é revisada sem
+    aviso, então rodar de novo amanhã pode devolver outro número. Quem confere
+    o relatório precisa obter o mesmo resultado a partir do mesmo arquivo — e
+    é por isso que o período é validado antes de reusar.
+
+    Para buscar de novo na fonte, passe ``--refazer`` ou apague o arquivo.
+    """
+    if not BRUTO.exists():
+        return None
+
+    d = json.loads(BRUTO.read_text(encoding="utf-8"))
+    if d.get("periodo") != [INICIO, FIM]:
+        log_step(
+            f"{BRUTO.name} cobre {d.get('periodo')}, mas o script pede "
+            f"[{INICIO}, {FIM}] — buscando na fonte",
+            "aviso",
+        )
+        return None
+
+    inst = pd.DataFrame(d["olinda"]["linhas"])
+    mercado = pd.DataFrame(d["sgs"]["linhas"])
+    return inst, mercado, d["extraido_em"]
 
 
 def taxas_por_instituicao() -> pd.DataFrame:
@@ -140,28 +171,32 @@ def _posicao(valor: float, amostra: np.ndarray) -> float:
 
 def main() -> int:
     log_step("S13.4 · Âncora de preço — dado público do Banco Central")
-    extraido_em = datetime.now().astimezone().isoformat(timespec="seconds")
 
-    inst = taxas_por_instituicao()
-    mercado = taxa_media_do_mercado()
+    cache = None if "--refazer" in sys.argv else _do_cache()
+    if cache is not None:
+        inst, mercado, extraido_em = cache
+        log_step(f"Reusando {BRUTO.name}, extraído em {extraido_em} (--refazer busca de novo)")
+    else:
+        extraido_em = datetime.now().astimezone().isoformat(timespec="seconds")
+        inst = taxas_por_instituicao()
+        mercado = taxa_media_do_mercado()
 
-    # Guarda o bruto antes de qualquer agregação: é o que permite auditar o
-    # número mais tarde sem depender de a API responder igual.
-    DIR_EXTERNOS.mkdir(parents=True, exist_ok=True)
-    bruto = DIR_EXTERNOS / "bcb_taxas_veiculos_2025s2.json"
-    bruto.write_text(
-        json.dumps(
-            {
-                "extraido_em": extraido_em,
-                "periodo": [INICIO, FIM],
-                "olinda": {"modalidade": MODALIDADE, "url": OLINDA,
-                           "linhas": inst.to_dict("records")},
-                "sgs": {"serie": SERIE_SGS, "linhas": mercado.to_dict("records")},
-            },
-            ensure_ascii=False,
-        ),
-        encoding="utf-8",
-    )
+        # Guarda o bruto antes de qualquer agregação: é o que permite auditar o
+        # número mais tarde sem depender de a API responder igual.
+        DIR_EXTERNOS.mkdir(parents=True, exist_ok=True)
+        BRUTO.write_text(
+            json.dumps(
+                {
+                    "extraido_em": extraido_em,
+                    "periodo": [INICIO, FIM],
+                    "olinda": {"modalidade": MODALIDADE, "url": OLINDA,
+                               "linhas": inst.to_dict("records")},
+                    "sgs": {"serie": SERIE_SGS, "linhas": mercado.to_dict("records")},
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
 
     taxas = inst["taxa_am"].to_numpy(dtype=float)
     n_inst = inst["InstituicaoFinanceira"].nunique()
@@ -228,7 +263,7 @@ def main() -> int:
         fh.write(cabecalho)
         saida.to_csv(fh, index=False)
 
-    log_step(f"Bruto guardado em {bruto}")
+    log_step(f"Bruto em {BRUTO}")
     log_step(f"Tabela gravada em {destino}")
     log_step("Registre a procedência em docs/FONTES_EXTERNAS.md antes de usar o número",
              "aviso")
