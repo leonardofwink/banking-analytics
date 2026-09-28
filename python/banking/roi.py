@@ -25,7 +25,7 @@ import pandas as pd
 
 from banking.perda import fator_ead, lgd, tabelas
 from banking.price import juros_pagos_ate, juros_totais
-from banking.score import score_de_pd
+from banking.score import CORTES_PD, score_de_pd
 
 __all__ = [
     "CENARIOS",
@@ -182,7 +182,11 @@ class Resultado:
 
 
 def aplicar_politica(
-    propostas: pd.DataFrame, politica: pd.DataFrame, escorar=None
+    propostas: pd.DataFrame,
+    politica: pd.DataFrame,
+    escorar=None,
+    cortes=CORTES_PD,
+    prazo_como_teto: bool = False,
 ) -> pd.DataFrame:
     """Traduz cada proposta na oferta que a política faz a ela.
 
@@ -199,6 +203,13 @@ def aplicar_politica(
     :param politica: indexada por ``score``, com ``decisao``, ``taxa_am``,
         ``prazo_meses`` e ``pct_entrada_minima``.
     :param escorar: callable que recebe o DataFrame ajustado e devolve a PD.
+    :param cortes: as fronteiras de PD que definem as faixas. O default é o
+        nosso :data:`~banking.score.CORTES_PD`; outra régua permite simular a
+        política de outro grupo na mesma base.
+    :param prazo_como_teto: o enunciado chama a coluna de **"Prazo máx."**. Com
+        ``False`` (o default, e o que foi submetido) o cliente recebe o prazo da
+        tabela; com ``True``, recebe o **menor** entre o que pediu e o da tabela.
+        Dos três grupos, só o nosso tratou como valor fixo.
     :return: uma linha por proposta, com a oferta e a economia de cada uma.
     """
     obrigatorias = {"decisao", "taxa_am", "prazo_meses", "pct_entrada_minima"}
@@ -207,13 +218,19 @@ def aplicar_politica(
         raise ValueError(f"política sem as colunas {sorted(faltando)}")
 
     o = propostas.copy()
-    o["score"] = score_de_pd(o["pd"])
+    o["score"] = score_de_pd(o["pd"], cortes)
 
     regras = politica.set_index("score") if "score" in politica.columns else politica
     for coluna in ("decisao", "taxa_am", "prazo_meses", "pct_entrada_minima"):
         o[coluna] = o["score"].map(regras[coluna])
 
     o["aprovada"] = o["decisao"].astype(str).str.upper().eq("APROVAR")
+
+    if prazo_como_teto:
+        o["prazo_meses"] = np.minimum(
+            o["prazo_meses"].to_numpy(dtype=float),
+            o["prazo_desejado_meses"].to_numpy(dtype=float),
+        )
 
     # Entrada efetiva: o cliente nunca dá menos do que já queria dar.
     o["pct_entrada_efetiva"] = np.maximum(

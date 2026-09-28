@@ -14,7 +14,7 @@
 | [S13.2](#s132--os-registros-antes-do-uso) | PRD · GLOSSARIO · AGENTS | 4/4 | ✅ | `dc97755` |
 | [S13.3](#s133--a-premissa-vira-parâmetro) | `Premissas` em `banking/roi.py` | 4/4 | ✅ | `dc357df` |
 | [S13.4](#s134--a-âncora-de-mercado) | `recuperacao/27_ancora_de_mercado.py` | 4/4 | ✅ | `15ac0de` |
-| [S13.5](#s135--a-calibração-do-aceite) | `recuperacao/28_calibrar_o_aceite.py` | 0/5 | ⬜ | |
+| [S13.5](#s135--a-calibração-do-aceite) | `recuperacao/28_calibrar_o_aceite.py` | 4/5 | 🔄 | |
 | [S13.6](#s136--a-política-sob-o-piso) | `recuperacao/29_politica_sob_piso.py` | 0/4 | ⬜ | |
 | [S13.7](#s137--a-submissão-alternativa) | `recuperacao/30_submissao_alternativa.py` | 0/3 | ⬜ | |
 | [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 testes em `tests/python/` | 0/5 | ⬜ | |
@@ -132,6 +132,41 @@ Até a apuração a elasticidade era premissa; agora é estimável. Três observ
 3. O resultado é uma **região** de `(a0, β_taxa, γ)` compatível, não um ponto.
 4. O que não for identificável com três observações está **escrito como não identificável**, com os parâmetros fixados e o motivo.
 5. Os três cenários originais seguem intocados em `roi.py:96-100`.
+
+#### Resultado, em 28/09/2026 — e por que o item 1 do DoD **não** está cumprido
+
+| | mediana (1,820%) | ponderada por volume (2,021%) |
+| - | ---------------- | ----------------------------- |
+| `a0` | 0,862 | 0,838 |
+| `beta_taxa` | 0,830 | **1,186** |
+| `gama` | 0,813 | 1,072 |
+| validação: ROI | 16,31% (+0,04 pp) | 16,37% (+0,10 pp) |
+| validação: volume | R$ 62,7 MM (−0,09) | R$ 62,1 MM (−0,74) |
+| validação: guard-rails | ❌ inadimplência 8,2% | ✅ **todos os quatro** |
+
+**A âncora ponderada por volume vence** por um critério que não entrou no
+ajuste: o professor afirma que a política com +0,7 pp fica *"dentro dos quatro
+guard-rails"*. Sob a ponderada, o motor concorda. Sob a mediana, ele acusa
+inadimplência de 8,2%. É uma terceira informação, qualitativa e independente
+de ROI e volume, e ela discrimina.
+
+**O item 1 do DoD não está cumprido, e a tolerância não vai ser afrouxada.**
+Os resíduos, sob a ponderada:
+
+| observação | alvo | previsto | erro | dentro? |
+| ---------- | ---- | -------- | ---- | ------- |
+| nossa · ROI | 11,21% | 11,56% | +0,35 pp | ❌ (±0,05) |
+| nossa · volume | R$ 84,4 MM | R$ 84,4 MM | −0,01 MM | ✅ |
+| Grupo 2 · aceite | 63,9% | 62,3% | −1,59 pp | ❌ (±1) |
+
+Os resíduos têm **o mesmo sinal nas duas âncoras**, o que aponta para erro
+sistemático, não ruído de otimização. A causa mais provável é a aproximação
+declarada nº 1: a política do Grupo 2 é reconstruída sobre a **nossa** PD, e o
+otimizador sacrifica o ajuste do nosso ROI para acomodar os números deles.
+
+**O que fecharia o item:** reduzir a tensão entre as duas políticas — por
+exemplo, calibrando só nas observações da nossa política e usando as do Grupo 2
+apenas como validação. Fica registrado como pendente, não como resolvido.
 
 > **Por que a nº 1 sozinha não basta:** acertar o ROI e errar o volume foi exatamente o que escondeu o problema até a apuração. O ROI é uma razão e o aceite move numerador e denominador juntos — ele perdoa erro de elasticidade. O volume não.
 
