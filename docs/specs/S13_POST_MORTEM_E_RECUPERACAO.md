@@ -17,7 +17,7 @@
 | [S13.5](#s135--a-calibração-do-aceite) | `recuperacao/28_calibrar_o_aceite.py` | 4/5 | 🔄 | |
 | [S13.6](#s136--a-política-sob-o-piso) | `recuperacao/29_politica_sob_piso.py` | 0/4 | ⬜ | |
 | [S13.7](#s137--a-submissão-alternativa) | `recuperacao/30_submissao_alternativa.py` | 0/3 | ⬜ | |
-| [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 testes em `tests/python/` | 0/5 | ⬜ | |
+| [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 testes em `tests/python/` | 1/5 | 🔄 | |
 | [S13.9](#s139--as-correções-de-artefato) | 8 correções | 1/8 | 🔄 | |
 | **Passo** | **DoD do S13** | **1/6** | 🔄 | |
 
@@ -207,8 +207,8 @@ Cada defeito encontrado na auditoria nasceu num vão da suíte.
 
 **DoD — pronto quando:**
 
-1. Fixture **não-plana** para `aplicar_politica`. A atual usa mesma taxa, prazo e entrada em toda faixa, então um off-by-one no mapeamento faixa→linha produz saída idêntica e **os 170 passam**. É o único elo da cadeia sem teste capaz de falhar.
-2. As nove elasticidades de `CENARIOS` ficam **fixadas por teste** — é o que deixou `S08_MOTOR_DE_ROI.md` derivar e permanecer errado.
+1. Fixture **não-plana** para `aplicar_politica`. A atual usa mesma taxa, prazo e entrada em toda faixa, então um off-by-one no mapeamento faixa→linha produz saída idêntica e **os 173 passam**. É o único elo da cadeia sem teste capaz de falhar.
+2. ✅ As nove elasticidades de `CENARIOS` ficam **fixadas por teste** — é o que deixou `S08_MOTOR_DE_ROI.md` derivar e permanecer errado. Junto, `PREMISSAS_CALIBRADAS` e a direção da âncora (a calibrada tem de ficar **acima** da submetida, senão alguém reverteu a régua para o livro próprio).
 3. `perda_por_faixa` é extraído para `banking.perda` e testado uma vez, em vez de replicado em **11 arquivos**.
 4. Existe teste afirmando a relação entre `POLITICA_ESCOLHIDA` e o que `09_buscar_politica.py` seleciona.
 5. `validar_monotonicidade` ganha teste de **empate**: preço único e truncagem no teto produzem `diff == 0` e têm de passar.
@@ -244,7 +244,7 @@ Defeitos vivos hoje. `outputs/submissao/` não se altera — corrige-se o **gera
 1. O post-mortem está escrito, com as dez causas verificáveis. ✅
 2. A calibração fecha nas três âncoras **e** passa na validação fora da amostra.
 3. Existe política que atende os cinco limites, ou está medido e escrito sob que condições ela não existe.
-4. `pytest -q` passa com **170**, incluindo os guardas de documentação.
+4. `pytest -q` passa com **173**, incluindo os guardas de documentação e as premissas fixadas.
 5. Nenhum script de recuperação contém `0.15` fora da definição do piso.
 6. `outputs/submissao/` e `POLITICA_ESCOLHIDA` inalterados ao fim do passo.
 

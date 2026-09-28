@@ -18,6 +18,9 @@ from banking.dados import carregar_processada
 from banking.price import juros_pagos_ate, juros_totais, parcela, saldo_devedor
 from banking.roi import (
     CENARIOS,
+    CENARIO_CALIBRADO,
+    PREMISSAS_CALIBRADAS,
+    PREMISSAS_SUBMETIDAS,
     GUARD_RAILS,
     TAXA_MERCADO,
     aplicar_politica,
@@ -270,3 +273,55 @@ def test_taxa_de_mercado_vem_da_base_a() -> None:
     except FileNotFoundError as erro:
         pytest.skip(str(erro))
     assert TAXA_MERCADO == pytest.approx(base_a["taxa_juros_am"].mean(), abs=0.0005)
+
+
+# --- S13.8 · As premissas ficam fixadas por teste ----------------------------
+# Foi a ausência disto que deixou `docs/specs/S08_MOTOR_DE_ROI.md` documentar
+# nove elasticidades erradas por dias sem ninguém notar: os testes só conferiam
+# a ORDENAÇÃO entre os cenários, nunca os valores.
+
+
+def test_cenarios_submetidos_nao_mudam():
+    """Os três cenários são o registro do que foi defendido na banca.
+
+    Alterá-los faz cinco artefatos publicados mentirem de uma vez — deck,
+    documento, painel, QA e specs. Premissa nova entra como `Premissas`
+    separada, não editando estes números.
+    """
+    esperado = {
+        "otimista": (0.95, 0.8, 1.2, 0.4, 0.2),
+        "central": (0.85, 1.5, 2.0, 0.8, 0.5),
+        "pessimista": (0.70, 2.5, 3.5, 1.5, 1.0),
+    }
+    assert set(CENARIOS) == set(esperado)
+    for nome, (a0, bt, be, bp, g) in esperado.items():
+        c = CENARIOS[nome]
+        assert (c.a0, c.beta_taxa, c.beta_entrada, c.beta_prazo, c.gama) == (a0, bt, be, bp, g)
+
+
+def test_premissas_calibradas_batem_com_a_apuracao():
+    """Os valores calibrados em 28/09/2026, contra o que o professor apurou.
+
+    Não são chute: saíram de `recuperacao/28_calibrar_o_aceite.py`. Mudá-los
+    exige rodar a calibração de novo e atualizar o PRD § Decisões de modelagem,
+    porque todo número da recuperação depende deles.
+    """
+    assert PREMISSAS_CALIBRADAS.taxa_mercado == pytest.approx(0.02021, abs=1e-9)
+    c = CENARIO_CALIBRADO
+    assert c.a0 == pytest.approx(0.837873, abs=1e-6)
+    assert c.beta_taxa == pytest.approx(1.185511, abs=1e-6)
+    assert c.gama == pytest.approx(1.072320, abs=1e-6)
+    # beta_entrada e beta_prazo ficaram fixos no central: com cinco observações
+    # não dá para identificar cinco parâmetros.
+    assert (c.beta_entrada, c.beta_prazo) == (CENARIOS["central"].beta_entrada,
+                                              CENARIOS["central"].beta_prazo)
+
+
+def test_a_ancora_calibrada_esta_acima_da_submetida():
+    """A régua antiga media a AutoCred, não o mercado — causa nº 1 do post-mortem.
+
+    O teste trava a direção: se alguém reverter a âncora para o livro próprio,
+    o número volta a cair abaixo do mercado e isto falha.
+    """
+    assert PREMISSAS_CALIBRADAS.taxa_mercado > PREMISSAS_SUBMETIDAS.taxa_mercado
+    assert PREMISSAS_SUBMETIDAS.taxa_mercado == pytest.approx(TAXA_MERCADO)

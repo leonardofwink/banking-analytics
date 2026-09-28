@@ -71,6 +71,28 @@ Fica escrito porque **decisão revertida sem o motivo registrado volta a ser tom
 
 **Procedência é obrigatória:** série, período e data de extração ficam em [`FONTES_EXTERNAS.md`](../FONTES_EXTERNAS.md). Dado externo sem procedência não entra.
 
+#### D1.1 · Qual das duas réguas — decidida em 28/09/2026
+
+O BCB dá duas respostas para "quanto o mercado cobrava", e elas respondem perguntas diferentes:
+
+| Régua | Valor | Responde |
+| ----- | ----- | -------- |
+| Mediana por instituição (Olinda, 53 instituições) | 1,820% a.m. | *"o concorrente típico cobra quanto?"* |
+| **Média ponderada por volume (SGS 20749)** | **2,021% a.m.** | *"o dinheiro emprestado no mercado saiu a quanto?"* |
+
+**Escolhida: a ponderada por volume.** Não pelo argumento conceitual — os dois são defensáveis — mas porque **um dado independente discriminou**.
+
+A calibração do aceite (S13.5) foi rodada com as duas. Nos números de ROI e volume, a mediana ajusta ligeiramente melhor. Mas o professor afirmou que a nossa política com 0,7 ponto a mais na taxa ficaria *"dentro dos quatro guard-rails"*, e essa afirmação **não entrou em nenhuma das duas calibrações**:
+
+| Âncora | Inadimplência prevista nessa política |
+| ------ | ------------------------------------- |
+| Mediana (1,820%) | **8,2%** — estoura o teto de 8% |
+| Ponderada (2,021%) | **dentro** — os quatro guard-rails fecham |
+
+Uma informação qualitativa, independente de ROI e de volume, separou as duas. É o tipo de teste que vale mais que preferência metodológica.
+
+**Registrado como premissa nomeada** em `banking/roi.py`: `PREMISSAS_CALIBRADAS`, âncora 2,021%, com `CENARIO_CALIBRADO` (`a0` 0,838 · `beta_taxa` 1,186 · `gama` 1,072). `PREMISSAS_SUBMETIDAS` continua intacta ao lado, porque é o registro do que foi defendido.
+
 ### D2 · O critério de escolha passa a ser máximo ROI com piso de 15%
 
 **Registrada em 28/09/2026, para o [S13](../specs/S13_POST_MORTEM_E_RECUPERACAO.md).**
