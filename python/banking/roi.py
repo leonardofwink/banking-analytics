@@ -29,8 +29,10 @@ from banking.score import CORTES_PD, score_de_pd
 
 __all__ = [
     "CENARIOS",
+    "CENARIO_CALIBRADO",
     "Cenario",
     "GUARD_RAILS",
+    "PREMISSAS_CALIBRADAS",
     "PREMISSAS_SUBMETIDAS",
     "Premissas",
     "Resultado",
@@ -145,6 +147,47 @@ def premissas_do_modulo() -> Premissas:
 #: O que foi efetivamente submetido ao professor em 25/09/2026. Imutável: serve
 #: de linha de base para qualquer comparação com premissas recalibradas.
 PREMISSAS_SUBMETIDAS = Premissas("submetidas", TAXA_MERCADO, CENARIOS)
+
+
+# --- As premissas calibradas contra a apuração (28/09/2026) -------------------
+# Não são mais chute. Saíram de `recuperacao/28_calibrar_o_aceite.py`, ajustadas
+# a cinco observações que o professor devolveu: ROI e volume realizados da nossa
+# política, e ROI, volume e aceite da do Grupo 2.
+#
+# ⚠️ **A âncora é a média de mercado ponderada por volume**, 2,021% a.m. — série
+# 20749 do BCB para aquisição de veículos, PF, no semestre da Base C. Não é a
+# média do nosso próprio livro, que era o erro nº 1 do post-mortem, nem a
+# mediana das instituições. A decisão e o critério que a resolveu estão em
+# `docs/processo/PRD.md § Decisões de modelagem`, D1.
+#
+# O que a calibração revelou, contra o que se assumia no cenário central:
+#
+#   a0          0,838  (assumia 0,85)   -- estava certo
+#   beta_taxa   1,186  (assumia 1,50)   -- 27% acima do real
+#   gama        1,072  (assumia 0,50)   -- MAIS QUE O DOBRO do assumido
+#
+# O erro grande não foi a elasticidade: foi a régua. Com a âncora antiga, a
+# nossa taxa média de 1,911% parecia 20% acima do mercado e o motor cortava 26%
+# dos clientes por isso. Com a âncora certa, ela está 5% ABAIXO do mercado e o
+# corte correto é zero.
+#
+# `beta_entrada` e `beta_prazo` ficam nos valores do central: com cinco
+# observações não dá para identificar cinco parâmetros, e as três políticas
+# exigiam os mesmos 10% de entrada, então eles quase não variam entre elas.
+#
+# ⚠️ Validado FORA DA AMOSTRA contra o contrafactual do professor, que não
+# entrou no ajuste: a nossa política com +0,7 pp na taxa dá 16,37% de ROI e
+# R$ 62,1 mi (ele apurou 16,27% e R$ 62,8 mi), com os quatro guard-rails
+# cumpridos — como ele afirmou. Foi essa afirmação qualitativa que decidiu
+# entre as duas âncoras candidatas.
+CENARIO_CALIBRADO = Cenario(
+    "calibrado", a0=0.837873, beta_taxa=1.185511,
+    beta_entrada=2.0, beta_prazo=0.8, gama=1.072320,
+)
+
+PREMISSAS_CALIBRADAS = Premissas(
+    "calibradas", 0.02021, {"calibrado": CENARIO_CALIBRADO}
+)
 
 
 @dataclass
