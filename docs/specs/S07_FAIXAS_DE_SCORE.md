@@ -1,6 +1,6 @@
 # S07 · Faixas de score (PD → 1 a 10)
 
-> Passo 7 de 11 do [`ROADMAP.md`](../ROADMAP.md). Abre a frente da política.
+> Passo 7 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Abre a frente da política.
 >
 > ✅ **CONCLUÍDO em 2026-09-22** — 117 testes verdes. Janela viável de aprovação: score ≥ 7 até score ≥ 4.
 

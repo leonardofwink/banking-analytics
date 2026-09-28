@@ -84,7 +84,7 @@ O projeto é **Python**. Ele nasceu para ser poliglota e não foi — ver § A l
 
 **A numeração é global e cronológica.** Um pipeline leva o número da ordem em que foi escrito, não da pasta onde mora: por isso `analises/` tem 16, 21 e 24 e `conferencias/` tem os outros. O número é a linha do tempo; a pasta é o propósito. Script novo pega o próximo número livre.
 
-**Biblioteca × pipeline.** `python/banking/` tem **funções**: não rodam nada ao ser importadas, não leem nem escrevem arquivo, não imprimem. As outras pastas de `python/` têm **pipelines**: rodam, leem, escrevem e logam. Cálculo que vale testar (perda esperada, Price, ROI, faixa de score) vira função na biblioteca; a sequência que orquestra vira pipeline. É isso que permite 167 testes sem rodar nada de ponta a ponta.
+**Biblioteca × pipeline.** `python/banking/` tem **funções**: não rodam nada ao ser importadas, não leem nem escrevem arquivo, não imprimem. As outras pastas de `python/` têm **pipelines**: rodam, leem, escrevem e logam. Cálculo que vale testar (perda esperada, Price, ROI, faixa de score) vira função na biblioteca; a sequência que orquestra vira pipeline. É isso que permite 170 testes sem rodar nada de ponta a ponta.
 
 **Camadas de dado:** `brutos/` é **somente leitura** — nunca editar nem sobrescrever. `intermediarios/` e `processados/` são sempre **regeneráveis pelos scripts**. Se não for possível regenerar, existe um passo manual escondido e o projeto deixou de ser reprodutível.
 
@@ -102,7 +102,7 @@ removido, junto com o andaime que o sustentava: `_setup.R`, os wrappers
 `rscript.*`, o `.Rproj` e o `.Renviron.example`. Repositório que carrega
 estrutura para algo que não existe ensina o errado a quem chega.
 
-Registrado em [`docs/processo/DEBITO_TECNICO.md`](docs/processo/DEBITO_TECNICO.md).
+Removido em `2de6840` — junto com `test_semente_bate_com_o_lado_r`, que era o único teste a depender do lado R. **Esta seção é o registro da decisão.**
 
 ### Se o R voltar, duas coisas continuam valendo
 

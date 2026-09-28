@@ -1,6 +1,6 @@
 # S01 · Ingestão e contrato de dados
 
-> Passo 1 de 11 do [`ROADMAP.md`](../ROADMAP.md). **Não depende de nada e bloqueia tudo.**
+> Passo 1 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). **Não depende de nada e bloqueia tudo.**
 >
 > ✅ **CONCLUÍDO em 2026-09-14.** DoD verificado item a item; 28 testes verdes. Implementação em [`python/banking/dados.py`](../../python/banking/dados.py), [`python/etl/01_ingestao.py`](../../python/etl/01_ingestao.py) e [`tests/python/test_ingestao.py`](../../tests/python/test_ingestao.py).
 > Dados descritos em [`DICIONARIO_DADOS.md`](../DICIONARIO_DADOS.md).

@@ -11,7 +11,7 @@
 
 ### Terminologia de gestão de risco
 
-Os três termos que estruturam o raciocínio (detalhe em [`GLOSSARIO.md`](GLOSSARIO.md#1-gestão-de-risco--o-eixo-inerente--controle--residual)):
+Os três termos que estruturam o raciocínio (detalhe em [`GLOSSARIO.md`](../GLOSSARIO.md#1-gestão-de-risco--o-eixo-inerente--controle--residual)):
 
 - **Risco inerente** — o risco bruto, antes de qualquer controle.
 - **Risco residual** — o que sobra depois dos controles. É o que a instituição de fato carrega.
@@ -46,7 +46,7 @@ De cada real emprestado, quanto sobra depois de descontar a perda esperada.
 - [ ] Confirmar com o professor se a mentoria vai modelar os três componentes ou só a PD.
 - [ ] Confirmar se a otimização de cutoff por ROE entra no escopo do projeto.
 - [ ] Registrar a **definição de default** adotada (90+? outro corte?) em [`PRD.md`](PRD.md) — muda todos os números.
-- [ ] Descobrir qual base de dados será usada e sob quais condições (ver [`DICIONARIO_DADOS.md`](DICIONARIO_DADOS.md)).
+- [ ] Descobrir qual base de dados será usada e sob quais condições (ver [`DICIONARIO_DADOS.md`](../DICIONARIO_DADOS.md)).
 
 ---
 
