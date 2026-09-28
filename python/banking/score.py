@@ -46,13 +46,17 @@ SCORE_MAXIMO = 10
 CORTES_PD = (0.025, 0.035, 0.050, 0.070, 0.095, 0.130, 0.180, 0.250, 0.350)
 
 
-def score_de_pd(pd_valores) -> np.ndarray:
+def score_de_pd(pd_valores, cortes=CORTES_PD) -> np.ndarray:
     """Converte probabilidade de default em faixa de score (1 a 10).
 
     Intervalos **fechados à direita**, como as faixas de LTV do S02: uma PD de
     exatamente 2,5% é score 10; 2,51% já é score 9.
 
     :param pd_valores: PD em **fração** (``0.085``, não ``8.5``).
+    :param cortes: as nove fronteiras de PD, em ordem crescente. O default é
+        :data:`CORTES_PD`, e mantê-lo reproduz tudo o que foi submetido — a
+        régua só vira argumento para que **usar outra seja uma escolha
+        declarada**, nunca uma edição silenciosa da constante.
     :return: array de inteiros entre 1 e 10, com 10 = melhor risco.
     :raises ValueError: se alguma PD estiver fora de [0, 1] — sinal de erro de
         unidade, que produziria uma tabela de política inteira errada.
@@ -72,28 +76,31 @@ def score_de_pd(pd_valores) -> np.ndarray:
 
     # searchsorted devolve quantos cortes a PD já ultrapassou: 0 para a melhor
     # faixa, 9 para a pior. O score é o complemento.
-    return (SCORE_MAXIMO - np.searchsorted(CORTES_PD, p, side="left")).astype(int)
+    return (SCORE_MAXIMO - np.searchsorted(cortes, p, side="left")).astype(int)
 
 
-def faixa_de_score(score: int) -> tuple[float, float]:
+def faixa_de_score(score: int, cortes=CORTES_PD) -> tuple[float, float]:
     """Devolve ``(pd_minima, pd_maxima)`` da faixa — o inverso de :func:`score_de_pd`.
 
     É o que a tabela de política exibe: cada linha precisa dizer que intervalo
     de risco ela cobre, senão a tabela não se explica sozinha.
 
     :param score: inteiro entre 1 e 10.
+    :param cortes: as mesmas fronteiras passadas a :func:`score_de_pd`. Passar
+        uma régua aqui e outra lá produz uma tabela que descreve faixas
+        diferentes das que a política aplicou — incoerência que vale 10 pontos.
     :return: limites da faixa. A faixa 10 começa em 0,0; a faixa 1 termina em 1,0.
     """
     if not SCORE_MINIMO <= score <= SCORE_MAXIMO:
         raise ValueError(f"score {score} fora de [{SCORE_MINIMO}, {SCORE_MAXIMO}]")
 
     indice = SCORE_MAXIMO - score  # 0 para score 10, 9 para score 1
-    minimo = 0.0 if indice == 0 else CORTES_PD[indice - 1]
-    maximo = 1.0 if indice == len(CORTES_PD) else CORTES_PD[indice]
+    minimo = 0.0 if indice == 0 else cortes[indice - 1]
+    maximo = 1.0 if indice == len(cortes) else cortes[indice]
     return (minimo, maximo)
 
 
-def tabela_de_faixas(pd_valores=None, pesos=None) -> pd.DataFrame:
+def tabela_de_faixas(pd_valores=None, pesos=None, cortes=CORTES_PD) -> pd.DataFrame:
     """Monta o esqueleto da tabela de política: uma linha por faixa.
 
     Sem argumentos, devolve só os limites de cada faixa. Com ``pd_valores``,
@@ -102,17 +109,19 @@ def tabela_de_faixas(pd_valores=None, pesos=None) -> pd.DataFrame:
 
     :param pd_valores: PDs de uma base, para contar a ocupação das faixas.
     :param pesos: valor financiado de cada proposta, para somar volume por faixa.
+    :param cortes: as fronteiras de PD, repassadas a :func:`faixa_de_score` e
+        :func:`score_de_pd` para que a tabela descreva a mesma régua que classifica.
     """
     linhas = []
     for score in range(SCORE_MAXIMO, SCORE_MINIMO - 1, -1):
-        minimo, maximo = faixa_de_score(score)
+        minimo, maximo = faixa_de_score(score, cortes)
         linhas.append({"score": score, "pd_minima": minimo, "pd_maxima": maximo})
     tabela = pd.DataFrame(linhas)
 
     if pd_valores is None:
         return tabela
 
-    scores = score_de_pd(pd_valores)
+    scores = score_de_pd(pd_valores, cortes)
     p = np.asarray(pd_valores, dtype=float)
     ocupacao = (
         pd.DataFrame({"score": scores, "pd": p})
