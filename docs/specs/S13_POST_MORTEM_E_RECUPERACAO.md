@@ -10,16 +10,16 @@
 
 | Subetapa | Entrega | DoD | Status | Commit |
 | -------- | ------- | --- | ------ | ------ |
-| [S13.1](#s131--o-post-mortem) | `processo/POST_MORTEM.md` | 4/4 | ✅ | `3e9cf41` |
-| [S13.2](#s132--os-registros-antes-do-uso) | PRD · GLOSSARIO · AGENTS | 0/4 | ⬜ | |
-| [S13.3](#s133--a-premissa-vira-parâmetro) | `Premissas` em `banking/roi.py` | 0/4 | ⬜ | |
+| [S13.1](#s131--o-post-mortem) | `processo/POST_MORTEM.md` | 4/4 | ✅ | `0cd2675` |
+| [S13.2](#s132--os-registros-antes-do-uso) | PRD · GLOSSARIO · AGENTS | 4/4 | ✅ | `dc97755` |
+| [S13.3](#s133--a-premissa-vira-parâmetro) | `Premissas` em `banking/roi.py` | 4/4 | ✅ | `dc357df` |
 | [S13.4](#s134--a-âncora-de-mercado) | `recuperacao/27_ancora_de_mercado.py` | 0/4 | ⬜ | |
 | [S13.5](#s135--a-calibração-do-aceite) | `recuperacao/28_calibrar_o_aceite.py` | 0/5 | ⬜ | |
 | [S13.6](#s136--a-política-sob-o-piso) | `recuperacao/29_politica_sob_piso.py` | 0/4 | ⬜ | |
 | [S13.7](#s137--a-submissão-alternativa) | `recuperacao/30_submissao_alternativa.py` | 0/3 | ⬜ | |
 | [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 testes em `tests/python/` | 0/5 | ⬜ | |
 | [S13.9](#s139--as-correções-de-artefato) | 7 correções | 0/7 | ⬜ | |
-| **Passo** | **DoD do S13** | **0/6** | ⬜ | |
+| **Passo** | **DoD do S13** | **1/6** | 🔄 | |
 
 ## Objetivo
 
