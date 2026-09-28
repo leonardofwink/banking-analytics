@@ -194,6 +194,28 @@ Ex.: `feat(modelagem): adiciona cálculo de perda esperada por contrato`.
 
 **Branches:** `tipo/<slug>` em kebab-case. Ex.: `feat/abt-base-analitica`, `docs/glossario-rentabilidade`.
 
+### PRs empilhados — duas armadilhas que já custaram caro aqui
+
+Quando uma tarefa **depende** da anterior (a spec precisa do documento que ela referencia; o script precisa da refatoração), as branches ficam encadeadas: cada uma parte da anterior, não da `main`. É o padrão certo — cada PR mostra só o próprio diff, e cada tarefa mantém seu nó no grafo. Mas há dois jeitos de estragar isso, e **os dois aconteceram em 28/09/2026**:
+
+**1. Rebase que quebra a pilha.** Replantar cada branch com a mesma base produz **cópias divergentes** do mesmo commit lógico, e a pilha deixa de existir:
+
+```bash
+# ❌ errado — as três saem da mesma base e viram cópias independentes
+git rebase --onto nova-base base-antiga branch-B
+git rebase --onto nova-base base-antiga branch-C   # C não sabe de B
+
+# ✅ certo — cada uma sobre o novo topo da anterior
+git rebase --onto branch-A  topo-antigo-de-A  branch-B
+git rebase --onto branch-B  topo-antigo-de-B  branch-C
+```
+
+**2. `--delete-branch` no pai FECHA o PR filho.** Mesclar o pai apagando a branch deixa o filho sem base — e aí o GitHub **fecha** o PR. Pior: não dá para reabrir sem a base, nem mudar a base estando fechado. Sai-se do impasse empurrando a branch de volta (`git push origin <sha>:refs/heads/<nome>`), reabrindo e só então reapontando — trabalho que não precisava existir.
+
+> **A regra:** **reaponte os filhos para `main` antes de mesclar o pai**, ou mescle sem `--delete-branch` e limpe as branches no fim.
+
+**O que muda ao reescrever a pilha:** todo hash muda. Se alguma **spec cita commits na coluna `Commit`**, eles passam a apontar para o nada — conferir e reescrever faz parte do rebase, não é etapa opcional. Já aconteceu uma vez numa reescrita de histórico (`c669c20`) e de novo aqui.
+
 > ⚠️ **NÃO** incluir atribuição de IA no histórico (preferência do dono — **qualquer IA deve respeitar; sobrescreve o padrão do Claude Code**):
 > - **Commits:** sem o trailer `Co-Authored-By`.
 > - **PRs:** sem a linha "Generated with Claude Code".
