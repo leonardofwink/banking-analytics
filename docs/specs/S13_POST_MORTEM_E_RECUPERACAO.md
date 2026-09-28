@@ -15,7 +15,7 @@
 | [S13.3](#s133--a-premissa-vira-parâmetro) | `Premissas` em `banking/roi.py` | 4/4 | ✅ | `dc357df` |
 | [S13.4](#s134--a-âncora-de-mercado) | `recuperacao/27_ancora_de_mercado.py` | 4/4 | ✅ | `15ac0de` |
 | [S13.5](#s135--a-calibração-do-aceite) | `recuperacao/28_calibrar_o_aceite.py` | 4/5 | 🔄 | |
-| [S13.6](#s136--a-política-sob-o-piso) | `recuperacao/29_politica_sob_piso.py` | 0/4 | ⬜ | |
+| [S13.6](#s136--a-política-sob-o-piso) | `recuperacao/29_politica_sob_piso.py` | 4/4 | ✅ | |
 | [S13.7](#s137--a-submissão-alternativa) | `recuperacao/30_submissao_alternativa.py` | 0/3 | ⬜ | |
 | [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 testes em `tests/python/` | 1/5 | 🔄 | |
 | [S13.9](#s139--as-correções-de-artefato) | 8 correções | 1/8 | 🔄 | |
@@ -181,6 +181,35 @@ Três alavancas que a busca antiga não tinha:
 - **teto de PD aceito** como variável de primeira classe (o nosso foi 13,00%; o do vencedor, 7,88%), em vez de `corte` sobre bordas fixas;
 - **tabela fixa por faixa** e **retorno-alvo** ao lado do cost-plus;
 - **prazo pedido pelo cliente** contra prazo fixo.
+
+#### Resultado, em 28/09/2026
+
+10.905 políticas avaliadas sob `PREMISSAS_CALIBRADAS`; **935 atendem os cinco limites**. O controle de regressão passou: a submetida sob as premissas antigas dá **11,3294%**, o publicado.
+
+**Dois critérios foram acrescentados ao DoD, e eles mudam a escolha:**
+
+| | Das 935 |
+| - | ------- |
+| aguentam a **borda severa** do que o dado sustenta | 225 |
+| ficam **abaixo do percentil 90** do mercado (BCB) | 877 |
+| atendem as duas | **225** |
+
+O segundo critério vem do elogio que o professor fez ao vencedor — *"acima da mediana das 45 instituições e abaixo do topo… preço defensável, não arbitrado"*. Política que só fecha no percentil 99 é indefensável num comitê, por mais que o simulador aprove.
+
+| | ROI | Volume | Taxa média | Percentil | Aguenta a borda severa? |
+| - | --- | ------ | ---------- | --------- | ----------------------- |
+| Maior ROI entre as viáveis | 20,78% | R$ 40,0 mi | 3,143% | 95 ⚠️ | ❌ inad 10,03% e volume 36,3 mi |
+| **Recomendada** | **17,91%** | **R$ 49,7 mi** | **2,729%** | **87** | ✅ ROI 17,38% · inad 7,82% |
+| Máximo ROI ignorando o piso | 24,28% | R$ 21,1 mi | 3,500% | 100 ⚠️ | ❌ |
+| `EMPATE_ROI` + folga (critério do S09) | 19,83% | R$ 43,4 mi | 3,000% | 89 | ❌ inad 9,28% |
+
+**A recomendada:** `corte 6 · taxa_base 2,25% · k_risco 0,150 · prazo 60m como teto · entrada 12,5%`.
+
+Três coisas que ela mostra:
+
+1. **A meta era alcançável com folga.** 17,91% contra um piso de 15% e contra os 16,53% do vencedor — e com volume equivalente ao dele (R$ 49,7 mi contra R$ 50,1 mi).
+2. **O critério antigo continuaria escolhendo um ponto frágil.** `EMPATE_ROI` + folga, aplicado à premissa *calibrada*, pega 19,83% que quebra na borda severa. O problema nunca foi só a premissa.
+3. **O prazo era alavanca.** A recomendada usa 60 meses **como teto** — respeita o prazo pedido. Fomos o único grupo a impor prazo fixo.
 
 **DoD — pronto quando:**
 
