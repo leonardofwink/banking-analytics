@@ -23,8 +23,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
-from banking.dados import carregar_parametros_ead_lgd
-from banking.perda import fator_ead, lgd
+from banking.perda import fator_ead, lgd, tabelas
 from banking.price import juros_pagos_ate, juros_totais
 from banking.score import score_de_pd
 
@@ -32,9 +31,12 @@ __all__ = [
     "CENARIOS",
     "Cenario",
     "GUARD_RAILS",
+    "PREMISSAS_SUBMETIDAS",
+    "Premissas",
     "Resultado",
     "TAXA_MERCADO",
     "aplicar_politica",
+    "premissas_do_modulo",
     "simular",
 ]
 
@@ -98,6 +100,51 @@ CENARIOS = {
     "central": Cenario("central", a0=0.85, beta_taxa=1.5, beta_entrada=2.0, beta_prazo=0.8, gama=0.5),
     "pessimista": Cenario("pessimista", a0=0.70, beta_taxa=2.5, beta_entrada=3.5, beta_prazo=1.5, gama=1.0),
 }
+
+
+@dataclass(frozen=True)
+class Premissas:
+    """As suposições sobre o mundo que o simulador não mede — juntas e com nome.
+
+    ``TAXA_MERCADO`` e ``CENARIOS`` nasceram como constantes de módulo. Quem
+    chamava :func:`simular` não precisava declará-las, e por isso ninguém as
+    questionou: o desafio de 2026 foi perdido por uma delas estar errada, e o
+    diagnóstico está em ``docs/processo/POST_MORTEM.md``.
+
+    Agrupá-las num objeto nomeado não muda nenhum número — muda o fato de que
+    **usar uma premissa passa a ser uma escolha explícita**.
+
+    :param nome: identifica o conjunto nos relatórios. Aparece ao lado de todo
+        número que dependa dele.
+    :param taxa_mercado: o preço que o cliente encontraria no concorrente. É o
+        denominador do excesso de taxa, e portanto a régua contra a qual "caro"
+        é medido. Ver ``docs/GLOSSARIO.md`` § âncora de preço.
+    :param cenarios: as elasticidades, por nome de cenário.
+    """
+
+    nome: str
+    taxa_mercado: float
+    cenarios: dict[str, Cenario]
+
+
+def premissas_do_modulo() -> Premissas:
+    """As premissas tal como o módulo as declara **neste instante**.
+
+    Lê :data:`TAXA_MERCADO` e :data:`CENARIOS` na chamada, em vez de capturá-los
+    na importação. É o que preserva o comportamento de
+    ``analises/21_premissa_de_aceite.py`` e ``modelagem/13_alavancas_de_volume.py``,
+    que injetam cenários extras reatribuindo ``roi.CENARIOS`` em tempo de execução.
+
+    **Código novo não deve depender disto**: construa um :class:`Premissas` e
+    passe-o a :func:`simular`. Este acessor existe para que a introdução do
+    parâmetro não altere nada do que já roda.
+    """
+    return Premissas("submetidas", TAXA_MERCADO, CENARIOS)
+
+
+#: O que foi efetivamente submetido ao professor em 25/09/2026. Imutável: serve
+#: de linha de base para qualquer comparação com premissas recalibradas.
+PREMISSAS_SUBMETIDAS = Premissas("submetidas", TAXA_MERCADO, CENARIOS)
 
 
 @dataclass
@@ -189,13 +236,22 @@ def aplicar_politica(
     return o
 
 
-def simular(ofertas: pd.DataFrame, cenario: Cenario | str = "central") -> Resultado:
+def simular(
+    ofertas: pd.DataFrame,
+    cenario: Cenario | str = "central",
+    premissas: Premissas | None = None,
+) -> Resultado:
     """Calcula o ROI anualizado da carteira que a política gera.
 
     :param ofertas: saída de :func:`aplicar_politica`.
-    :param cenario: um :class:`Cenario` ou o nome de um dos :data:`CENARIOS`.
+    :param cenario: um :class:`Cenario` ou o nome de um cenário das ``premissas``.
+    :param premissas: a âncora de preço e as elasticidades. Omitir usa
+        :func:`premissas_do_modulo` — o comportamento histórico, idêntico ao de
+        antes deste parâmetro existir. **Código novo passa explicitamente**,
+        porque a premissa é a parte do resultado que os dados não sustentam.
     """
-    c = CENARIOS[cenario] if isinstance(cenario, str) else cenario
+    p = premissas if premissas is not None else premissas_do_modulo()
+    c = p.cenarios[cenario] if isinstance(cenario, str) else cenario
 
     aprovadas = ofertas[ofertas["aprovada"]].copy()
     taxa_aprovacao = len(aprovadas) / max(len(ofertas), 1)
@@ -213,7 +269,7 @@ def simular(ofertas: pd.DataFrame, cenario: Cenario | str = "central") -> Result
     principal = aprovadas["valor_financiado_ofertado"].to_numpy(dtype=float)
 
     # --- reação do cliente (premissa do cenário) ----------------------------
-    excesso_taxa = taxa / TAXA_MERCADO - 1.0
+    excesso_taxa = taxa / p.taxa_mercado - 1.0
     encurtamento = np.clip(
         1.0 - prazo / aprovadas["prazo_desejado_meses"].to_numpy(dtype=float), 0.0, 1.0
     )
@@ -239,7 +295,7 @@ def simular(ofertas: pd.DataFrame, cenario: Cenario | str = "central") -> Result
 
     # Quem quebra: a receita depende de QUANDO. Média ponderada pela
     # distribuição do mês do default (média 6,9, pico entre o 5º e o 8º mês).
-    distribuicao = carregar_parametros_ead_lgd().dist_mes_default
+    distribuicao = tabelas().dist_mes_default
     juros_se_quebra = np.zeros_like(principal)
     for mes, frequencia in distribuicao.items():
         meses = np.minimum(float(mes), prazo)  # contrato de 24m não quebra no mês 30
