@@ -1,6 +1,6 @@
 # S10 · Aplicação à base C e submissão
 
-> Passo 10 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S09. **→ Entregável 2 pronto (40 pts).**
+> Passo 10 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Depende do S09. **→ Entregável 2 pronto (40 pts).**
 >
 > ✅ **CONCLUÍDO em 2026-09-22** — 5.000 linhas, 59,5% aprovadas, 167 testes verdes.
 

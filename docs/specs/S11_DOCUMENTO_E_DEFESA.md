@@ -1,6 +1,6 @@
 # S11 · Documento de política e defesa
 
-> Passo 11 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S10. **→ Fecha o entregável 2.**
+> Passo 11 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Depende do S10. **→ Fecha o entregável 2.**
 >
 > ✅ **CONCLUÍDO em 2026-09-23** — 3 páginas, dentro do limite do professor, 167 testes verdes.
 
@@ -82,7 +82,7 @@ O argumento de que a meta é alvo e não limite está na escolha de palavras do
 próprio enunciado — os outros quatro são "mínimo", "máximo" e "teto"; este é
 "meta". E a saída fica registrada: se o simulador do professor for menos
 elástico do que supusemos, a fronteira inteira sobe e 15% volta ao alcance sem
-violar nada. Ver o item 4 do [`DEBITO_TECNICO.md`](../DEBITO_TECNICO.md).
+violar nada. Ver o item 4 do [`DEBITO_TECNICO.md`](../processo/DEBITO_TECNICO.md).
 
 ## Caber em três páginas
 

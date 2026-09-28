@@ -1,6 +1,6 @@
 # S02 · Perda esperada (EAD e LGD)
 
-> Passo 2 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S01. **Libera a frente de política.**
+> Passo 2 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Depende do S01. **Libera a frente de política.**
 >
 > ✅ **CONCLUÍDO em 2026-09-22** — commit `8a9e6dc`, 49 testes verdes.
 
@@ -62,7 +62,7 @@ Medido contra o gabarito:
 
 O efeito real do avalista na base A é de **0,079** (resíduo médio de −0,0633 com avalista contra +0,0157 sem), e não 0,061 — mais um sinal de que o parâmetro declarado não foi calculado sobre a mesma referência.
 
-**Decisão:** `modo="oficial"` é o **padrão**, porque é o parâmetro declarado e a coerência com o enunciado vale 10 pontos. `modo="centrado"` fica implementado e o viés é compensado explicitamente na margem de segurança da precificação (S09). Registrado em [`DEBITO_TECNICO.md`](../DEBITO_TECNICO.md#5--o-ajuste-de-avalista-da-lgd-tem-viés-conhecido-e-vamos-usar-assim-mesmo).
+**Decisão:** `modo="oficial"` é o **padrão**, porque é o parâmetro declarado e a coerência com o enunciado vale 10 pontos. `modo="centrado"` fica implementado e o viés é compensado explicitamente na margem de segurança da precificação (S09). Registrado em [`DEBITO_TECNICO.md`](../processo/DEBITO_TECNICO.md#5--o-ajuste-de-avalista-da-lgd-tem-viés-conhecido-e-vamos-usar-assim-mesmo).
 
 ---
 

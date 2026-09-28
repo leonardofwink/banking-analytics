@@ -1,6 +1,6 @@
 # S05 · Desafiantes — Random Forest e XGBoost
 
-> Passo 5 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S04. **Encerra a escolha do modelo.**
+> Passo 5 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Depende do S04. **Encerra a escolha do modelo.**
 >
 > ✅ **CONCLUÍDO em 2026-09-22** — XGBoost escolhido: AuROC 0,7234 · KS 0,3660 na validação 2024 (+0,0745 sobre a logística).
 
@@ -50,7 +50,7 @@ Só o estimador final muda. Se o pré-processamento ou a partição variassem ju
 
 Não é preferência estética. Três razões concretas:
 
-- A validação tem **239 defaults**. Com essa amostra, o intervalo de confiança do AuROC é largo o bastante para que diferenças pequenas sejam ruído — está no [débito técnico](../DEBITO_TECNICO.md#7--sem-validação-cruzada--só-um-holdout-temporal), item 7.
+- A validação tem **239 defaults**. Com essa amostra, o intervalo de confiança do AuROC é largo o bastante para que diferenças pequenas sejam ruído — está no [débito técnico](../processo/DEBITO_TECNICO.md#7--sem-validação-cruzada--só-um-holdout-temporal), item 7.
 - O AuROC vale **30 pontos relativos** ao melhor grupo; a defesa vale **20 absolutos**. Um modelo explicável coeficiente a coeficiente rende mais na segunda conta.
 - Árvores produzem probabilidade **pior calibrada** que a logística, e a política precisa de **nível**, não só de ordenação.
 

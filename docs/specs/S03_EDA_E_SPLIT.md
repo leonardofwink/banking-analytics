@@ -1,6 +1,6 @@
 # S03 · Exploratória e split temporal
 
-> Passo 3 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S01. **Abre o bloco do modelo.**
+> Passo 3 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Depende do S01. **Abre o bloco do modelo.**
 >
 > ✅ **CONCLUÍDO em 2026-09-22** — 72 testes verdes. Achado principal: as duas variáveis mais preditivas (`score_bureau`, `qtd_restricoes_ativas`) são as mais instáveis na base C (PSI 0,50 e 5,93).
 

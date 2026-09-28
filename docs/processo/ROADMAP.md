@@ -2,7 +2,7 @@
 
 > **Como ler:** o objetivo final ("entregar o modelo e a política até 25/09") é grande demais para ser executado. Aqui ele vira **11 passos pequenos**, cada um com um resultado verificável. Cada passo é uma **spec**: a spec detalhada nasce em `docs/specs/` **quando o passo começa**, não antes — escrever as onze de uma vez seria adivinhar decisões que ainda não temos informação para tomar.
 >
-> **Requisitos:** [`DESAFIO.md`](DESAFIO.md) · **Decisões macro:** [`ENTREGAVEL_1_MODELO.md`](ENTREGAVEL_1_MODELO.md), [`ENTREGAVEL_2_POLITICA.md`](ENTREGAVEL_2_POLITICA.md) · **Dados:** [`DICIONARIO_DADOS.md`](DICIONARIO_DADOS.md)
+> **Requisitos:** [`DESAFIO.md`](../DESAFIO.md) · **Decisões macro:** [`ENTREGAVEL_1_MODELO.md`](../ENTREGAVEL_1_MODELO.md), [`ENTREGAVEL_2_POLITICA.md`](../ENTREGAVEL_2_POLITICA.md) · **Dados:** [`DICIONARIO_DADOS.md`](../DICIONARIO_DADOS.md)
 
 ## O que estamos construindo, em uma frase
 
@@ -27,7 +27,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **O que é:** ler os três CSVs, remover as colunas proibidas, conferir tipos e contagens, gravar em Parquet em `dados/processados/`.
 
-**Por que existe:** todo o resto depende de a base estar certa. E, principalmente, porque a remoção das [colunas proibidas](DICIONARIO_DADOS.md#colunas-proibidas-pós-concessão) precisa acontecer **em um lugar só**. Se cada script remover por conta própria, um vai esquecer — e o esquecimento custa 30 pontos, sem dar erro.
+**Por que existe:** todo o resto depende de a base estar certa. E, principalmente, porque a remoção das [colunas proibidas](../DICIONARIO_DADOS.md#colunas-proibidas-pós-concessão) precisa acontecer **em um lugar só**. Se cada script remover por conta própria, um vai esquecer — e o esquecimento custa 30 pontos, sem dar erro.
 
 **Como faremos:** uma função `carregar(base)` que aplica a lista de exclusão e devolve o DataFrame limpo. Um teste que **falha** se qualquer coluna proibida sobreviver.
 
@@ -35,7 +35,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** nada. É o primeiro.
 
-**Status:** ✅ concluído em 2026-09-14 — spec e DoD verificado em [`specs/S01_INGESTAO.md`](specs/S01_INGESTAO.md).
+**Status:** ✅ concluído em 2026-09-14 — spec e DoD verificado em [`specs/S01_INGESTAO.md`](../specs/S01_INGESTAO.md).
 
 ---
 
@@ -51,7 +51,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S01. **Pode rodar em paralelo com todo o bloco do modelo.**
 
-**Status:** ✅ concluído em 2026-09-22 — LGD com erro de 0,0003 e EAD 0,0005 contra o gabarito. Spec em [`specs/S02_PERDA_ESPERADA.md`](specs/S02_PERDA_ESPERADA.md).
+**Status:** ✅ concluído em 2026-09-22 — LGD com erro de 0,0003 e EAD 0,0005 contra o gabarito. Spec em [`specs/S02_PERDA_ESPERADA.md`](../specs/S02_PERDA_ESPERADA.md).
 
 ---
 
@@ -69,7 +69,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S01.
 
-**Status:** ✅ concluído em 2026-09-22 — split fixado; PSI mostra que `score_bureau` (0,50) e `qtd_restricoes_ativas` (5,93) explodem na base C. Spec em [`specs/S03_EDA_E_SPLIT.md`](specs/S03_EDA_E_SPLIT.md).
+**Status:** ✅ concluído em 2026-09-22 — split fixado; PSI mostra que `score_bureau` (0,50) e `qtd_restricoes_ativas` (5,93) explodem na base C. Spec em [`specs/S03_EDA_E_SPLIT.md`](../specs/S03_EDA_E_SPLIT.md).
 
 ---
 
@@ -85,7 +85,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S03.
 
-**Status:** ✅ concluído em 2026-09-22 — AuROC 0,6489. Spec em [specs/S04_BASELINE_LOGISTICA.md](specs/S04_BASELINE_LOGISTICA.md).
+**Status:** ✅ concluído em 2026-09-22 — AuROC 0,6489. Spec em [specs/S04_BASELINE_LOGISTICA.md](../specs/S04_BASELINE_LOGISTICA.md).
 
 ---
 
@@ -101,7 +101,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S04.
 
-**Status:** ✅ concluído em 2026-09-22 — XGBoost vence com AuROC 0,7234. Spec em [specs/S05_DESAFIANTES.md](specs/S05_DESAFIANTES.md).
+**Status:** ✅ concluído em 2026-09-22 — XGBoost vence com AuROC 0,7234. Spec em [specs/S05_DESAFIANTES.md](../specs/S05_DESAFIANTES.md).
 
 ---
 
@@ -129,7 +129,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S05. **→ Entregável 1 pronto.**
 
-**Status:** ✅ concluído em 2026-09-22 — arquivo em outputs/submissao/. Spec em [specs/S06_SUBMISSAO_MODELO.md](specs/S06_SUBMISSAO_MODELO.md).
+**Status:** ✅ concluído em 2026-09-22 — arquivo em outputs/submissao/. Spec em [specs/S06_SUBMISSAO_MODELO.md](../specs/S06_SUBMISSAO_MODELO.md).
 
 ---
 
@@ -147,7 +147,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S06 (ou uma PD provisória, para não bloquear).
 
-**Status:** ✅ concluído em 2026-09-22 — cortes absolutos de PD; janela viável score ≥ 7 a ≥ 4. Spec em [specs/S07_FAIXAS_DE_SCORE.md](specs/S07_FAIXAS_DE_SCORE.md).
+**Status:** ✅ concluído em 2026-09-22 — cortes absolutos de PD; janela viável score ≥ 7 a ≥ 4. Spec em [specs/S07_FAIXAS_DE_SCORE.md](../specs/S07_FAIXAS_DE_SCORE.md).
 
 ---
 
@@ -160,7 +160,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 **Como faremos:** implementar a fórmula oficial, peça por peça:
 - **Parcela** pela Tabela Price, com a taxa e o prazo que ofertarmos.
 - **Juros de quem paga até o fim:** `parcela × prazo − financiado`.
-- **Juros de quem quebra:** só até o mês do calote — ponderado pela [distribuição do mês do default](DICIONARIO_DADOS.md#parâmetros-de-ead-e-lgd-dados-não-modelados) (média 6,9, pico entre o 5º e o 8º mês).
+- **Juros de quem quebra:** só até o mês do calote — ponderado pela [distribuição do mês do default](../DICIONARIO_DADOS.md#parâmetros-de-ead-e-lgd-dados-não-modelados) (média 6,9, pico entre o 5º e o 8º mês).
 - **Perda realizada:** `fator_ead × financiado × lgd` (vem do S02).
 - **Aceite e seleção adversa:** como não sabemos a intensidade, entram como **cenários** — otimista, central, pessimista.
 
@@ -168,7 +168,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S02.
 
-**Status:** ✅ concluído em 2026-09-22 — taxa de mercado ancorada na base A (1,59% a.m.). Spec em [specs/S08_MOTOR_DE_ROI.md](specs/S08_MOTOR_DE_ROI.md).
+**Status:** ✅ concluído em 2026-09-22 — taxa de mercado ancorada na base A (1,59% a.m.). Spec em [specs/S08_MOTOR_DE_ROI.md](../specs/S08_MOTOR_DE_ROI.md).
 
 ---
 
@@ -184,7 +184,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S07 e S08.
 
-**Status:** ✅ concluído em 2026-09-22 — ROI 11,3% nos três cenários, com folga. Spec em [specs/S09_TABELA_DE_POLITICA.md](specs/S09_TABELA_DE_POLITICA.md).
+**Status:** ✅ concluído em 2026-09-22 — ROI 11,3% nos três cenários, com folga. Spec em [specs/S09_TABELA_DE_POLITICA.md](../specs/S09_TABELA_DE_POLITICA.md).
 
 ---
 
@@ -200,7 +200,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S09. **→ Entregável 2 pronto.**
 
-**Status:** ✅ concluído em 2026-09-22 — arquivo em outputs/submissao/. Spec em [specs/S10_SUBMISSAO_POLITICA.md](specs/S10_SUBMISSAO_POLITICA.md).
+**Status:** ✅ concluído em 2026-09-22 — arquivo em outputs/submissao/. Spec em [specs/S10_SUBMISSAO_POLITICA.md](../specs/S10_SUBMISSAO_POLITICA.md).
 
 ---
 
@@ -218,7 +218,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S06 e S10.
 
-**Status:** ✅ concluído em 2026-09-23 — documento de 3 páginas em outputs/submissao/, gerado a partir do template do professor. Spec em [specs/S11_DOCUMENTO_E_DEFESA.md](specs/S11_DOCUMENTO_E_DEFESA.md).
+**Status:** ✅ concluído em 2026-09-23 — documento de 3 páginas em outputs/submissao/, gerado a partir do template do professor. Spec em [specs/S11_DOCUMENTO_E_DEFESA.md](../specs/S11_DOCUMENTO_E_DEFESA.md).
 
 ---
 
@@ -236,7 +236,7 @@ Cada seta é uma tradução: probabilidade vira faixa, faixa vira dinheiro, dinh
 
 **Depende de:** S09 e S11.
 
-**Status:** ✅ concluído em 2026-09-23 — nenhuma das 4.044 políticas que batem a meta é viável, e o único guard-rail que as bloqueia é o volume. Teto viável: 11,46%. Spec em [specs/S12_FRONTEIRA_ROI_VOLUME.md](specs/S12_FRONTEIRA_ROI_VOLUME.md).
+**Status:** ✅ concluído em 2026-09-23 — nenhuma das 4.044 políticas que batem a meta é viável, e o único guard-rail que as bloqueia é o volume. Teto viável: 11,46%. Spec em [specs/S12_FRONTEIRA_ROI_VOLUME.md](../specs/S12_FRONTEIRA_ROI_VOLUME.md).
 
 ---
 

@@ -97,13 +97,13 @@ em que o trabalho foi feito, não a pasta onde mora. Por isso `analises/` tem
 16, 21 e 24, e `conferencias/` tem os demais — o número é a linha do tempo, a
 pasta é o propósito.
 
-**A distinção que sustenta tudo:** `python/banking/` tem **funções** — puras, testáveis, sem efeito colateral ao ser importadas. As outras pastas de `python/` têm **pipelines** — rodam, leem e escrevem arquivos, imprimem log. Cálculo que vale testar vira função na biblioteca; a sequência que orquestra vira pipeline. É o que permite que os 167 testes cubram o que importa sem precisar rodar nada de ponta a ponta.
+**A distinção que sustenta tudo:** `python/banking/` tem **funções** — puras, testáveis, sem efeito colateral ao ser importadas. As outras pastas de `python/` têm **pipelines** — rodam, leem e escrevem arquivos, imprimem log. Cálculo que vale testar vira função na biblioteca; a sequência que orquestra vira pipeline. É o que permite que os 170 testes cubram o que importa sem precisar rodar nada de ponta a ponta.
 
 ## Sobre o repositório
 
 Organizado para reprodutibilidade: o git versiona **apenas código e documentação** — nenhuma base de dados entra no histórico, e qualquer pessoa reconstrói os dados rodando os scripts. (A única exceção é `painel/dados.js`, para o painel abrir de um clone; o porquê está no [`.gitignore`](.gitignore) e no [`AGENTS.md`](AGENTS.md).)
 
-**Tudo em Python.** O projeto foi montado para ser poliglota — R para exploração e comunicação, Python para o ferramental de crédito — mas **o R acabou não sendo usado**: o prazo de treze dias não deixou espaço para manter duas linguagens em sincronia, e a regra do projeto é que a ABT tenha uma única construção. O andaime de R foi removido do repositório; o registro da decisão está em [`docs/processo/DEBITO_TECNICO.md`](docs/processo/DEBITO_TECNICO.md).
+**Tudo em Python.** O projeto foi montado para ser poliglota — R para exploração e comunicação, Python para o ferramental de crédito — mas **o R acabou não sendo usado**: o prazo de treze dias não deixou espaço para manter duas linguagens em sincronia, e a regra do projeto é que a ABT tenha uma única construção. O andaime de R foi removido do repositório; o registro da decisão está no [`AGENTS.md`](AGENTS.md#a-linguagem-que-ficou-de-fora).
 
 > 📖 **Vocabulário:** o [glossário](docs/GLOSSARIO.md) cobre risco inerente, risco residual, mitigação, PD/EAD/LGD, ROE e os termos que aparecem em todo o resto.
 
@@ -121,8 +121,8 @@ Depois, rode sem precisar ativar o ambiente — o wrapper usa o interpretador do
 
 ```powershell
 .\scripts\py.cmd                                  # qual interpretador está em uso
-.\scripts\py.cmd python\modelagem_desafiantes.py
-.\scripts\py.cmd -m pytest                        # os 167 testes
+.\scripts\py.cmd python\modelagem\05_desafiantes.py
+.\scripts\py.cmd -m pytest                        # os 170 testes
 ```
 
 Todo script começa importando a âncora, que resolve os caminhos a partir da raiz:
@@ -157,7 +157,7 @@ O repositório não carrega dado nenhum. Para chegar nesses números do zero:
 .\scripts\py.cmd python\modelagem\09_buscar_politica.py      # 5. a política
 .\scripts\py.cmd python\modelagem\10_submissao_politica.py   #    decisões da base C
 
-.\scripts\py.cmd -m pytest                                   # 6. 167 testes
+.\scripts\py.cmd -m pytest                                   # 6. 170 testes
 ```
 
 O passo 5 é o que importa para a defesa: ele varre o espaço de políticas e
@@ -187,7 +187,7 @@ que batam. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
 
 ## Estado atual
 
-**Desafio AutoCred, entregue.** Os dois entregáveis fechados, 167 testes passando.
+**Desafio AutoCred, entregue.** Os dois entregáveis fechados, 170 testes passando.
 
 | | |
 | - | - |

@@ -1,6 +1,6 @@
 # S08 · Motor de simulação do ROI
 
-> Passo 8 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S02. **O passo mais trabalhoso da frente de política.**
+> Passo 8 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Depende do S02. **O passo mais trabalhoso da frente de política.**
 >
 > ✅ **CONCLUÍDO em 2026-09-22** — 141 testes verdes. Price validada contra a base A (erro 0,0003%).
 

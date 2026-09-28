@@ -1,7 +1,7 @@
 # S12 · A meta de 15% de ROI é alcançável?
 
 > Verificação posterior ao S11, feita para responder a uma pergunta da defesa.
-> Não estava no [`ROADMAP.md`](../ROADMAP.md) original.
+> Não estava no [`ROADMAP.md`](../processo/ROADMAP.md) original.
 >
 > ✅ **CONCLUÍDO em 2026-09-23** — 5.600 políticas testadas, nenhuma viável bate a meta.
 

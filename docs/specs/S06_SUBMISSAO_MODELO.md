@@ -1,6 +1,6 @@
 # S06 · Escoragem e submissão do modelo
 
-> Passo 6 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S05. **→ Entregável 1 pronto (40 pts).**
+> Passo 6 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Depende do S05. **→ Entregável 1 pronto (40 pts).**
 >
 > ✅ **CONCLUÍDO em 2026-09-22** — 3.000 PDs escoradas, PD média 0,0788, validador limpo.
 

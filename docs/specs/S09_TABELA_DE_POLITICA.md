@@ -1,6 +1,6 @@
 # S09 · A tabela de política
 
-> Passo 9 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S07 e do S08. **É o entregável.**
+> Passo 9 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Depende do S07 e do S08. **É o entregável.**
 >
 > ✅ **CONCLUÍDO em 2026-09-22** — 155 testes verdes. Aprovar score ≥ 5, taxa 1,50% + 0,1×perda, entrada 10%. ROI 11,3% central, folga de 12,7%.
 
@@ -86,7 +86,7 @@ Ambas ficam registradas porque mudar critério depois de ver resultado é exatam
 
 A primeira busca **degenerou**: 896 das 960 políticas morriam por volume, e a vencedora usava **preço único para todo risco**. Um resultado que reproduz a patologia diagnosticada pelo conselho é sintoma de premissa errada, não de política certa.
 
-A âncora que corrigiu: **o teto de 3,5% a.m. só é guard-rail se as políticas quiserem chegar perto dele.** Se o aceite morresse a 2%, o teto seria decorativo. As elasticidades foram recalibradas (β_taxa de 0,8 / 1,5 / 2,5) para que cobrar no teto deixe aceite baixo mas não nulo. Registrado em [`DEBITO_TECNICO.md`](../DEBITO_TECNICO.md#4--as-elasticidades-da-base-c-são-premissa-não-medida).
+A âncora que corrigiu: **o teto de 3,5% a.m. só é guard-rail se as políticas quiserem chegar perto dele.** Se o aceite morresse a 2%, o teto seria decorativo. As elasticidades foram recalibradas (β_taxa de 0,8 / 1,5 / 2,5) para que cobrar no teto deixe aceite baixo mas não nulo. Registrado em [`DEBITO_TECNICO.md`](../processo/DEBITO_TECNICO.md#4--as-elasticidades-da-base-c-são-premissa-não-medida).
 
 ### 2. O critério de desempate era largo demais — e a escolha foi para o humano
 

@@ -1,6 +1,6 @@
 # S04 · Baseline — regressão logística
 
-> Passo 4 de 11 do [`ROADMAP.md`](../ROADMAP.md). Depende do S03. **O primeiro número de verdade.**
+> Passo 4 de 11 do [`ROADMAP.md`](../processo/ROADMAP.md). Depende do S03. **O primeiro número de verdade.**
 >
 > ✅ **CONCLUÍDO em 2026-09-22** — AuROC 0,6489 · KS 0,2432 na validação 2024. Venceu a variante independente de política.
 

@@ -104,7 +104,7 @@ A volatilidade em torno da EL — o quanto a perda pode superar a média num ano
 
 ### Default
 
-A definição de default é uma **escolha do projeto**, não uma verdade universal — e muda todos os números. O padrão de mercado é **atraso ≥ 90 dias** (90+), mas pode incluir gatilhos qualitativos (renegociação forçada, recuperação judicial). **Registre a definição adotada no [PRD](PRD.md) antes da primeira modelagem.**
+A definição de default é uma **escolha do projeto**, não uma verdade universal — e muda todos os números. O padrão de mercado é **atraso ≥ 90 dias** (90+), mas pode incluir gatilhos qualitativos (renegociação forçada, recuperação judicial). **Registre a definição adotada no [PRD](processo/PRD.md) antes da primeira modelagem.**
 
 ---
 

@@ -18,7 +18,7 @@
 | [S13.6](#s136--a-política-sob-o-piso) | `recuperacao/29_politica_sob_piso.py` | 0/4 | ⬜ | |
 | [S13.7](#s137--a-submissão-alternativa) | `recuperacao/30_submissao_alternativa.py` | 0/3 | ⬜ | |
 | [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 testes em `tests/python/` | 0/5 | ⬜ | |
-| [S13.9](#s139--as-correções-de-artefato) | 7 correções | 0/7 | ⬜ | |
+| [S13.9](#s139--as-correções-de-artefato) | 8 correções | 1/8 | 🔄 | |
 | **Passo** | **DoD do S13** | **1/6** | 🔄 | |
 
 ## Objetivo
@@ -172,7 +172,7 @@ Cada defeito encontrado na auditoria nasceu num vão da suíte.
 
 **DoD — pronto quando:**
 
-1. Fixture **não-plana** para `aplicar_politica`. A atual usa mesma taxa, prazo e entrada em toda faixa, então um off-by-one no mapeamento faixa→linha produz saída idêntica e **os 166 passam**. É o único elo da cadeia sem teste capaz de falhar.
+1. Fixture **não-plana** para `aplicar_politica`. A atual usa mesma taxa, prazo e entrada em toda faixa, então um off-by-one no mapeamento faixa→linha produz saída idêntica e **os 170 passam**. É o único elo da cadeia sem teste capaz de falhar.
 2. As nove elasticidades de `CENARIOS` ficam **fixadas por teste** — é o que deixou `S08_MOTOR_DE_ROI.md` derivar e permanecer errado.
 3. `perda_por_faixa` é extraído para `banking.perda` e testado uma vez, em vez de replicado em **11 arquivos**.
 4. Existe teste afirmando a relação entre `POLITICA_ESCOLHIDA` e o que `09_buscar_politica.py` seleciona.
@@ -192,7 +192,13 @@ Defeitos vivos hoje. `outputs/submissao/` não se altera — corrige-se o **gera
 4. `ENTREGAVEL_1_MODELO.md:90` — documenta a PD ao contrário do que foi submetido.
 5. `S08_MOTOR_DE_ROI.md:85-91` — as **nove** elasticidades e o exemplo de aceite.
 6. `ENTREGAVEL_2_POLITICA.md § 2` (tabela vazia) e `MATRIZ_RISCOS.md` (template não preenchido).
-7. `README.md` — **166** testes (não 167, em sete arquivos), dois caminhos de comando inexistentes, uma referência cruzada quebrada, e a **bifurcação no topo** entre a submissão e a recuperação.
+7. ✅ **Ponteiros que envelheceram, com teste que impede a volta.** O diagnóstico inicial estava errado em três pontos, e a correção registra o que de fato se achou:
+   - **37 links relativos quebrados** (não "uma referência cruzada"), todos por caminho errado entre `docs/`, `docs/processo/` e `docs/specs/`. O `ROADMAP.md` sozinho tinha 18.
+   - **Um byte de controle `0x05`** no `README.md:124` — não "dois caminhos inexistentes". Era `python\modelagem\05_...` com o `\0` interpretado como escape octal. Invisível na leitura.
+   - **As specs S10 e S11 estavam certas:** eram **167 testes** na data em que fecharam, medido em `6b0cf63`. O número caiu para 166 quando `2de6840` removeu o R e, com ele, `test_semente_bate_com_o_lado_r`. Quem envelheceu foi o `README.md` e o `AGENTS.md`, que falam do presente.
+   - `README.md` e `AGENTS.md` apontavam para `DEBITO_TECNICO.md` como registro da remoção do R. Esse arquivo **nunca mencionou R**.
+   - Guardado por `tests/python/test_documentacao.py`: links resolvem, hashes das specs existem, nenhum caractere de controle.
+8. `README.md` — a **bifurcação no topo** entre a submissão e a recuperação, para quem clonar saber qual dos dois números é "o" número.
 
 ---
 
@@ -203,7 +209,7 @@ Defeitos vivos hoje. `outputs/submissao/` não se altera — corrige-se o **gera
 1. O post-mortem está escrito, com as dez causas verificáveis. ✅
 2. A calibração fecha nas três âncoras **e** passa na validação fora da amostra.
 3. Existe política que atende os cinco limites, ou está medido e escrito sob que condições ela não existe.
-4. `pytest -q` passa com **166 + os novos**.
+4. `pytest -q` passa com **170**, incluindo os guardas de documentação.
 5. Nenhum script de recuperação contém `0.15` fora da definição do piso.
 6. `outputs/submissao/` e `POLITICA_ESCOLHIDA` inalterados ao fim do passo.
 
