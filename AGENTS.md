@@ -142,8 +142,12 @@ estranhar a curva de inadimplência. Data de calendário é gravada como
 2. **LGPD e anonimização.** CPF, nome, endereço, telefone e e-mail não devem sair da camada bruta. Se a modelagem precisar de identificador, use chave substituta (hash ou ID sequencial) gerada na ingestão. Dado pessoal nunca vai para `outputs/`, para documentação ou para o chat.
 3. **Segredos fora do versionamento.** Tokens e credenciais **jamais** vão para o git — use variáveis de ambiente e leia com `os.environ`. O `.gitignore` já bloqueia `secrets/`, `token*.json` e `credentials*.json`.
 4. **Termo novo da mentoria vai para o glossário.** Todo conceito apresentado nas aulas entra em [`docs/GLOSSARIO.md`](docs/GLOSSARIO.md), na seção certa. O Leonardo **não vem de banking** — não presuma vocabulário conhecido: ao usar um termo técnico pela primeira vez numa resposta ou num comentário de código, explique-o em uma linha e registre-o no glossário.
-5. **Decisão de modelagem é registrada antes de ser usada.** Definição de default, janelas de observação e performance, partição treino/teste, tratamento de rejeitados: tudo em [`docs/processo/PRD.md`](docs/processo/PRD.md#4-decisões-de-modelagem). Sem isso, resultado de hoje não é comparável com o de amanhã.
+5. **Decisão de modelagem é registrada antes de ser usada.** Definição de default, janelas de observação e performance, partição treino/teste, tratamento de rejeitados: tudo em [`docs/processo/PRD.md`](docs/processo/PRD.md#decisões-de-modelagem). Sem isso, resultado de hoje não é comparável com o de amanhã.
 6. **Ações externas só com confirmação.** Rodar scripts e mostrar preview do resultado pode; **push / merge / criar repo / abrir PR** exigem o "ok" do Leonardo.
+7. **Conclusão negativa exige teste de premissa.** Antes de publicar que algo **"não dá para fazer"**, varra a **premissa** que sustenta a conclusão, não só as variáveis de decisão. Um resultado negativo fecha a porta para a ação e ninguém volta a abri-la — ele carrega ônus de prova **maior** que um positivo, não menor.
+   > **Sintoma de violação:** a varredura tem milhares de combinações das variáveis que você escolhe e **zero** da suposição que as domina.
+   >
+   > Esta regra nasceu de um erro concreto, registrado em [`docs/processo/POST_MORTEM.md`](docs/processo/POST_MORTEM.md): o projeto varreu 5.600 combinações de política sobre uma elasticidade de aceite assumida, concluiu que a meta de ROI era inalcançável, e publicou isso como *"medido, não argumentado"*. A meta era alcançável — bastavam **0,7 ponto a mais na taxa**, na mesma política. Nenhum artefato interno acusou: a spec passou no DoD, os testes passaram, os números reproduziram.
 
 ## Convenções de código Python
 

@@ -2,7 +2,7 @@
 
 > **Passo a passo:** [`ROADMAP.md`](ROADMAP.md) — o objetivo final quebrado em 11 passos.
 >
-> **Requisitos** (o que o professor pediu): [`DESAFIO.md`](DESAFIO.md) · **Como faremos**: [`ENTREGAVEL_1_MODELO.md`](ENTREGAVEL_1_MODELO.md) e [`ENTREGAVEL_2_POLITICA.md`](ENTREGAVEL_2_POLITICA.md) · **Aulas**: [`MENTORIA.md`](MENTORIA.md)
+> **Requisitos** (o que o professor pediu): [`DESAFIO.md`](../DESAFIO.md) · **Como faremos**: [`ENTREGAVEL_1_MODELO.md`](../ENTREGAVEL_1_MODELO.md) e [`ENTREGAVEL_2_POLITICA.md`](../ENTREGAVEL_2_POLITICA.md) · **Aulas**: [`MENTORIA.md`](MENTORIA.md)
 >
 > Este documento é só o **plano**: quem faz o quê, em que ordem, até quando.
 
@@ -27,8 +27,8 @@ Por que isso importa aqui em particular: **o grupo trabalha em paralelo em três
 
 | Papel | Responsável | Entregável | Spec |
 | ----- | ----------- | ---------- | ---- |
-| Modelagem | — | Modelo de PD (40 pts) | [Entregável 1](ENTREGAVEL_1_MODELO.md) |
-| **Política e precificação** | **Leonardo** | Tabela de faixas + CSV (40 pts) | [Entregável 2](ENTREGAVEL_2_POLITICA.md) |
+| Modelagem | — | Modelo de PD (40 pts) | [Entregável 1](../ENTREGAVEL_1_MODELO.md) |
+| **Política e precificação** | **Leonardo** | Tabela de faixas + CSV (40 pts) | [Entregável 2](../ENTREGAVEL_2_POLITICA.md) |
 | Negócio e defesa | — | Apresentação ao conselho (20 pts) | — |
 
 **O grupo decidiu que todos desenvolvem todas as partes**, comparam resultados e juntam o melhor de cada um. Os papéis acima marcam quem responde pela entrega final de cada bloco, não quem trabalha nele.
@@ -45,9 +45,49 @@ Por que isso importa aqui em particular: **o grupo trabalha em paralelo em três
 | ----------- | ------- | -------- |
 | Documento "AutoCred — Regras da Competição" | Professor | Confirmação da rubrica e das regras de submissão |
 | E-mail de destino da entrega | Professor | Só o envio, no dia 25 |
-| Custo de captação e despesa operacional | Professor | Piso da taxa por faixa ([ENTREGÁVEL 2 § 6](ENTREGAVEL_2_POLITICA.md#6-perguntas--o-que-o-enunciado-respondeu-e-o-que-falta)) |
+| Custo de captação e despesa operacional | Professor | Piso da taxa por faixa ([ENTREGÁVEL 2 § 6](../ENTREGAVEL_2_POLITICA.md#6-perguntas--o-que-o-enunciado-respondeu-e-o-que-falta)) |
 
 > Não há simulador da Base C: **a submissão é única e sem feedback**. A política é decidida por raciocínio sobre o trade-off e testada por cenários internos, não calibrada por tentativa.
+
+## Decisões de modelagem
+
+> **Regra crítica 5 do [`AGENTS.md`](../../AGENTS.md):** decisão de modelagem se registra **antes** de ser usada. Sem isso, o resultado de hoje não é comparável com o de amanhã — e uma premissa que ninguém precisou declarar é uma premissa que ninguém questiona.
+>
+> Decisões dos passos S01–S12 estão nas specs correspondentes. Esta seção recebe as que **atravessam** passos.
+
+### D1 · A âncora de preço passa a ser referência externa, não o livro da AutoCred
+
+**Registrada em 28/09/2026, para o [S13](../specs/S13_POST_MORTEM_E_RECUPERACAO.md).**
+
+`TAXA_MERCADO = 0.0159` (`banking/roi.py:49`) é a média da taxa praticada na Base A — o **livro da própria AutoCred** — e é usada como denominador de `excesso = taxa / TAXA_MERCADO − 1`, isto é, como *"o preço que o cliente encontra no concorrente"*.
+
+**O concorrente é o mercado, e o preço do mercado é público.** A recuperação passa a ancorar em série do Banco Central para crédito a pessoa física, aquisição de veículos, no período da Base C.
+
+**A razão anterior para recusar, que estava errada.** Durante a análise a referência externa foi considerada e descartada com o argumento de que *"trazer dado de fora para um exercício fechado é arriscado na banca"*. O grupo vencedor fez exatamente isso e o professor registrou como diferencial: *"fez o que nenhum outro fez — comparou a taxa proposta com dados públicos do Banco Central… preço defensável, não arbitrado."*
+
+Fica escrito porque **decisão revertida sem o motivo registrado volta a ser tomada**.
+
+**Onde é usada:** `recuperacao/27_ancora_de_mercado.py` produz o valor; `Premissas.taxa_mercado` o carrega. A âncora antiga sobrevive em `PREMISSAS_SUBMETIDAS`, para a comparação continuar honesta.
+
+**Procedência é obrigatória:** série, período e data de extração ficam em [`FONTES_EXTERNAS.md`](../FONTES_EXTERNAS.md). Dado externo sem procedência não entra.
+
+### D2 · O critério de escolha passa a ser máximo ROI com piso de 15%
+
+**Registrada em 28/09/2026, para o [S13](../specs/S13_POST_MORTEM_E_RECUPERACAO.md).**
+
+O S09 escolheu por **viabilidade nos três cenários** (`09_buscar_politica.py:6-8`) e desempate por folga. Os quatro limites do enunciado eram invioláveis; a exigência de robustez nos três cenários era **nossa**; e quando o conjunto ficou vazio, foi a meta de **15% exigida pelo conselho** que cedeu.
+
+A recuperação inverte a assimetria: os 15% entram como **quinto guard-rail**, e o que cede é a premissa.
+
+**O que isso não significa.** Não é abandonar análise de cenário — o grupo vencedor *"testou subir a taxa em 0,3 ponto, viu que romperia dois guard-rails no cenário severo e desistiu"*. A política escolhida segue sendo reportada sob o cenário severo; a diferença é que a robustez deixa de **filtrar** e passa a **informar**.
+
+**Onde é usada:** `recuperacao/29_politica_sob_piso.py`. `EMPATE_ROI` não se aplica.
+
+### O que deixou de valer com a apuração
+
+A seção *Dependências externas* registra que *"a submissão é única e sem feedback"* e que a política seria *"testada por cenários internos, não calibrada por tentativa"*. Isso valia até 26/09/2026.
+
+A apuração devolveu ROI e volume realizados por grupo, e o aceite do vencedor a um preço conhecido. **A elasticidade do aceite deixou de ser premissa e passou a ser estimável** — é o que o S13.5 faz.
 
 ## Cronograma
 
@@ -73,7 +113,7 @@ Prazo: **25/09** (entrega por e-mail). Leaderboard: **26/09**.
 | Risco | Mitigação |
 | ----- | --------- |
 | Bases chegam tarde e sobra pouco tempo | Specs, validador e esqueleto do pipeline prontos **antes** do dado. Quando a base chegar, é só rodar |
-| Viés de seleção (A/B aprovados × C mar aberto) | [ENTREGÁVEL 1 § 6](ENTREGAVEL_1_MODELO.md#6--risco-central-as-bases-a-e-b-são-de-aprovados-a-base-c-é-mar-aberto). Tratar a PD como ordenação confiável, nível suspeito |
+| Viés de seleção (A/B aprovados × C mar aberto) | [ENTREGÁVEL 1 § 6](../ENTREGAVEL_1_MODELO.md#6--risco-central-as-bases-a-e-b-são-de-aprovados-a-base-c-é-mar-aberto). Tratar a PD como ordenação confiável, nível suspeito |
 | Otimizar AuROC e perder no ROI | Os blocos valem 40 + 40. Modelo bom com política ruim perde |
 | Política no limite de um guard-rail | Escolher a robusta, não a máxima — margem deliberada |
 | Erro de formato no CSV | Validador obrigatório antes do envio |

@@ -125,6 +125,7 @@ A definição de default é uma **escolha do projeto**, não uma verdade univers
 | **Matriz de transição** | Generalização do roll rate: probabilidade de migrar entre todos os estados de atraso |
 | **PSI** (*Population Stability Index*) | Mede se a população atual ainda parece a de desenvolvimento. Referência: < 0,1 estável · 0,1–0,25 atenção · > 0,25 recalibrar |
 | **Reject inference** | Tratamento do viés de só termos performance de quem foi aprovado. Ignorar isso enviesa todo scorecard de reaprovação |
+| **Restrição monotônica** | Amarra imposta ao modelo para que uma variável só empurre o risco numa direção — mais restrições no bureau **nunca** podem reduzir a PD prevista. Impede o modelo de aprender relações que contrariam o bom senso a partir de ruído da amostra. Custa pouco poder de discriminação e compra muita **defensabilidade**: sem ela, a resposta a *"por que este cliente pagou mais?"* pode ser indefensável num comitê |
 | **Roll rate** | Probabilidade de migrar de uma faixa de atraso para a seguinte (ex.: 30→60 dias) |
 | **Safra** (*vintage*) | Grupo de contratos originados no mesmo período. A unidade de análise em crédito — carteiras só são comparáveis dentro da mesma safra |
 | **Swap set** | Quem o modelo novo aprova e o antigo recusava (e vice-versa). É onde se enxerga o ganho real de trocar de modelo |
@@ -184,6 +185,47 @@ A leitura: **de cada real emprestado, quanto sobra depois de descontar a perda.*
 | **NIM** | *Net Interest Margin* — margem financeira: receita de juros menos custo de captação, sobre o ativo rentável |
 | **Índice de eficiência** | Despesa operacional / receita. Quanto **menor**, melhor — é uma das poucas métricas bancárias em que menos é mais |
 | **Custo de captação** | O que o banco paga para ter o dinheiro que empresta. O piso de qualquer precificação |
+
+### Elasticidade do aceite — quanto o cliente foge quando o preço sobe
+
+**Elasticidade** é o quanto uma quantidade reage à variação de outra. Aqui: **quantos clientes desistem da proposta a cada ponto de taxa a mais**.
+
+No motor de ROI ela aparece como o `β` de uma curva exponencial:
+
+```
+aceite = a0 · e^(−β · excesso)        excesso = taxa cobrada / taxa de mercado − 1
+```
+
+- `β` **alto** = cliente sensível a preço, foge rápido. `β` **baixo** = cliente aguenta preço maior.
+- `a0` é o aceite na condição de referência — quanto fecha quando você cobra exatamente o preço de mercado.
+
+**Por que é o número mais perigoso do projeto:** ele não está nos dados. Cobrar mais aumenta a receita por contrato e diminui o número de contratos, e é a elasticidade que decide qual dos dois efeitos ganha. Errá-la para cima faz uma política lucrativa parecer inviável — foi exatamente o que aconteceu, e está em [`processo/POST_MORTEM.md`](processo/POST_MORTEM.md).
+
+### Âncora de preço — a régua contra a qual "caro" é medido
+
+"Caro" não existe sozinho: existe **em relação a alguma coisa**. A âncora de preço é essa referência — o preço que o cliente encontraria **se fosse ao concorrente**.
+
+Ela entra como denominador do excesso, e por isso escolhe-la errada distorce tudo o que vem depois:
+
+| Âncora | Cobrar 2,5% a.m. parece… |
+| ------ | ------------------------ |
+| 1,59% (a média da nossa própria carteira antiga) | **57% acima do mercado** |
+| 2,3% (mediana das instituições, dado público do BCB) | **9% acima do mercado** |
+
+**A regra prática:** a âncora tem de vir de **fora da sua própria operação**. O preço que você mesmo pratica não mede o mercado — mede você. No Brasil, o Banco Central publica as taxas médias por modalidade e por instituição, e é dado público.
+
+### RAROC — precificar pelo retorno que se quer, não pelo custo que se tem
+
+*Risk-Adjusted Return on Capital.* Em vez de somar margem em cima do custo (**cost-plus**: `preço = custo + perda esperada + margem`), inverte-se a pergunta: **qual preço entrega o retorno-alvo, dado o risco daquele cliente?**
+
+| Abordagem | Como se define o preço |
+| --------- | ---------------------- |
+| **Cost-plus** | parte do custo e soma margem — o preço é consequência |
+| **RAROC** | parte do retorno exigido e resolve para o preço — o retorno é a restrição |
+
+É o que bancos fazem de fato, e a diferença aparece quando o retorno tem piso contratual: no cost-plus você descobre o ROI no fim e torce; no RAROC ele é a entrada.
+
+> ⚠️ **A ressalva que o professor fez:** preço calculado contrato a contrato *"é um algoritmo, não uma tabela de política — funciona, mas é difícil de defender num comitê"*. Uma **tabela fixa por faixa de score**, validada contra referência externa, é menos ótima e mais defensável — e foi a que venceu o desafio.
 
 ---
 
