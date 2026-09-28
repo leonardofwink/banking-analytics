@@ -381,7 +381,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
       { q: "Por que a taxa varia só 0,66 ponto?",
         a: "Porque a perda é pequena diante dos juros. Taxa alta afasta o cliente e atrai o pior — o teto de 3,5% nunca chega perto de morder." },
       { q: "Por que negar o score 4?",
-        a: "A perda da faixa é 11,18%; a regra cobraria 2,62%, 65% acima do mercado. Aprová-lo daria +0,09pp de ROI e cortaria a folga pela metade." },
+        a: "A perda da faixa é 11,18%; a regra cobraria 2,62%, 65% acima do mercado. Aprová-lo daria +0,09pp de ROI e levaria a inadimplência de 6,58% a 7,39%, contra um teto de 8%." },
     ],
     rodape: "6. A política · aprovar ou negar, taxa, prazo máximo e entrada mínima por faixa de score, aplicada à Base C",
     numero: n,
@@ -510,7 +510,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
   const s = slide();
   const c = moldura(pres, s, {
     kicker: "3 · os quatro limites",
-    titulo: "Os quatro limites passam nos três cenários de aceite,\ncom 12,7% de folga até o mais apertado",
+    titulo: "Os quatro limites passam nos três cenários de aceite —\nno pior deles, o volume fecha R$ 5,1 mi acima do piso",
     casoPede: "Aprovação ≥ 35%, taxa ≤ 3,5% ao mês, inadimplência ≤ 8% e volume ≥ R$ 40 milhões. Estourar corta a nota pela metade.",
     perguntas: [
       { q: "As reações da Base C são reais?",
@@ -565,7 +565,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
     fontSize: 13, bold: true, color: NAVY, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   s.addText(
-    "O ROI é uma razão, e o aceite move numerador e denominador juntos. Foi pelo volume que medimos a folga.",
+    "O ROI é uma razão, e o aceite move numerador e denominador juntos. Por isso é pelo volume que se mede o quanto a política aguenta.",
     { x: c.x + 0.28, y: 5.36, w: 3.3, h: 0.7, fontSize: 11, color: GREY, fontFace: SANS,
       lineSpacing: 14, isTextBox: true, margin: 0 }
   );
@@ -576,7 +576,7 @@ const slide = () => { n += 1; return pres.addSlide(); };
     fontSize: 13, bold: true, color: WHITE, fontFace: SERIF, isTextBox: true, margin: 0,
   });
   s.addText(
-    "Mais 0,13 ponto de ROI custaria R$ 4,2 mi de margem: a política de maior retorno viável fecha o pior cenário a R$ 0,9 mi do piso, a nossa a R$ 5,1 mi. Furar o piso corta a nota pela metade.",
+    "A política de maior retorno viável rende 0,13 ponto a mais e origina R$ 2,4 mi a menos. O conselho pediu retorno sem parar de crescer — ficamos com o crescimento.",
     { x: c.x + 4.33, y: 5.36, w: 3.3, h: 0.7, fontSize: 11, color: GREY_ESCURO,
       fontFace: SANS, lineSpacing: 14, isTextBox: true, margin: 0 }
   );
