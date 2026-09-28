@@ -24,6 +24,7 @@ __all__ = [
     "PROJ_ROOT",
     "DIR_DADOS",
     "DIR_BRUTOS",
+    "DIR_EXTERNOS",
     "DIR_INTERMED",
     "DIR_PROCESSADOS",
     "DIR_OUTPUTS",
@@ -56,6 +57,10 @@ PROJ_ROOT: Path = _achar_raiz(Path(__file__).resolve().parent)
 # Camadas de dado — NENHUMA é versionada (ver .gitignore).
 DIR_DADOS = PROJ_ROOT / "dados"
 DIR_BRUTOS = DIR_DADOS / "brutos"  # como chegou, intocado — somente leitura
+# Dado de fora do desafio (BCB e afins). Mesma regra de brutos/: somente
+# leitura, nunca editado à mão. A procedência — série, período, data de
+# extração — vive em docs/FONTES_EXTERNAS.md, que É versionado.
+DIR_EXTERNOS = DIR_DADOS / "externos"
 DIR_INTERMED = DIR_DADOS / "intermediarios"  # limpo/padronizado
 DIR_PROCESSADOS = DIR_DADOS / "processados"  # base analítica (ABT)
 
@@ -73,6 +78,7 @@ for _d in (
     DIR_BRUTOS,
     DIR_INTERMED,
     DIR_PROCESSADOS,
+    DIR_EXTERNOS,
     DIR_FIGURAS,
     DIR_TABELAS,
     DIR_RELATORIOS,
