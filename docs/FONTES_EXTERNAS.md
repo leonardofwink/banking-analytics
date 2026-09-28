@@ -18,17 +18,61 @@ A decisão está registrada em [`processo/PRD.md § Decisões de modelagem`](pro
 
 | # | Fonte | Identificador | Período | Extraído em | Usada em |
 | - | ----- | ------------- | ------- | ----------- | -------- |
-| | *(a preencher pelo `recuperacao/27_ancora_de_mercado.py`)* | | | | |
+| 1 | BCB · Olinda / taxaJuros | modalidade **401101** | 2025-07-01 a 2025-12-31 | 2026-09-28 | `recuperacao/27_ancora_de_mercado.py` |
+| 2 | BCB · SGS | série **20749** | jul a dez/2025 | 2026-09-28 | idem |
 
-### Como preencher
+### 1 · Taxa por instituição — a distribuição
 
-Cada linha ganha, abaixo da tabela, uma seção com:
+```
+https://olinda.bcb.gov.br/olinda/servico/taxaJuros/versao/v2/odata/TaxasJurosDiariaPorInicioPeriodo
+  $filter = Modalidade eq 'Aquisição de veículos - Prefixado'
+            and InicioPeriodo ge '2025-07-01' and InicioPeriodo le '2025-12-31'
+```
 
-- **URL exata** da consulta ou do endpoint, reproduzível por quem ler;
-- **o que a série mede** — modalidade, tipo de pessoa, encargo incluído (taxa nominal, CET, pré ou pós-fixado);
-- **o recorte usado** e por quê (mediana, quartis, média ponderada);
-- **a data de extração**, porque série revisada muda valor sem avisar;
-- **o número que entrou no código**, para conferência direta.
+**O que mede:** taxa de juros **prefixada**, ao mês, cobrada por cada instituição em operações de **aquisição de veículos** para **pessoa física** — a mesma operação da AutoCred. O período é semanal, e a consulta cobre exatamente o intervalo da Base C.
+
+**O recorte:** 5.346 observações, **53 instituições**, 130 semanas.
+
+| | % a.m. |
+| - | ------ |
+| p5 | 1,050 |
+| p25 | 1,440 |
+| **mediana** | **1,820** |
+| p75 | 2,120 |
+| p95 | 3,150 |
+| máximo | 3,590 |
+
+**Ressalva registrada:** 53 observações (1,0%) ficam abaixo de 0,30% a.m. — taxa promocional de banco de montadora, não preço de crédito. Excluí-las move a mediana de 1,820% para 1,830%, então **não** foram excluídas: o efeito é imaterial e apagar dado exige motivo melhor que conveniência.
+
+**Dois detalhes técnicos que custam tempo:** o OData recusa espaço codificado como `+`, então a URL é montada à mão em vez de por `params=`; e a resposta vem com charset mal declarado, então o encoding é forçado para UTF-8 — sem isso todo acento vira `?`.
+
+### 2 · Taxa média do mercado — o nível
+
+```
+https://api.bcb.gov.br/dados/serie/bcdata.sgs.20749/dados?formato=json
+  dataInicial = 01/07/2025   dataFinal = 31/12/2025
+```
+
+**O que mede:** taxa média das operações de crédito com recursos livres, pessoas físicas, aquisição de veículos. Vem em **% ao ano** e é **ponderada por volume**.
+
+**Conversão:** taxa mensal equivalente por juros compostos — `(1 + i_aa)^(1/12) − 1`, não `i_aa / 12`.
+
+**Resultado:** média de **2,021% a.m.** no semestre (27,14% a.a.).
+
+### Por que as duas, e não uma
+
+Respondem perguntas diferentes, e a escolha entre elas é decisão de política, não do script:
+
+| | Responde |
+| - | -------- |
+| Mediana por instituição — **1,820%** | *"o concorrente típico cobra quanto?"* |
+| Média SGS ponderada por volume — **2,021%** | *"o real emprestado no mercado saiu a quanto?"* |
+
+As duas estão **acima** de `TAXA_MERCADO = 1,590%`, que é onde o projeto ancorou. Esse valor cai no **percentil 33** da distribuição: tratamos como preço de mercado algo que só um terço das instituições cobrava ou menos.
+
+### Como preencher uma fonte nova
+
+Cada linha ganha uma seção com: **URL exata** reproduzível; **o que a série mede** (modalidade, tipo de pessoa, pré ou pós-fixado); **o recorte** e por quê; **a data de extração**; e **o número que entrou no código**.
 
 > ⚠️ **Série revisada é armadilha silenciosa.** O BCB republica séries com correções. Sem a data de extração registrada, um número que não reproduz vira discussão sobre quem digitou errado — quando a explicação é que a fonte mudou.
 

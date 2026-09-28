@@ -12,10 +12,10 @@
 pandas
 numpy
 
-# --- Fronteira Python <-> R --------------------------------------------------
-# Parquet é o formato de troca entre as duas linguagens: preserva tipos (data,
-# decimal, categórico) — coisa que CSV perde — e é lido nativamente dos dois
-# lados (pyarrow aqui, arrow no R). Ver AGENTS.md § A fronteira entre as duas linguagens.
+# --- Formato de troca --------------------------------------------------------
+# Parquet preserva tipo (data, decimal, categórico) — coisa que CSV perde. Foi
+# escolhido como fronteira com o R, que acabou não entrando no projeto
+# (AGENTS.md § A linguagem que ficou de fora), e ficou por preservar os tipos.
 pyarrow
 
 # --- Modelagem de crédito ----------------------------------------------------
@@ -43,6 +43,13 @@ matplotlib
 
 # --- Leitura de base em Excel ------------------------------------------------
 openpyxl
+
+# --- Dado externo ------------------------------------------------------------
+# requests: consulta às APIs públicas do Banco Central (SGS e Olinda), de onde
+#   sai a âncora de preço de mercado. O post-mortem registra por que a média do
+#   nosso próprio livro não serve como referência de mercado — ver
+#   docs/processo/PRD.md § Decisões de modelagem, D1.
+requests
 
 # --- Testes ------------------------------------------------------------------
 pytest
