@@ -15,12 +15,16 @@ import pandas as pd
 import pytest
 
 from banking.dados import carregar_processada
+from banking.politica import gerar_politica
+from banking.score import faixa_de_score
 from banking.submissao import (
     COLUNAS_SUBMISSAO_MODELO,
+    COLUNAS_SUBMISSAO_POLITICA,
     ValidacaoFalhou,
     formatar_submissao,
     resumo_distribuicao,
     validar_submissao_modelo,
+    validar_submissao_politica,
 )
 
 N = 3_000
@@ -365,3 +369,61 @@ def test_arquivo_de_politica_tem_negados_com_campos_vazios() -> None:
     assert negadas, "nenhuma linha negada no arquivo"
     for linha in negadas[:50]:
         assert linha.endswith(",NEGAR,,,"), f"linha negada com campo preenchido: {linha}"
+
+
+# --- S13.7 · O prazo lido como teto ------------------------------------------
+
+
+def _submissao_minima(prazos, politica):
+    """Três linhas aprovadas na mesma faixa, com os prazos dados."""
+    n = len(prazos)
+    linha = politica[politica["decisao"] == "APROVAR"].iloc[0]
+    faixa = faixa_de_score(int(linha["score"]))
+    return pd.DataFrame(
+        {
+            "id_proposta": [f"P{i:06d}" for i in range(n)],
+            "pd": np.linspace(faixa[0] + 1e-6, faixa[1] - 1e-6, n),
+            "score_1a10": [int(linha["score"])] * n,
+            "decisao": ["APROVAR"] * n,
+            "taxa_am": [linha["taxa_am"]] * n,
+            "prazo_meses": list(prazos),
+            "pct_entrada_minima": [linha["pct_entrada_minima"]] * n,
+        },
+        columns=list(COLUNAS_SUBMISSAO_POLITICA),
+    )
+
+
+def test_prazo_como_teto_aceita_prazo_menor_que_a_tabela():
+    """Dar 36 meses a quem pediu 36 é coerente com um teto de 60.
+
+    É a leitura que o enunciado sugere ao chamar a coluna de "Prazo máx.", e a
+    que Grupo 1 e Grupo 2 adotaram. Só o nosso grupo deu prazo fixo a todos.
+    """
+    politica = gerar_politica(corte=6, taxa_base=0.0225, k_risco=0.0,
+                              prazo_max=60, entrada_base=0.10, entrada_passo=0.0)
+    sub = _submissao_minima([60, 48, 36], politica)
+    validar_submissao_politica(sub, sub["id_proposta"], politica,
+                               aprovacao_minima=0.0, prazo_como_teto=True)
+
+
+def test_prazo_como_teto_ainda_rejeita_prazo_acima_do_teto():
+    """Teto é teto: 72 meses numa tabela de 60 continua sendo incoerência."""
+    politica = gerar_politica(corte=6, taxa_base=0.0225, k_risco=0.0,
+                              prazo_max=60, entrada_base=0.10, entrada_passo=0.0)
+    sub = _submissao_minima([60, 72, 36], politica)
+    with pytest.raises(ValidacaoFalhou, match="acima do teto"):
+        validar_submissao_politica(sub, sub["id_proposta"], politica,
+                                   aprovacao_minima=0.0, prazo_como_teto=True)
+
+
+def test_leitura_estrita_continua_sendo_o_padrao():
+    """O default não mudou: sem declarar o teto, prazo diferente é incoerência.
+
+    É o que protege a submissão de 25/09/2026, que deu prazo fixo a todos.
+    """
+    politica = gerar_politica(corte=6, taxa_base=0.0225, k_risco=0.0,
+                              prazo_max=60, entrada_base=0.10, entrada_passo=0.0)
+    sub = _submissao_minima([60, 48, 36], politica)
+    with pytest.raises(ValidacaoFalhou, match="diferente da tabela"):
+        validar_submissao_politica(sub, sub["id_proposta"], politica,
+                                   aprovacao_minima=0.0)

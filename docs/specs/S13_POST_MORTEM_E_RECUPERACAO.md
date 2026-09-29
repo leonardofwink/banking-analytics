@@ -16,7 +16,7 @@
 | [S13.4](#s134--a-âncora-de-mercado) | `recuperacao/27_ancora_de_mercado.py` | 4/4 | ✅ | `15ac0de` |
 | [S13.5](#s135--a-calibração-do-aceite) | `recuperacao/28_calibrar_o_aceite.py` | 4/5 | 🔄 | |
 | [S13.6](#s136--a-política-sob-o-piso) | `recuperacao/29_politica_sob_piso.py` | 4/4 | ✅ | |
-| [S13.7](#s137--a-submissão-alternativa) | `recuperacao/30_submissao_alternativa.py` | 0/3 | ⬜ | |
+| [S13.7](#s137--a-submissão-alternativa) | `recuperacao/30_submissao_alternativa.py` | 3/3 | ✅ | |
 | [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 testes em `tests/python/` | 1/5 | 🔄 | |
 | [S13.9](#s139--as-correções-de-artefato) | 8 correções | 1/8 | 🔄 | |
 | **Passo** | **DoD do S13** | **1/6** | 🔄 | |
@@ -222,6 +222,20 @@ Três coisas que ela mostra:
 
 ### S13.7 · A submissão alternativa
 
+#### Resultado, em 29/09/2026
+
+`outputs/recuperacao/submissao_politica_recuperacao.csv` — 5.000 linhas, **2.526 aprovadas (50,5%)**, validador passou. Sob as premissas calibradas: **ROI 17,91% · volume R$ 49,7 mi · inadimplência 6,38%**, os quatro guard-rails cumpridos.
+
+**1.981 propostas receberam prazo menor que o teto porque pediram menos.** É a alavanca do prazo em número: fomos o único grupo a impor prazo fixo, e ela sozinha aparece no resultado.
+
+##### Uma decisão de interpretação que vale 10 pontos
+
+O enunciado chama a coluna de **"Prazo máx."**. Sob essa leitura, dar 36 meses a quem pediu 36 é **coerente** com um teto de 60 — e foi o que Grupo 1 e Grupo 2 fizeram.
+
+`validar_submissao_politica` exigia igualdade exata, porque foi escrito quando tratávamos prazo como valor fixo. Ganhou o parâmetro `prazo_como_teto`, **com o default estrito preservado**: a submissão de 25/09/2026 continua validando como sempre validou, e a leitura de teto tem de ser **declarada** para valer.
+
+Três testes cobrem isso: teto aceita prazo menor, teto ainda rejeita prazo maior, e a leitura estrita continua sendo o padrão.
+
 **DoD — pronto quando:**
 
 1. `outputs/recuperacao/` tem os arquivos no formato do enunciado, 5.000 linhas.
@@ -236,7 +250,7 @@ Cada defeito encontrado na auditoria nasceu num vão da suíte.
 
 **DoD — pronto quando:**
 
-1. Fixture **não-plana** para `aplicar_politica`. A atual usa mesma taxa, prazo e entrada em toda faixa, então um off-by-one no mapeamento faixa→linha produz saída idêntica e **os 173 passam**. É o único elo da cadeia sem teste capaz de falhar.
+1. Fixture **não-plana** para `aplicar_politica`. A atual usa mesma taxa, prazo e entrada em toda faixa, então um off-by-one no mapeamento faixa→linha produz saída idêntica e **os 176 passam**. É o único elo da cadeia sem teste capaz de falhar.
 2. ✅ As nove elasticidades de `CENARIOS` ficam **fixadas por teste** — é o que deixou `S08_MOTOR_DE_ROI.md` derivar e permanecer errado. Junto, `PREMISSAS_CALIBRADAS` e a direção da âncora (a calibrada tem de ficar **acima** da submetida, senão alguém reverteu a régua para o livro próprio).
 3. `perda_por_faixa` é extraído para `banking.perda` e testado uma vez, em vez de replicado em **11 arquivos**.
 4. Existe teste afirmando a relação entre `POLITICA_ESCOLHIDA` e o que `09_buscar_politica.py` seleciona.
@@ -273,7 +287,7 @@ Defeitos vivos hoje. `outputs/submissao/` não se altera — corrige-se o **gera
 1. O post-mortem está escrito, com as dez causas verificáveis. ✅
 2. A calibração fecha nas três âncoras **e** passa na validação fora da amostra.
 3. Existe política que atende os cinco limites, ou está medido e escrito sob que condições ela não existe.
-4. `pytest -q` passa com **173**, incluindo os guardas de documentação e as premissas fixadas.
+4. `pytest -q` passa com **176**, incluindo os guardas de documentação e as premissas fixadas.
 5. Nenhum script de recuperação contém `0.15` fora da definição do piso.
 6. `outputs/submissao/` e `POLITICA_ESCOLHIDA` inalterados ao fim do passo.
 

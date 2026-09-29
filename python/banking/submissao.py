@@ -153,6 +153,7 @@ def validar_submissao_politica(
     taxa_maxima: float = 0.035,
     aprovacao_minima: float = 0.35,
     arquivo: str = "submissao_politica.csv",
+    prazo_como_teto: bool = False,
 ) -> None:
     """Confere o arquivo do entregável 2 contra as regras e contra a política.
 
@@ -165,6 +166,12 @@ def validar_submissao_politica(
     :param submissao: DataFrame com as sete colunas.
     :param ids_esperados: os ``id_proposta`` da base C, na íntegra.
     :param politica: a tabela do S09, indexada por ``score``.
+    :param prazo_como_teto: como ler a coluna de prazo da tabela. Com ``False``
+        (o default, e o que foi submetido em 25/09/2026), toda linha aprovada
+        tem de ter **exatamente** o prazo da faixa. Com ``True``, a tabela é um
+        **teto** — o enunciado chama a coluna de *"Prazo máx."* — e a coerência
+        exigida passa a ser "nenhuma linha acima dele". Dos três grupos, dois
+        adotaram a leitura de teto; só o nosso deu prazo fixo a todo mundo.
     :raises ValidacaoFalhou: com a lista de todos os problemas encontrados.
     """
     from banking.score import SCORE_MAXIMO, SCORE_MINIMO, score_de_pd
@@ -254,8 +261,26 @@ def validar_submissao_politica(
             problemas.append(f"score {score} aprovado, mas ausente da tabela de política")
             continue
         for coluna in COLUNAS_CONDICAO:
-            esperado = regras.loc[score, coluna]
-            diferentes = int((~np.isclose(grupo[coluna].to_numpy(dtype=float), float(esperado))).sum())
+            esperado = float(regras.loc[score, coluna])
+            valores = grupo[coluna].to_numpy(dtype=float)
+
+            if coluna == "prazo_meses" and prazo_como_teto:
+                # O enunciado chama a coluna de "Prazo máx.". Sob essa leitura,
+                # dar 36 meses a quem pediu 36 é COERENTE com um teto de 60 —
+                # e foi o que dois dos três grupos fizeram. A coerência exigida
+                # passa a ser "nenhuma linha acima do teto", não "toda linha
+                # igual ao teto".
+                acima = int((valores > esperado + 1e-9).sum())
+                if acima:
+                    problemas.append(
+                        f"faixa {score}: {acima} linhas com prazo acima do teto "
+                        f"de {esperado:.0f} meses"
+                    )
+                if int((valores <= 0).sum()):
+                    problemas.append(f"faixa {score}: linhas com prazo não positivo")
+                continue
+
+            diferentes = int((~np.isclose(valores, esperado)).sum())
             if diferentes:
                 problemas.append(
                     f"faixa {score}: {diferentes} linhas com {coluna!r} diferente da tabela "

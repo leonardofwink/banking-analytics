@@ -29,6 +29,8 @@ from banking.score import SCORE_MAXIMO, SCORE_MINIMO, faixa_de_score
 __all__ = [
     "COLUNAS_POLITICA",
     "POLITICA_ESCOLHIDA",
+    "POLITICA_RECUPERACAO",
+    "PRAZO_COMO_TETO_RECUPERACAO",
     "descrever",
     "gerar_politica",
     "validar_monotonicidade",
@@ -205,3 +207,45 @@ POLITICA_ESCOLHIDA = {
     "entrada_base": 0.10,
     "entrada_passo": 0.0,
 }
+
+
+# --- A política da recuperação (S13.6) ---------------------------------------
+# Escolhida em 28/09/2026 pela varredura de `recuperacao/29_politica_sob_piso.py`,
+# sob `PREMISSAS_CALIBRADAS` — não mais sob cenário inventado.
+#
+# O critério NÃO é o máximo ROI. Entre as 935 políticas que atendem os cinco
+# limites, o máximo daria 20,78% — e quebra na borda severa do que o próprio
+# dado sustenta (inadimplência 10,03%, volume R$ 36,3 mi), cobrando no percentil
+# 95 do mercado. Recomendar isso seria repetir a sorte do vencedor, não o método
+# dele: o professor registrou que o Grupo 2 "testou subir a taxa em 0,3 ponto,
+# viu que romperia dois guard-rails no cenário severo e desistiu".
+#
+# Esta é a de maior ROI entre as 225 que, além dos cinco limites:
+#
+#   · fecham também na BORDA SEVERA da calibração (β 1,363 e γ 1,930, do perfil
+#     de verossimilhança do S13.5) — pior caso medido, não imaginado;
+#   · cobram abaixo do PERCENTIL 90 do mercado (BCB), para o preço se explicar
+#     num comitê. O professor elogiou o vencedor por ficar "acima da mediana
+#     das 45 instituições e abaixo do topo".
+#
+#   calibrado      ROI 17,91% · volume R$ 49,7 mi · inadimplência 6,38%
+#   borda severa   ROI 17,38% · volume R$ 46,7 mi · inadimplência 7,82%
+#   taxa média     2,729% a.m. — percentil 87 do mercado
+#
+# ⚠️ O prazo é TETO, não valor fixo: cada proposta recebe o menor entre o que
+# pediu e 60 meses. É a leitura que o enunciado sugere ("Prazo máx.") e que dois
+# dos três grupos adotaram. Quem aplica esta política precisa passar
+# `prazo_como_teto=True` a `aplicar_politica` e a `validar_submissao_politica` —
+# sem isso, o número não é este.
+POLITICA_RECUPERACAO = {
+    "corte": 6,
+    "taxa_base": 0.0225,
+    "k_risco": 0.150,
+    "prazo_max": 60,
+    "entrada_base": 0.125,
+    "entrada_passo": 0.0,
+}
+
+#: Como a política da recuperação lê a coluna de prazo. Anda junto com
+#: :data:`POLITICA_RECUPERACAO` — separar os dois produz um número errado.
+PRAZO_COMO_TETO_RECUPERACAO = True
