@@ -84,7 +84,7 @@ O projeto é **Python**. Ele nasceu para ser poliglota e não foi — ver § A l
 
 **A numeração é global e cronológica.** Um pipeline leva o número da ordem em que foi escrito, não da pasta onde mora: por isso `analises/` tem 16, 21 e 24 e `conferencias/` tem os outros. O número é a linha do tempo; a pasta é o propósito. Script novo pega o próximo número livre.
 
-**Biblioteca × pipeline.** `python/banking/` tem **funções**: não rodam nada ao ser importadas, não leem nem escrevem arquivo, não imprimem. As outras pastas de `python/` têm **pipelines**: rodam, leem, escrevem e logam. Cálculo que vale testar (perda esperada, Price, ROI, faixa de score) vira função na biblioteca; a sequência que orquestra vira pipeline. É isso que permite 173 testes sem rodar nada de ponta a ponta.
+**Biblioteca × pipeline.** `python/banking/` tem **funções**: não rodam nada ao ser importadas, não leem nem escrevem arquivo, não imprimem. As outras pastas de `python/` têm **pipelines**: rodam, leem, escrevem e logam. Cálculo que vale testar (perda esperada, Price, ROI, faixa de score) vira função na biblioteca; a sequência que orquestra vira pipeline. É isso que permite 176 testes sem rodar nada de ponta a ponta.
 
 **Camadas de dado:** `brutos/` é **somente leitura** — nunca editar nem sobrescrever. `intermediarios/` e `processados/` são sempre **regeneráveis pelos scripts**. Se não for possível regenerar, existe um passo manual escondido e o projeto deixou de ser reprodutível.
 
