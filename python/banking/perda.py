@@ -42,6 +42,7 @@ __all__ = [
     "fator_ead",
     "lgd",
     "perda_esperada",
+    "perda_por_faixa",
     "tabelas",
 ]
 
@@ -235,4 +236,63 @@ def perda_esperada(
         p
         * ead(valor_financiado, prazo_meses, ltv)
         * lgd(idade_veiculo_anos, ltv, possui_avalista, modo=modo)
+    )
+
+
+def perda_por_faixa(
+    propostas: pd.DataFrame,
+    cortes=None,
+    modo: ModoAvalista = "oficial",
+) -> dict[int, float]:
+    """A perda esperada média de cada faixa de score, como **fração** do financiado.
+
+    É o insumo da precificação: ``politica.gerar_politica`` cobra
+    ``taxa_base + k_risco × perda_por_faixa[score]``. Se este número vier de um
+    jeito num script e de outro em outro, duas políticas com os mesmos seis
+    parâmetros cobram preços diferentes — e a incoerência não levanta exceção.
+
+    ⚠️ **Esta função existe porque a receita estava replicada em 20 arquivos.**
+    Trocar a base, a coluna de LTV ou o modo de avalista em um deles produzia um
+    preço diferente sem nada acusar. Registrado como vão G4 no post-mortem.
+
+    A perda sai como fração porque é assim que o preço a consome: ``PD × EAD ×
+    LGD`` sem multiplicar pelo valor financiado. O fator de EAD já vem
+    adimensional (0,98 a 1,04).
+
+    :param propostas: precisa de ``pd``, ``prazo_meses``, ``ltv``,
+        ``idade_veiculo_anos`` e ``possui_avalista``. Na base C, use a saída de
+        :func:`banking.dados.preparar_base_c` — ela copia as colunas
+        «desejadas» para os nomes que o modelo espera.
+    :param cortes: as fronteiras de PD das faixas. Omitir usa
+        :data:`banking.score.CORTES_PD`.
+    :param modo: qual regra de avalista aplicar à LGD. O default ``"oficial"``
+        é o parâmetro declarado pelo professor, e é o que foi submetido — ver
+        ``docs/processo/DEBITO_TECNICO.md`` § 5 para o viés conhecido.
+    :return: ``{score: perda_esperada_media}``, só com as faixas presentes.
+    """
+    from banking.score import CORTES_PD, score_de_pd
+
+    faltando = {"pd", "prazo_meses", "ltv", "idade_veiculo_anos", "possui_avalista"} - set(
+        propostas.columns
+    )
+    if faltando:
+        raise ValueError(
+            f"propostas sem as colunas {sorted(faltando)} — na base C, passe pela "
+            "banking.dados.preparar_base_c antes"
+        )
+
+    el = (
+        propostas["pd"].to_numpy(dtype=float)
+        * fator_ead(propostas["prazo_meses"], propostas["ltv"])
+        * lgd(
+            propostas["idade_veiculo_anos"],
+            propostas["ltv"],
+            propostas["possui_avalista"],
+            modo=modo,
+        )
+    )
+    scores = score_de_pd(propostas["pd"], CORTES_PD if cortes is None else cortes)
+    return (
+        pd.DataFrame({"score": scores, "el": el})
+        .groupby("score")["el"].mean().to_dict()
     )

@@ -26,7 +26,7 @@ from banking.roi import (
     aplicar_politica,
     simular,
 )
-from banking.score import SCORE_MAXIMO, SCORE_MINIMO
+from banking.score import SCORE_MAXIMO, SCORE_MINIMO, faixa_de_score, score_de_pd
 
 
 # --- Tabela Price ------------------------------------------------------------
@@ -325,3 +325,90 @@ def test_a_ancora_calibrada_esta_acima_da_submetida():
     """
     assert PREMISSAS_CALIBRADAS.taxa_mercado > PREMISSAS_SUBMETIDAS.taxa_mercado
     assert PREMISSAS_SUBMETIDAS.taxa_mercado == pytest.approx(TAXA_MERCADO)
+
+
+# --- S13.8 · O elo que não tinha rede ----------------------------------------
+
+
+def _propostas_em_todas_as_faixas(por_faixa=7) -> pd.DataFrame:
+    """Carteira que ocupa as dez faixas, para testar o mapeamento faixa->linha.
+
+    A carteira sintética padrão usa uma PD só, então todo mundo cai na mesma
+    faixa — e um erro de mapeamento não teria como aparecer.
+    """
+    pds = []
+    for score in range(SCORE_MAXIMO, SCORE_MINIMO - 1, -1):
+        lo, hi = faixa_de_score(score)
+        hi = min(hi, 0.95)
+        pds.extend(np.linspace(lo + 1e-4, hi - 1e-4, por_faixa))
+    n = len(pds)
+    return pd.DataFrame(
+        {
+            "pd": np.array(pds),
+            "valor_bem": np.full(n, 50_000.0),
+            "pct_entrada_desejada": np.full(n, 0.10),
+            "valor_financiado_desejado": np.full(n, 45_000.0),
+            "prazo_desejado_meses": np.full(n, 48),
+            "idade_veiculo_anos": np.full(n, 3),
+            "possui_avalista": np.array(["Não"] * n),
+        }
+    )
+
+
+def _politica_com_valores_distintos():
+    """Uma tabela em que cada faixa tem taxa, prazo e entrada DIFERENTES.
+
+    A fixture que existia antes era **plana** — mesma taxa, prazo e entrada em
+    toda faixa. Com ela, um off-by-one no mapeamento faixa→linha produz saída
+    idêntica e os testes passam. Era o único elo da cadeia sem rede, e é o que
+    alimenta o `simular`.
+    """
+    linhas = []
+    for score in range(10, 0, -1):
+        aprovada = score >= 5
+        linhas.append({
+            "score": score,
+            "decisao": "APROVAR" if aprovada else "NEGAR",
+            # valores propositalmente distintos e crescentes com o risco
+            "taxa_am": 0.010 + 0.002 * (10 - score) if aprovada else np.nan,
+            "prazo_meses": float(60 - 2 * (10 - score)) if aprovada else np.nan,
+            "pct_entrada_minima": 0.05 + 0.01 * (10 - score) if aprovada else np.nan,
+        })
+    return pd.DataFrame(linhas)
+
+
+def test_aplicar_politica_mapeia_cada_faixa_na_linha_certa():
+    """Cada proposta recebe as condições da SUA faixa, não das vizinhas.
+
+    Um off-by-one no `map` por score — ou um `set_index` na coluna errada —
+    atribuiria a linha vizinha e passaria despercebido com tabela plana.
+    """
+    politica = _politica_com_valores_distintos()
+    ofertas = aplicar_politica(_propostas_em_todas_as_faixas(), politica)
+    regras = politica.set_index("score")
+
+    for score in ofertas["score"].unique():
+        sel = ofertas[ofertas["score"] == score]
+        for coluna in ("taxa_am", "prazo_meses", "pct_entrada_minima"):
+            esperado = regras.loc[score, coluna]
+            obtido = sel[coluna].to_numpy(dtype=float)
+            if np.isnan(esperado):
+                assert np.isnan(obtido).all(), f"faixa {score}, {coluna}"
+            else:
+                assert np.allclose(obtido, esperado), (
+                    f"faixa {score}: {coluna} deveria ser {esperado}, veio {obtido[:3]}"
+                )
+
+
+def test_aplicar_politica_nao_embaralha_scores():
+    """O score de cada linha continua sendo o da PD daquela linha.
+
+    É a dobradiça entre o modelo e a política: se ela escorregar, todo o resto
+    fica internamente coerente e errado em relação ao risco.
+    """
+    ofertas = aplicar_politica(
+        _propostas_em_todas_as_faixas(), _politica_com_valores_distintos()
+    )
+    assert np.array_equal(
+        ofertas["score"].to_numpy(), score_de_pd(ofertas["pd"])
+    )

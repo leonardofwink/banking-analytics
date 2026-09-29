@@ -30,7 +30,7 @@ import pandas as pd
 
 from banking.dados import carregar_processada, preparar_base_c
 from banking.modelo import treinar_modelo_final
-from banking.perda import fator_ead, lgd
+from banking.perda import perda_por_faixa
 from banking.politica import (
     PRAZO_COMO_TETO_RECUPERACAO,
     POLITICA_RECUPERACAO,
@@ -68,17 +68,9 @@ def main() -> int:
     propostas["pd"] = escorar(propostas)
 
     # --- a tabela ------------------------------------------------------------
-    el = (
-        propostas["pd"]
-        * fator_ead(propostas["prazo_desejado_meses"], propostas["ltv"])
-        * lgd(propostas["idade_veiculo_anos"], propostas["ltv"],
-              propostas["possui_avalista"])
+    politica = gerar_politica(
+        **POLITICA_RECUPERACAO, perda_por_faixa=perda_por_faixa(propostas)
     )
-    perda_por_faixa = (
-        pd.DataFrame({"score": score_de_pd(propostas["pd"]), "el": el})
-        .groupby("score")["el"].mean().to_dict()
-    )
-    politica = gerar_politica(**POLITICA_RECUPERACAO, perda_por_faixa=perda_por_faixa)
 
     problemas = validar_monotonicidade(politica)
     if problemas:

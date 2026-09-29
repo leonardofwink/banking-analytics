@@ -97,7 +97,7 @@ em que o trabalho foi feito, não a pasta onde mora. Por isso `analises/` tem
 16, 21 e 24, e `conferencias/` tem os demais — o número é a linha do tempo, a
 pasta é o propósito.
 
-**A distinção que sustenta tudo:** `python/banking/` tem **funções** — puras, testáveis, sem efeito colateral ao ser importadas. As outras pastas de `python/` têm **pipelines** — rodam, leem e escrevem arquivos, imprimem log. Cálculo que vale testar vira função na biblioteca; a sequência que orquestra vira pipeline. É o que permite que os 176 testes cubram o que importa sem precisar rodar nada de ponta a ponta.
+**A distinção que sustenta tudo:** `python/banking/` tem **funções** — puras, testáveis, sem efeito colateral ao ser importadas. As outras pastas de `python/` têm **pipelines** — rodam, leem e escrevem arquivos, imprimem log. Cálculo que vale testar vira função na biblioteca; a sequência que orquestra vira pipeline. É o que permite que os 185 testes cubram o que importa sem precisar rodar nada de ponta a ponta.
 
 ## Sobre o repositório
 
@@ -122,7 +122,7 @@ Depois, rode sem precisar ativar o ambiente — o wrapper usa o interpretador do
 ```powershell
 .\scripts\py.cmd                                  # qual interpretador está em uso
 .\scripts\py.cmd python\modelagem\05_desafiantes.py
-.\scripts\py.cmd -m pytest                        # os 176 testes
+.\scripts\py.cmd -m pytest                        # os 185 testes
 ```
 
 Todo script começa importando a âncora, que resolve os caminhos a partir da raiz:
@@ -157,7 +157,7 @@ O repositório não carrega dado nenhum. Para chegar nesses números do zero:
 .\scripts\py.cmd python\modelagem\09_buscar_politica.py      # 5. a política
 .\scripts\py.cmd python\modelagem\10_submissao_politica.py   #    decisões da base C
 
-.\scripts\py.cmd -m pytest                                   # 6. 176 testes
+.\scripts\py.cmd -m pytest                                   # 6. 185 testes
 ```
 
 O passo 5 é o que importa para a defesa: ele varre o espaço de políticas e
@@ -187,7 +187,7 @@ que batam. Ver [`docs/PAINEL.md`](docs/PAINEL.md).
 
 ## Estado atual
 
-**Desafio AutoCred, entregue.** Os dois entregáveis fechados, 176 testes passando.
+**Desafio AutoCred, entregue.** Os dois entregáveis fechados, 185 testes passando.
 
 | | |
 | - | - |

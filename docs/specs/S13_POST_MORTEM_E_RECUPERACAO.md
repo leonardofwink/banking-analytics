@@ -17,7 +17,7 @@
 | [S13.5](#s135--a-calibração-do-aceite) | `recuperacao/28_calibrar_o_aceite.py` | 4/5 | 🔄 | |
 | [S13.6](#s136--a-política-sob-o-piso) | `recuperacao/29_politica_sob_piso.py` | 4/4 | ✅ | |
 | [S13.7](#s137--a-submissão-alternativa) | `recuperacao/30_submissao_alternativa.py` | 3/3 | ✅ | |
-| [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 testes em `tests/python/` | 1/5 | 🔄 | |
+| [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 guardas em `tests/python/` | 5/5 | ✅ | |
 | [S13.9](#s139--as-correções-de-artefato) | 8 correções | 1/8 | 🔄 | |
 | **Passo** | **DoD do S13** | **1/6** | 🔄 | |
 
@@ -248,9 +248,19 @@ Três testes cobrem isso: teto aceita prazo menor, teto ainda rejeita prazo maio
 
 Cada defeito encontrado na auditoria nasceu num vão da suíte.
 
+#### Fechada em 29/09/2026 — **185 testes**, de 166
+
+| Vão | Como foi fechado |
+| --- | ---------------- |
+| **G1** fixture plana | `_propostas_em_todas_as_faixas` + tabela com valores distintos por faixa. **Verificado contra isca:** um `+ 1` no `score_de_pd` derruba os dois testes; sem o `+ 1`, passam |
+| **G3** elasticidades soltas | os nove valores dos cenários submetidos e os três calibrados, fixados |
+| **G4** receita replicada | `perda_por_faixa` extraída para `banking.perda` — estava em **20 arquivos**, não 11 — e fixada nos valores publicados |
+| **G5** `POLITICA_ESCOLHIDA` sem rede | teste que a declara como **registro do submetido**, com a divergência do `09` documentada no docstring |
+| **G6** empate sem teste | truncagem no teto e preço único produzem `diff == 0` e têm de passar |
+
 **DoD — pronto quando:**
 
-1. Fixture **não-plana** para `aplicar_politica`. A atual usa mesma taxa, prazo e entrada em toda faixa, então um off-by-one no mapeamento faixa→linha produz saída idêntica e **os 176 passam**. É o único elo da cadeia sem teste capaz de falhar.
+1. Fixture **não-plana** para `aplicar_politica`. A atual usa mesma taxa, prazo e entrada em toda faixa, então um off-by-one no mapeamento faixa→linha produz saída idêntica e **os 185 passam**. É o único elo da cadeia sem teste capaz de falhar.
 2. ✅ As nove elasticidades de `CENARIOS` ficam **fixadas por teste** — é o que deixou `S08_MOTOR_DE_ROI.md` derivar e permanecer errado. Junto, `PREMISSAS_CALIBRADAS` e a direção da âncora (a calibrada tem de ficar **acima** da submetida, senão alguém reverteu a régua para o livro próprio).
 3. `perda_por_faixa` é extraído para `banking.perda` e testado uma vez, em vez de replicado em **11 arquivos**.
 4. Existe teste afirmando a relação entre `POLITICA_ESCOLHIDA` e o que `09_buscar_politica.py` seleciona.
@@ -287,7 +297,7 @@ Defeitos vivos hoje. `outputs/submissao/` não se altera — corrige-se o **gera
 1. O post-mortem está escrito, com as dez causas verificáveis. ✅
 2. A calibração fecha nas três âncoras **e** passa na validação fora da amostra.
 3. Existe política que atende os cinco limites, ou está medido e escrito sob que condições ela não existe.
-4. `pytest -q` passa com **176**, incluindo os guardas de documentação e as premissas fixadas.
+4. `pytest -q` passa com **185**, incluindo os guardas de documentação, as premissas fixadas e os cinco elos da cadeia.
 5. Nenhum script de recuperação contém `0.15` fora da definição do piso.
 6. `outputs/submissao/` e `POLITICA_ESCOLHIDA` inalterados ao fim do passo.
 

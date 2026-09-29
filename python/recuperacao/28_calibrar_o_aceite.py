@@ -54,7 +54,7 @@ from scipy.optimize import differential_evolution
 
 from banking.dados import carregar_processada, preparar_base_c
 from banking.modelo import treinar_modelo_final
-from banking.perda import fator_ead, lgd
+from banking.perda import perda_por_faixa
 from banking.politica import POLITICA_ESCOLHIDA, gerar_politica
 from banking.projeto import DIR_TABELAS, SEMENTE, log_step, semear
 from banking.roi import CENARIOS, Cenario, Premissas, aplicar_politica, simular
@@ -137,15 +137,7 @@ def preparar() -> dict:
     p = preparar_base_c(base_c).reset_index(drop=True)
     p["pd"] = escorar(p)
 
-    perda = (
-        p.assign(
-            sc=score_de_pd(p["pd"]),
-            el=fator_ead(p["prazo_desejado_meses"], p["ltv"])
-            * lgd(p["idade_veiculo_anos"], p["ltv"], p["possui_avalista"])
-            * p["pd"],
-        )
-        .groupby("sc")["el"].mean().to_dict()
-    )
+    perda = perda_por_faixa(p)
 
     nossa = gerar_politica(**POLITICA_ESCOLHIDA, perda_por_faixa=perda)
     g2 = politica_do_grupo2()
