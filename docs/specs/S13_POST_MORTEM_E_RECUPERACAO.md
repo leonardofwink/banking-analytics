@@ -19,6 +19,7 @@
 | [S13.7](#s137--a-submissão-alternativa) | `recuperacao/30_submissao_alternativa.py` | 3/3 | ✅ | |
 | [S13.8](#s138--os-testes-que-impedem-a-volta) | 5 guardas em `tests/python/` | 5/5 | ✅ | |
 | [S13.9](#s139--as-correções-de-artefato) | 8 correções | 1/8 | 🔄 | |
+| [S13.10](#s1310--diagnóstico-de-política) | `recuperacao/31_diagnostico_de_politica.py` | 3/3 | ✅ | |
 | **Passo** | **DoD do S13** | **1/6** | 🔄 | |
 
 ## Objetivo
@@ -198,16 +199,24 @@ O segundo critério vem do elogio que o professor fez ao vencedor — *"acima da
 
 | | ROI | Volume | Taxa média | Percentil | Aguenta a borda severa? |
 | - | --- | ------ | ---------- | --------- | ----------------------- |
-| Maior ROI entre as viáveis | 20,78% | R$ 40,0 mi | 3,143% | 95 ⚠️ | ❌ inad 10,03% e volume 36,3 mi |
-| **Recomendada** | **17,91%** | **R$ 49,7 mi** | **2,729%** | **87** | ✅ ROI 17,38% · inad 7,82% |
+| Maior ROI entre as viáveis | 20,80% | R$ 40,0 mi | 3,134% | 93 ⚠️ | ❌ inad 9,74% e volume 36,3 mi |
+| **Recomendada** | **18,59%** | **R$ 45,7 mi** | **2,817%** | **87** | ✅ ROI 17,90% · inad 7,96% |
 | Máximo ROI ignorando o piso | 24,28% | R$ 21,1 mi | 3,500% | 100 ⚠️ | ❌ |
-| `EMPATE_ROI` + folga (critério do S09) | 19,83% | R$ 43,4 mi | 3,000% | 89 | ❌ inad 9,28% |
+| `EMPATE_ROI` + folga (critério do S09) | 19,81% | R$ 43,7 mi | 3,000% | 89 | ❌ inad 9,33% |
 
-**A recomendada:** `corte 6 · taxa_base 2,25% · k_risco 0,150 · prazo 60m como teto · entrada 12,5%`.
+**A recomendada:** `corte 6 · taxa_base 1,80% · k_risco 0,350 · prazo 60m como teto · entrada 13,75%`.
+
+##### ⚠️ A primeira versão desta varredura tinha o mesmo defeito do S12
+
+O refino explorava **só em volta do melhor ponto da grade grossa**, e `entrada_base = 13,75%` não estava na grade. O resultado publicado na primeira rodada foi **17,91%** — **0,68 ponto abaixo** do que a mesma grade continha.
+
+É o erro do desafio em escala menor: concluir a partir de uma grade que passa por cima da resposta. Corrigido em duas frentes — a grade grossa ganhou passos de 2,5 pp na entrada, e o refino passou a explorar em torno dos **seis melhores** candidatos. De 10.905 políticas avaliadas para **23.829**.
+
+O número que mudou está registrado aqui em vez de substituído em silêncio.
 
 Três coisas que ela mostra:
 
-1. **A meta era alcançável com folga.** 17,91% contra um piso de 15% e contra os 16,53% do vencedor — e com volume equivalente ao dele (R$ 49,7 mi contra R$ 50,1 mi).
+1. **A meta era alcançável com folga.** 18,59% contra um piso de 15% e contra os 16,53% do vencedor.
 2. **O critério antigo continuaria escolhendo um ponto frágil.** `EMPATE_ROI` + folga, aplicado à premissa *calibrada*, pega 19,83% que quebra na borda severa. O problema nunca foi só a premissa.
 3. **O prazo era alavanca.** A recomendada usa 60 meses **como teto** — respeita o prazo pedido. Fomos o único grupo a impor prazo fixo.
 
@@ -224,7 +233,7 @@ Três coisas que ela mostra:
 
 #### Resultado, em 29/09/2026
 
-`outputs/recuperacao/submissao_politica_recuperacao.csv` — 5.000 linhas, **2.526 aprovadas (50,5%)**, validador passou. Sob as premissas calibradas: **ROI 17,91% · volume R$ 49,7 mi · inadimplência 6,38%**, os quatro guard-rails cumpridos.
+`outputs/recuperacao/submissao_politica_recuperacao.csv` — 5.000 linhas, **2.526 aprovadas (50,5%)**, validador passou. Sob as premissas calibradas: **ROI 18,59% · volume R$ 45,7 mi · inadimplência 6,39%**, os quatro guard-rails cumpridos.
 
 **1.981 propostas receberam prazo menor que o teto porque pediram menos.** É a alavanca do prazo em número: fomos o único grupo a impor prazo fixo, e ela sozinha aparece no resultado.
 
@@ -265,6 +274,46 @@ Cada defeito encontrado na auditoria nasceu num vão da suíte.
 3. `perda_por_faixa` é extraído para `banking.perda` e testado uma vez, em vez de replicado em **11 arquivos**.
 4. Existe teste afirmando a relação entre `POLITICA_ESCOLHIDA` e o que `09_buscar_politica.py` seleciona.
 5. `validar_monotonicidade` ganha teste de **empate**: preço único e truncagem no teto produzem `diff == 0` e têm de passar.
+
+---
+
+### S13.10 · Diagnóstico de política — os alarmes que não existiam
+
+Nasceu de uma frase dita depois da apuração: *"era esse tipo de insight que eu queria ter tido na hora da elaboração"*.
+
+Os indicadores levam segundos para calcular e estavam disponíveis desde o primeiro dia. Não apareceram porque **ninguém os pediu** — não porque faltasse dado.
+
+**DoD — pronto quando:**
+
+1. ✅ Roda sobre **qualquer** tabela de política e devolve: teto de PD, inclinação do preço, subsídio cruzado, largura das faixas, taxa média, percentil no mercado e o quadrante.
+2. ✅ Emite **alarmes com limiar declarado**, não só números.
+3. ✅ Compara as quatro políticas — as nossas duas e as dos Grupos 1 e 2, reconstruídas do quadro do professor, para a comparação ser reproduzível em vez de lembrada.
+
+#### O resultado, em 29/09/2026
+
+| | teto PD | inclinação | subsídio | largura | taxa média | quadrante | alarmes |
+| - | ------- | ---------- | -------- | ------- | ---------- | --------- | ------- |
+| Grupo 3 · submetida | 13,00% | 0,067 | 6,4× | 1,40× | 1,893% | permissivo e barato | **4** |
+| Grupo 3 · recuperação | 9,50% | **0,184** | 4,3× | 1,40× | 2,817% | na fronteira e caro | 1 |
+| Grupo 1 · 2º lugar | 15,00% | 0,067 | 9,5× | 1,38× | 2,454% | permissivo e caro | 3 |
+| **Grupo 2 · vencedor** | 7,88% | 0,119 | **3,9×** | **1,17×** | 2,496% | seletivo e caro | **0** |
+
+**O diagnóstico se valida sozinho: o vencedor não dispara nenhum alarme.** Os dois que perderam disparam três e quatro.
+
+E os quatro que a nossa política submetida dispararia, antes da entrega:
+
+- preço quase plano (0,067 pp por pp de PD)
+- subsídio cruzado de 6,4× — o cliente bom banca o ruim
+- taxa média **abaixo** da âncora de mercado
+- não fecha os cinco limites na borda severa
+
+#### Três indicadores meus estavam errados, e foram corrigidos na construção
+
+| Defeito | Correção |
+| ------- | -------- |
+| Largura pela **média** | a melhor faixa começa em zero, e dividir por isso dava **101×** e sequestrava a média. Passou a **mediana** (1,40×) |
+| Quadrante pela **taxa de aprovação** | depende de quantas propostas chegaram. Passou ao **teto de PD contra a mediana da base** (9,36% na Base C), com "na fronteira" quando fica a menos de 10% dela |
+| "Caro" pela **mediana das instituições** | chamava de cara uma política **abaixo** do preço de mercado. Passou à **âncora que o projeto adotou** — usar uma régua para decidir e outra para classificar é o erro que nos custou o desafio, em miniatura |
 
 ---
 

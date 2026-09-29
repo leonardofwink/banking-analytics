@@ -213,14 +213,14 @@ POLITICA_ESCOLHIDA = {
 # Escolhida em 28/09/2026 pela varredura de `recuperacao/29_politica_sob_piso.py`,
 # sob `PREMISSAS_CALIBRADAS` — não mais sob cenário inventado.
 #
-# O critério NÃO é o máximo ROI. Entre as 935 políticas que atendem os cinco
-# limites, o máximo daria 20,78% — e quebra na borda severa do que o próprio
+# O critério NÃO é o máximo ROI. Entre as 4.562 políticas que atendem os cinco
+# limites, o máximo daria 20,80% — e quebra na borda severa do que o próprio
 # dado sustenta (inadimplência 10,03%, volume R$ 36,3 mi), cobrando no percentil
 # 95 do mercado. Recomendar isso seria repetir a sorte do vencedor, não o método
 # dele: o professor registrou que o Grupo 2 "testou subir a taxa em 0,3 ponto,
 # viu que romperia dois guard-rails no cenário severo e desistiu".
 #
-# Esta é a de maior ROI entre as 225 que, além dos cinco limites:
+# Esta é a de maior ROI entre as 1.571 que, além dos cinco limites:
 #
 #   · fecham também na BORDA SEVERA da calibração (β 1,363 e γ 1,930, do perfil
 #     de verossimilhança do S13.5) — pior caso medido, não imaginado;
@@ -228,9 +228,15 @@ POLITICA_ESCOLHIDA = {
 #     num comitê. O professor elogiou o vencedor por ficar "acima da mediana
 #     das 45 instituições e abaixo do topo".
 #
-#   calibrado      ROI 17,91% · volume R$ 49,7 mi · inadimplência 6,38%
-#   borda severa   ROI 17,38% · volume R$ 46,7 mi · inadimplência 7,82%
-#   taxa média     2,729% a.m. — percentil 87 do mercado
+#   calibrado      ROI 18,59% · volume R$ 45,7 mi · inadimplência 6,39%
+#   borda severa   ROI 17,90% · volume R$ 42,7 mi · inadimplência 7,96%
+#   taxa média     2,817% a.m. — percentil 87 do mercado
+#
+# Repare no formato da tabela: taxa_base BAIXA (1,80%) com k_risco ALTO (0,350).
+# O preço vai de 2,27% na melhor faixa a 3,50% na pior — inclinação de 0,176
+# ponto de taxa por ponto de PD, contra 0,134 do grupo vencedor e 0,068 da
+# nossa política submetida. Precifica risco quase três vezes mais que a que
+# perdeu o desafio.
 #
 # ⚠️ O prazo é TETO, não valor fixo: cada proposta recebe o menor entre o que
 # pediu e 60 meses. É a leitura que o enunciado sugere ("Prazo máx.") e que dois
@@ -239,10 +245,10 @@ POLITICA_ESCOLHIDA = {
 # sem isso, o número não é este.
 POLITICA_RECUPERACAO = {
     "corte": 6,
-    "taxa_base": 0.0225,
-    "k_risco": 0.150,
+    "taxa_base": 0.0180,
+    "k_risco": 0.350,
     "prazo_max": 60,
-    "entrada_base": 0.125,
+    "entrada_base": 0.1375,
     "entrada_passo": 0.0,
 }
 

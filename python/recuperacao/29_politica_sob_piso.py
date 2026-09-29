@@ -75,10 +75,17 @@ GRADE_LARGA = {
     "taxa_base": [0.0150, 0.0175, 0.0200, 0.0225, 0.0250, 0.0275, 0.0300],
     "k_risco": [0.0, 0.10, 0.20, 0.30, 0.50],
     "prazo_max": [36, 48, 60],
-    "entrada_base": [0.0, 0.05, 0.10, 0.20],
+    # 12,5% faltava aqui, e era a entrada da melhor politica. O refino a achou
+    # por acaso, ao explorar em volta de outro ponto -- e por pouco nao a achou.
+    "entrada_base": [0.0, 0.05, 0.075, 0.10, 0.125, 0.15, 0.20],
     "entrada_passo": [0.0, 0.04],
     "prazo_como_teto": [False, True],
 }
+
+#: Quantos candidatos da grade grossa merecem refino. Refinar so em volta do
+#: melhor e apostar que o otimo global esta perto do melhor ponto de uma grade
+#: grossa -- e foi assim que 0,30 ponto de ROI ficou fora do alcance.
+CANDIDATOS_A_REFINAR = 6
 
 
 def _mercado() -> np.ndarray:
@@ -109,10 +116,13 @@ def _taxa_media_ponderada(ofertas: pd.DataFrame, cenario, premissas) -> float:
     Ponderada pelo que **fecha** — é o número comparável ao que o professor
     publicou para cada grupo (1,876% no nosso caso), não a média simples da
     tabela.
+
+    Calcula o aceite direto, sem chamar :func:`simular`: numa varredura de
+    dezenas de milhares de políticas, uma simulação a mais por avaliação é um
+    terço do tempo total gasto para obter um número que já está aqui.
     """
-    r = simular(ofertas, cenario, premissas)
     ap = ofertas[ofertas["aprovada"]]
-    if ap.empty or r.contratos_esperados <= 0:
+    if ap.empty:
         return float("nan")
     excesso = np.maximum(ap["taxa_am"].to_numpy() / premissas.taxa_mercado - 1.0, 0.0)
     encurt = np.clip(
@@ -257,6 +267,30 @@ def _mostrar(titulo: str, linha: pd.Series) -> None:
               f"  {'aguenta' if linha['robusta'] else '⚠️ NÃO aguenta'}")
 
 
+def _grade_fina(semente: pd.Series) -> dict:
+    """A vizinhança de um candidato, com passo mais fino que o da grade grossa."""
+    return {
+        "corte": sorted(
+            {int(semente["corte"]) + d for d in (-1, 0, 1)} & set(range(1, 10))
+        ),
+        "taxa_base": sorted({
+            round(max(0.010, semente["taxa_base"] + d), 5)
+            for d in np.arange(-0.00125, 0.00126, 0.00025)
+        }),
+        "k_risco": sorted({
+            round(max(0.0, semente["k_risco"] + d), 4)
+            for d in np.arange(-0.05, 0.051, 0.025)
+        }),
+        "prazo_max": [int(semente["prazo_max"])],
+        "entrada_base": sorted({
+            round(max(0.0, semente["entrada_base"] + d), 4)
+            for d in np.arange(-0.025, 0.0251, 0.0125)
+        }),
+        "entrada_passo": [semente["entrada_passo"]],
+        "prazo_como_teto": [bool(semente["prazo_como_teto"])],
+    }
+
+
 def main() -> int:
     log_step("S13.6 · A política sob o piso de 15%, com premissas calibradas")
     p, perda, escorar = _contexto()
@@ -304,22 +338,34 @@ def main() -> int:
         return 0
 
     # --- refino em torno da melhor ------------------------------------------
-    melhor = viaveis.loc[viaveis["roi"].idxmax()]
-    log_step("refino em torno da melhor")
-    fino = {
-        "corte": sorted({int(melhor["corte"]) + d for d in (-1, 0, 1)} & set(range(1, 10))),
-        "taxa_base": [round(melhor["taxa_base"] + d, 5)
-                      for d in np.arange(-0.0025, 0.0026, 0.0005)],
-        "k_risco": [round(max(0.0, melhor["k_risco"] + d), 4)
-                    for d in np.arange(-0.05, 0.051, 0.025)],
-        "prazo_max": [int(melhor["prazo_max"])],
-        "entrada_base": [round(max(0.0, melhor["entrada_base"] + d), 4)
-                         for d in np.arange(-0.05, 0.051, 0.025)],
-        "entrada_passo": [melhor["entrada_passo"]],
-        "prazo_como_teto": [bool(melhor["prazo_como_teto"])],
-    }
-    refinado = varrer(fino, p, perda, escorar, premissas, cen, severo, mercado)
-    todas = pd.concat([largo, refinado], ignore_index=True)
+    # --- refino em torno dos MELHORES, não só do melhor ---------------------
+    # Refinar apenas em volta do primeiro colocado da grade grossa é apostar que
+    # o ótimo global mora perto dele. Não mora: foi assim que 0,30 ponto de ROI
+    # ficou fora do alcance na primeira versão deste script.
+    prioridade = (
+        viaveis[viaveis["robusta_e_defensavel"]]
+        if viaveis["robusta_e_defensavel"].any()
+        else viaveis
+    )
+    eixos = ["corte", "taxa_base", "k_risco", "prazo_max", "entrada_base",
+             "entrada_passo", "prazo_como_teto"]
+    sementes = (
+        pd.concat([
+            prioridade.nlargest(CANDIDATOS_A_REFINAR, "roi"),
+            viaveis.nlargest(CANDIDATOS_A_REFINAR, "roi"),
+        ])
+        .drop_duplicates(subset=eixos)
+    )
+    log_step(f"refino em torno de {len(sementes)} candidatos")
+
+    partes = [largo]
+    for i, (_, semente) in enumerate(sementes.iterrows(), 1):
+        log_step(f"  candidato {i}/{len(sementes)}")
+        partes.append(
+            varrer(_grade_fina(semente), p, perda, escorar, premissas, cen,
+                   severo, mercado)
+        )
+    todas = pd.concat(partes, ignore_index=True).drop_duplicates(subset=eixos)
     viaveis = todas[todas["atende_os_cinco"]]
     log_step(f"{len(todas)} avaliadas no total · {len(viaveis)} atendem os cinco")
 
