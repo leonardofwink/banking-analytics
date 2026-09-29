@@ -22,6 +22,8 @@ from banking.perda import fator_ead, lgd
 from banking.politica import (
     COLUNAS_POLITICA,
     POLITICA_ESCOLHIDA,
+    PRAZO_COMO_TETO_RECUPERACAO,
+    POLITICA_RECUPERACAO,
     gerar_politica,
     validar_monotonicidade,
 )
@@ -191,3 +193,76 @@ def test_politica_escolhida_tem_folga_no_pior_cenario(contexto) -> None:
 
     assert pior.volume_originado >= GUARD_RAILS["volume_minimo"] * 1.05
     assert pior.inadimplencia <= GUARD_RAILS["inadimplencia_maxima"] * 0.95
+
+
+# --- S13.8 · Empate e o que POLITICA_ESCOLHIDA é -----------------------------
+
+
+def test_monotonicidade_aceita_empate_por_truncagem_no_teto():
+    """Faixas coladas no teto de 3,5% produzem `diff == 0`, e isso é coerente.
+
+    `politica.py` trunca a taxa no teto do enunciado. Com `k_risco` alto, várias
+    faixas ruins colidem lá em cima e a tabela fica **plana** no topo. Os sinais
+    de tolerância do validador (`< -1e-9`) são o que mantém isso fora do balde
+    "incoerente" — se alguém trocar por `<= 0`, toda a grade agressiva some da
+    busca e ninguém entende por quê.
+    """
+    politica = gerar_politica(
+        corte=5, taxa_base=0.030, k_risco=2.0, prazo_max=48,
+        entrada_base=0.10, entrada_passo=0.0,
+        perda_por_faixa={s: 0.05 * (11 - s) for s in range(1, 11)},
+    )
+    aprovadas = politica[politica["decisao"] == "APROVAR"]
+    assert (aprovadas["taxa_am"] == 0.035).sum() >= 2, "o cenário do teste não truncou"
+    assert validar_monotonicidade(politica) == []
+
+
+def test_monotonicidade_aceita_preco_unico():
+    """`k_risco = 0` dá taxa igual em toda faixa — a política antiga.
+
+    É a patologia que o conselho diagnosticou, não uma incoerência de tabela.
+    O validador confere **forma**, não mérito; quem julga mérito é a busca.
+    """
+    politica = gerar_politica(
+        corte=5, taxa_base=0.020, k_risco=0.0, prazo_max=48,
+        entrada_base=0.10, entrada_passo=0.0,
+        perda_por_faixa={s: 0.05 * (11 - s) for s in range(1, 11)},
+    )
+    aprovadas = politica[politica["decisao"] == "APROVAR"]
+    assert aprovadas["taxa_am"].nunique() == 1
+    assert validar_monotonicidade(politica) == []
+
+
+def test_politica_escolhida_e_o_registro_do_que_foi_submetido():
+    """Estes seis números são o que o professor recebeu em 25/09/2026.
+
+    ⚠️ **`POLITICA_ESCOLHIDA` não é a saída de `09_buscar_politica.py`.** O
+    script, rodado hoje com o próprio critério, seleciona `corte 6 · k_risco
+    0,00` — preço único, a patologia que o deck condena. A divergência vem de
+    `EMPATE_ROI = 0.01` ser uma janela de **1 ponto percentual**, e a escolha
+    final ter sido humana (`politica.py:187-188`).
+
+    Mudar estes números quebra a comparação com o apurado e faz cinco artefatos
+    publicados mentirem. Política nova entra como constante separada — é o que
+    `POLITICA_RECUPERACAO` faz.
+    """
+    assert POLITICA_ESCOLHIDA == {
+        "corte": 5,
+        "taxa_base": 0.0150,
+        "k_risco": 0.10,
+        "prazo_max": 48,
+        "entrada_base": 0.10,
+        "entrada_passo": 0.0,
+    }
+
+
+def test_politica_recuperacao_e_mais_seletiva_e_mais_cara():
+    """A direção da recuperação, travada: aprovar menos e cobrar mais.
+
+    Foi o que separou o vencedor de nós — *"aprovar menos e cobrar mais caro de
+    quem entra rendeu mais do que aprovar muito e cobrar barato"*. Se alguém
+    inverter qualquer um dos dois, isto falha.
+    """
+    assert POLITICA_RECUPERACAO["corte"] > POLITICA_ESCOLHIDA["corte"]
+    assert POLITICA_RECUPERACAO["taxa_base"] > POLITICA_ESCOLHIDA["taxa_base"]
+    assert PRAZO_COMO_TETO_RECUPERACAO is True

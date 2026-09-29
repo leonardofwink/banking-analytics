@@ -40,7 +40,7 @@ import pandas as pd
 
 from banking.dados import carregar_processada, preparar_base_c
 from banking.modelo import treinar_modelo_final
-from banking.perda import fator_ead, lgd
+from banking.perda import perda_por_faixa
 from banking.politica import POLITICA_ESCOLHIDA, gerar_politica, validar_monotonicidade
 from banking.projeto import DIR_EXTERNOS, DIR_TABELAS, log_step, semear
 from banking.roi import (
@@ -139,15 +139,7 @@ def _contexto():
 
     p = preparar_base_c(base_c).reset_index(drop=True)
     p["pd"] = escorar(p)
-    perda = (
-        p.assign(
-            sc=score_de_pd(p["pd"]),
-            el=fator_ead(p["prazo_desejado_meses"], p["ltv"])
-            * lgd(p["idade_veiculo_anos"], p["ltv"], p["possui_avalista"])
-            * p["pd"],
-        )
-        .groupby("sc")["el"].mean().to_dict()
-    )
+    perda = perda_por_faixa(p)
     return p, perda, escorar
 
 

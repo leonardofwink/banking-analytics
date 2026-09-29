@@ -203,3 +203,54 @@ def test_perda_esperada_na_ordem_de_grandeza_do_professor() -> None:
 
 def test_pd_zero_nao_gera_perda() -> None:
     assert perda_esperada([0.0], [10_000.0], [48], [0.75], [4])[0] == 0.0
+
+
+# --- S13.8 · A receita da perda por faixa, num lugar só ----------------------
+
+
+def test_perda_por_faixa_reproduz_o_que_foi_submetido():
+    """Os valores que a política submetida usou para precificar.
+
+    A receita estava replicada em **20 arquivos**. Trocar a base, a coluna de
+    LTV ou o modo de avalista em um deles produzia um preço diferente sem nada
+    acusar — vão G4 do post-mortem. Estes números são os publicados no deck e
+    no documento de política.
+    """
+    from banking.dados import carregar_processada, preparar_base_c
+    from banking.modelo import treinar_modelo_final
+    from banking.perda import perda_por_faixa
+
+    modelo = treinar_modelo_final(carregar_processada("A"))
+    propostas = preparar_base_c(carregar_processada("C")).reset_index(drop=True)
+    propostas["pd"] = modelo.predict_proba(propostas)[:, 1]
+
+    esperado = {10: 0.013435, 9: 0.020703, 8: 0.029242, 7: 0.040740,
+                6: 0.057715, 5: 0.079232, 4: 0.111836, 3: 0.156135,
+                2: 0.212813, 1: 0.333055}
+    obtido = perda_por_faixa(propostas)
+    assert set(obtido) == set(esperado)
+    for score, valor in esperado.items():
+        assert obtido[score] == pytest.approx(valor, abs=1e-6), f"faixa {score}"
+
+
+def test_perda_por_faixa_exige_as_colunas_que_usa():
+    """Faltando coluna, erro claro — não um KeyError no meio do cálculo."""
+    from banking.perda import perda_por_faixa
+
+    with pytest.raises(ValueError, match="preparar_base_c"):
+        perda_por_faixa(pd.DataFrame({"pd": [0.05, 0.10]}))
+
+
+def test_perda_por_faixa_cresce_com_o_risco():
+    """Faixa pior perde mais. Se isto inverter, o preço inverte junto."""
+    from banking.dados import carregar_processada, preparar_base_c
+    from banking.modelo import treinar_modelo_final
+    from banking.perda import perda_por_faixa
+
+    modelo = treinar_modelo_final(carregar_processada("A"))
+    propostas = preparar_base_c(carregar_processada("C")).reset_index(drop=True)
+    propostas["pd"] = modelo.predict_proba(propostas)[:, 1]
+
+    por_faixa = perda_por_faixa(propostas)
+    valores = [por_faixa[s] for s in sorted(por_faixa, reverse=True)]
+    assert valores == sorted(valores), "perda esperada não é monótona no score"
